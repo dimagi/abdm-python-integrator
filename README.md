@@ -65,3 +65,9 @@ The resulting package (wheel or tar) can be then installed using pip into your D
         'HRP_ABHA_REGISTERED_CHECK_CLASS': None,
     }
     ```
+
+## Testing
+Run the below command to run test cases. Uses settings as defined in `test_settings.py`
+```commandline
+python manage.py test
+```

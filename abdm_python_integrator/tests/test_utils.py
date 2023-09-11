@@ -43,7 +43,7 @@ class TestABDMRequestHelper(SimpleTestCase):
     @patch('abdm_python_integrator.utils.requests.get')
     def test_abha_get_failure(self, mocked_get,  *args):
         mocked_get.return_value = self._mock_response(status_code=400)
-        with self.assertRaises(requests.HTTPError) as err:
+        with self.assertRaises(requests.HTTPError):
             ABDMRequestHelper().abha_get(api_path='')
 
     @patch('abdm_python_integrator.utils.ABDMRequestHelper.get_access_token')

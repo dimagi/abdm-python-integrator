@@ -5,6 +5,14 @@ from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 
+from abdm_python_integrator.abha.const import (
+    CREATE_HEALTH_ID_URL,
+    GENERATE_AADHAAR_OTP_URL,
+    GENERATE_MOBILE_OTP_URL,
+    VERIFY_AADHAAR_OTP_URL,
+    VERIFY_MOBILE_OTP_URL,
+)
+
 
 class TestABHACreation(APITestCase):
 
@@ -20,13 +28,12 @@ class TestABHACreation(APITestCase):
     def _mock_abdm_http_post(url, payload):
         abdm_txn_id_mock = {"txnId": "1234"}
         return {
-            "v1/registration/aadhaar/generateOtp": abdm_txn_id_mock,
-            "v1/registration/aadhaar/verifyMobileOTP":  abdm_txn_id_mock,
-            "v1/registration/aadhaar/verifyOTP": abdm_txn_id_mock,
-            "v1/registration/aadhaar/generateMobileOTP": abdm_txn_id_mock,
-            "v1/registration/aadhaar/createHealthIdWithPreVerified": {"token": "1122", "refreshToken": "1133",
-                                                                      "health_id": "123-456", "txnId": "1234",
-                                                                      "new": 'true'},
+            GENERATE_AADHAAR_OTP_URL: abdm_txn_id_mock,
+            VERIFY_MOBILE_OTP_URL: abdm_txn_id_mock,
+            VERIFY_AADHAAR_OTP_URL: abdm_txn_id_mock,
+            GENERATE_MOBILE_OTP_URL: abdm_txn_id_mock,
+            CREATE_HEALTH_ID_URL: {"token": "1122", "refreshToken": "1133", "health_id": "123-456",
+                                   "txnId": "1234", "new": 'true'},
         }.get(url)
 
     def test_aadhaar_otp_generation_success(self):

@@ -1,10 +1,17 @@
 from unittest.mock import Mock, patch
 
 from django.contrib.auth.models import User
-from django.test import override_settings
 from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
+
+from abdm_python_integrator.abha.const import (
+    AUTH_OTP_URL,
+    CONFIRM_WITH_AADHAAR_OTP_URL,
+    CONFIRM_WITH_MOBILE_OTP_URL,
+    EXISTS_BY_HEALTH_ID,
+    SEARCH_BY_HEALTH_ID_URL,
+)
 
 
 class TestABHAVerification(APITestCase):
@@ -21,11 +28,11 @@ class TestABHAVerification(APITestCase):
     def _mock_abdm_http_post(url, payload):
         abdm_txn_id_mock = {"txnId": "1234"}
         return {
-            "v1/search/searchByHealthId": {"authMethods": ["MOBILE_OTP"]},
-            "v1/auth/init": abdm_txn_id_mock,
-            "v1/auth/confirmWithMobileOTP": abdm_txn_id_mock,
-            "v1/auth/confirmWithAadhaarOtp": abdm_txn_id_mock,
-            "v1/search/existsByHealthId": {"status": True}
+            SEARCH_BY_HEALTH_ID_URL: {"authMethods": ["MOBILE_OTP"]},
+            AUTH_OTP_URL: abdm_txn_id_mock,
+            CONFIRM_WITH_MOBILE_OTP_URL: abdm_txn_id_mock,
+            CONFIRM_WITH_AADHAAR_OTP_URL: abdm_txn_id_mock,
+            EXISTS_BY_HEALTH_ID: {"status": True}
         }.get(url)
 
     @staticmethod
@@ -98,7 +105,6 @@ class TestABHAVerification(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(self.invalid_req_msg, response.json().get("message"))
 
-    @override_settings(ABDM_INTEGRATOR={'ABHA_URL': ''})
     @patch('abdm_python_integrator.utils.ABDMRequestHelper.get_access_token')
     def test_get_health_card_success(self, post_mock):
         post_mock.return_value = 'test'

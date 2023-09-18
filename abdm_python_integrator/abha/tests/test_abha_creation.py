@@ -81,7 +81,7 @@ class TestABHACreation(APITestCase):
         with patch('abdm_python_integrator.utils.ABDMRequestHelper.abha_post',
                    side_effect=self._mock_abdm_http_post):
             response = self.client.post(reverse("verify_mobile_otp"),
-                                        {"txn_id": "1234", "otp": "1111"})
+                                        {"txn_id": "1234", "otp": "1111", "health_id": "123-456"})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.json(), {"health_id": "123-456", "txnId": "1234", "user_token": "1122",
                                            "exists_on_abdm": False})

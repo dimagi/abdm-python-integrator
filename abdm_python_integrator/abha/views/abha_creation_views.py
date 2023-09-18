@@ -38,7 +38,7 @@ class VerifyAadhaarOTP(ABHABaseView):
 
 class VerifyMobileOTP(ABHABaseView):
 
-    @method_decorator(required_request_params(["txn_id", "otp"]))
+    @method_decorator(required_request_params(["txn_id", "otp", "health_id"]))
     def post(self, request, format=None):
         txn_id = request.data.get("txn_id")
         otp = request.data.get("otp")

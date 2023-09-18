@@ -22,6 +22,7 @@ pip install abdm-python-integrator@git+https://github.com/dimagi/abdm-python-int
     ```
     url(r'^abdm/', include('abdm_integrator.urls')),
     ```
+
 3. Add below settings to your Django settings file.
    [test_settings](test_settings.py)
     ```python
@@ -45,6 +46,12 @@ pip install abdm-python-integrator@git+https://github.com/dimagi/abdm-python-int
         # Base URL for Gateway APIS (M2/M3 and Access Token).
         # Required setting. Below value is for ABDM sandbox environment.
         'GATEWAY_URL': 'https://dev.abdm.gov.in/gateway',
+
+        # User Model. Specify as 'app_label.Model'
+        # Set as per your project requirements. Used for storing request user for consents and health information requests
+        # Required setting. Below value uses Django User model.
+        'USER_MODEL': 'auth.User',
+        
         
         # Any Authentication class that is compatible with Rest Framework Authentication mechanism.
         # Set as per your project requirements. Used for APIs other than those exposed to ABDM Gateway.

@@ -9,6 +9,7 @@ DEFAULTS = {
     'X_CM_ID': None,
     'ABHA_URL': None,
     'GATEWAY_URL': None,
+    'USER_MODEL': None,
     'AUTHENTICATION_CLASS': None,
     'HRP_ABHA_REGISTERED_CHECK_CLASS': None,
 }

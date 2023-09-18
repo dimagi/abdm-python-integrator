@@ -12,6 +12,7 @@ from abdm_python_integrator.abha.const import (
     VERIFY_AADHAAR_OTP_URL,
     VERIFY_MOBILE_OTP_URL,
 )
+from abdm_python_integrator.abha.exceptions import INVALID_AADHAAR_MESSAGE, INVALID_MOBILE_MESSAGE
 
 
 class TestABHACreation(APITestCase):
@@ -40,7 +41,7 @@ class TestABHACreation(APITestCase):
         abdm_txn_id_mock = {"txnId": "1234"}
         with patch('abdm_python_integrator.utils.ABDMRequestHelper.abha_post',
                    side_effect=self._mock_abdm_http_post):
-            response = self.client.post(reverse("generate_aadhaar_otp"), {"aadhaar": "123456"})
+            response = self.client.post(reverse("generate_aadhaar_otp"), {"aadhaar": "123412341234"})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.json(), abdm_txn_id_mock)
 
@@ -48,6 +49,12 @@ class TestABHACreation(APITestCase):
         response = self.client.post(reverse("generate_aadhaar_otp"), {"pan": "123456"})
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(self.invalid_req_msg, response.json().get("message"))
+
+    def test_aadhaar_otp_generation_invalid_aadhaar(self):
+        response = self.client.post(reverse("generate_aadhaar_otp"), {"aadhaar": "123456"})
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(self.invalid_req_msg, response.json().get("message"))
+        self.assertEqual(INVALID_AADHAAR_MESSAGE, response.json()["details"][0]["message"])
 
     def test_mobile_otp_generation_success(self):
         abdm_txn_id_mock = {"txnId": "1234"}
@@ -62,6 +69,13 @@ class TestABHACreation(APITestCase):
         response = self.client.post(reverse("generate_mobile_otp"), {"pan": "123456"})
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(self.invalid_req_msg, response.json().get("message"))
+
+    def test_mobile_otp_generation_invalid_mobile(self):
+        response = self.client.post(reverse("generate_mobile_otp"),
+                                    {"txn_id": "1234", "mobile_number": "a999988888"})
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(self.invalid_req_msg, response.json().get("message"))
+        self.assertEqual(INVALID_MOBILE_MESSAGE, response.json()["details"][0]["message"])
 
     def test_aadhaar_otp_verification_success(self):
         abdm_txn_id_mock = {"txnId": "1234"}

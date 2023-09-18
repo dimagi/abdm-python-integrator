@@ -1,3 +1,5 @@
+import re
+
 from abdm_python_integrator.abha.const import (
     CREATE_HEALTH_ID_URL,
     GENERATE_AADHAAR_OTP_URL,
@@ -42,3 +44,11 @@ def create_health_id(txnid, health_id=None):
     if health_id:
         payload.update({"healthId": health_id})
     return ABDMRequestHelper().abha_post(CREATE_HEALTH_ID_URL, payload)
+
+
+def validate_aadhaar_number(aadhaar_number):
+    return bool(re.match(r"^(\d{12}|\d{16})$", aadhaar_number))
+
+
+def validate_mobile_number(mobile_number):
+    return bool(re.match(r"^(\+91)?\d{10}$", mobile_number))

@@ -11,11 +11,9 @@ from abdm_python_integrator.settings import app_settings
 
 class GetAuthMethods(ABHABaseView):
 
+    @method_decorator(required_request_params(["health_id"]))
     def get(self, request, format=None):
         health_id = request.query_params.get("health_id")
-        if not health_id:
-            error_msg = "Missing required parameter: health_id"
-            return generate_invalid_req_response(error_msg)
         resp = abdm_util.search_by_health_id(health_id)
         auth_methods = resp.get("authMethods")
         resp = {"auth_methods": auth_methods}

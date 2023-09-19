@@ -19,9 +19,10 @@ def required_request_params(required_request_data):
 
         @wraps(fn)
         def wrapped(request, *args, **kwargs):
+            request_data = request.query_params if request.method == 'GET' else request.data
             invalid_params = []
             for param in required_request_data:
-                if not request.data.get(param):
+                if not request_data.get(param):
                     invalid_params.append(param)
             if invalid_params:
                 error_msg = f"Missing required data in the request: {','.join(invalid_params)}"

@@ -14,7 +14,8 @@ INSTALLED_APPS = (
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "rest_framework.authtoken",
-    "abdm_integrator",
+    "abdm_integrator.abha",
+    "abdm_integrator.hiu",
 )
 
 ABDM_INTEGRATOR = {

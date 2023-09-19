@@ -16,8 +16,20 @@ This package is intended to be used by developers aiming to perform integration 
 pip install abdm-python-integrator@git+https://github.com/dimagi/abdm-python-integrator.git
 ```
 
+## Sub Apps
+The `abdm_integrator` is split into below apps as per milestones:
+1. abha - features related to milestone 1
+2. hiu - features related to milestone 2
+
+These sub apps can be added to Django `INSTALLED_APPS` setting based on what service is required for your project.
+
 ## Settings
-1. Add `abdm_integrator` to Django `INSTALLED_APPS` setting.
+1. Add required apps to Django `INSTALLED_APPS` setting.
+```
+    'abdm_integrator.abha',
+    'abdm_integrator.hiu',
+```
+
 2. Include app urls into your Django root url config.
     ```
     url(r'^abdm/', include('abdm_integrator.urls')),
@@ -65,6 +77,12 @@ pip install abdm-python-integrator@git+https://github.com/dimagi/abdm-python-int
         'HRP_ABHA_REGISTERED_CHECK_CLASS': None,
     }
     ```
+
+5. Run migrations
+
+```commandline
+python manage.py migrate abdm_hiu
+```
 
 ## Testing
 Run the below command to run test cases. Uses settings as defined in `test_settings.py`

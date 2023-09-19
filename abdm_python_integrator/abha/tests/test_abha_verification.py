@@ -108,7 +108,7 @@ class TestABHAVerification(APITestCase):
     @patch('abdm_python_integrator.utils.ABDMRequestHelper.get_access_token')
     def test_get_health_card_success(self, post_mock):
         post_mock.return_value = 'test'
-        with patch('abdm_python_integrator.abha.utils.abha_verification_util.requests.get',
+        with patch('abdm_python_integrator.abha.utils.abha_verification.requests.get',
                    side_effect=TestABHAVerification._get_health_card_mock_response):
             response = self.client.post(reverse("get_health_card_png"), {"user_token": "fake_token"})
         self.assertEqual(response.status_code, status.HTTP_200_OK)

@@ -1,10 +1,10 @@
 from django.utils.decorators import method_decorator
 
 from abdm_python_integrator.abha.exceptions import ABHA_ERROR_MESSAGES, ABHA_IN_USE_ERROR_CODE
-from abdm_python_integrator.abha.utils import abha_verification_util as abdm_util
-from abdm_python_integrator.abha.utils.abha_verification_util import get_account_information
+from abdm_python_integrator.abha.utils import abha_verification as abdm_util
+from abdm_python_integrator.abha.utils.abha_verification import get_account_information
 from abdm_python_integrator.abha.utils.decorators import required_request_params
-from abdm_python_integrator.abha.utils.response_util import generate_invalid_req_response, parse_response
+from abdm_python_integrator.abha.utils.response import generate_invalid_req_response, parse_response
 from abdm_python_integrator.abha.views.base import ABHABaseView
 from abdm_python_integrator.settings import app_settings
 

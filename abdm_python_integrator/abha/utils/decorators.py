@@ -1,7 +1,7 @@
 from functools import wraps
 from typing import List
 
-from abdm_python_integrator.abha.utils.response_util import generate_invalid_req_response
+from abdm_python_integrator.abha.utils.response import generate_invalid_req_response
 
 
 def required_request_params(required_request_data):

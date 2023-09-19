@@ -1,7 +1,7 @@
 from functools import wraps
 from typing import List
 
-from abdm_python_integrator.abha.utils.response import generate_invalid_req_response
+from abdm_python_integrator.abha.utils.response import get_bad_response
 
 
 def required_request_params(required_request_data):
@@ -15,7 +15,7 @@ def required_request_params(required_request_data):
             error_msg = "Parameter names not provided in the correct format. These parameters are defined" \
                         "in the decorator argument of api and used for validating the request." \
                         "Required: List of parameters."
-            return generate_invalid_req_response(error_msg)
+            return get_bad_response(error_msg)
 
         @wraps(fn)
         def wrapped(request, *args, **kwargs):
@@ -26,7 +26,7 @@ def required_request_params(required_request_data):
                     invalid_params.append(param)
             if invalid_params:
                 error_msg = f"Missing required data in the request: {','.join(invalid_params)}"
-                return generate_invalid_req_response(error_msg)
+                return get_bad_response(error_msg)
             return fn(request, *args, **kwargs)
 
         return wrapped

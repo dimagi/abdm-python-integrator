@@ -4,7 +4,7 @@ from abdm_python_integrator.abha.exceptions import ABHA_ERROR_MESSAGES, ABHA_IN_
 from abdm_python_integrator.abha.utils import abha_verification as abdm_util
 from abdm_python_integrator.abha.utils.abha_verification import get_account_information
 from abdm_python_integrator.abha.utils.decorators import required_request_params
-from abdm_python_integrator.abha.utils.response import generate_invalid_req_response, parse_response
+from abdm_python_integrator.abha.utils.response import get_bad_response, parse_response
 from abdm_python_integrator.abha.views.base import ABHABaseView
 from abdm_python_integrator.settings import app_settings
 
@@ -64,8 +64,8 @@ class SearchHealthId(ABHABaseView):
         if app_settings.HRP_ABHA_REGISTERED_CHECK_CLASS is not None:
             if (app_settings.HRP_ABHA_REGISTERED_CHECK_CLASS().
                     check_if_abha_registered(request.user, health_id)):
-                return generate_invalid_req_response(ABHA_ERROR_MESSAGES[ABHA_IN_USE_ERROR_CODE],
-                                                     error_code=ABHA_IN_USE_ERROR_CODE)
+                return get_bad_response(ABHA_ERROR_MESSAGES[ABHA_IN_USE_ERROR_CODE],
+                                        error_code=ABHA_IN_USE_ERROR_CODE)
         resp = abdm_util.search_by_health_id(health_id)
         return parse_response(resp)
 
@@ -85,8 +85,8 @@ class GetExistenceByHealthId(ABHABaseView):
         health_id = request.data.get("health_id")
         if app_settings.HRP_ABHA_REGISTERED_CHECK_CLASS is not None:
             if app_settings.HRP_ABHA_REGISTERED_CHECK_CLASS().check_if_abha_registered(request.user, health_id):
-                return generate_invalid_req_response(ABHA_ERROR_MESSAGES[ABHA_IN_USE_ERROR_CODE],
-                                                     error_code=ABHA_IN_USE_ERROR_CODE)
+                return get_bad_response(ABHA_ERROR_MESSAGES[ABHA_IN_USE_ERROR_CODE],
+                                        error_code=ABHA_IN_USE_ERROR_CODE)
         resp = abdm_util.exists_by_health_id(health_id)
         if "status" in resp:
             resp = {"health_id": health_id, "exists": resp.get("status")}

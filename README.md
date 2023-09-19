@@ -10,18 +10,11 @@ This package is intended to be used by developers aiming to perform integration 
 - djangorestframework >= 3.12
 - requests
 
-## Build from source
+## Installation
 
-1. Clone the repository.
-2. Install python build. (If not already existing)
-    ```commandline
-     pip install build
-    ```
-3. Run below command to build.
-    ```commandline
-    python -m build
-    ```
-The resulting package (wheel or tar) can be then installed using pip into your Django Project.
+```commandline
+pip install abdm_python_integrator@git+https://github.com/dimagi/abdm-python-integrator.git
+```
 
 ## Settings
 1. Add `abdm_python_integrator` to Django `INSTALLED_APPS` setting.

@@ -61,3 +61,33 @@ class HealthInformationType:
         (HEALTH_DOCUMENT_RECORD, 'Record artifact'),
         (WELLNESS_RECORD, 'Wellness Record'),
     ]
+
+
+class DataAccessMode:
+    VIEW = 'VIEW'
+    STORE = 'STORE'
+    QUERY = 'QUERY'
+    STREAM = 'STREAM'
+
+    CHOICES = [
+        (VIEW, 'View'),
+        (STORE, 'Store'),
+        (QUERY, 'Query'),
+        (STREAM, 'Stream'),
+    ]
+
+
+class TimeUnit:
+    HOUR = 'HOUR'
+    WEEK = 'WEEK'
+    DAY = 'DAY'
+    MONTH = 'MONTH'
+    YEAR = 'YEAR'
+
+    CHOICES = [
+        (HOUR, 'Hour'),
+        (WEEK, 'Week'),
+        (DAY, 'Day'),
+        (MONTH, 'Month'),
+        (YEAR, 'Year'),
+    ]

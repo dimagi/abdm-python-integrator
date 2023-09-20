@@ -3,6 +3,10 @@ from rest_framework.exceptions import APIException
 ERROR_FUTURE_DATE_MESSAGE = 'This field must be in future'
 ERROR_PAST_DATE_MESSAGE = 'This field must be in past'
 
+GATEWAY_ERROR_STATUS = 554
+GATEWAY_ERROR_CODE = 'gateway_error'
+GATEWAY_ERROR_MESSAGE = 'ABDM Gateway Error'
+
 
 class ABDMAccessTokenException(Exception):
     pass

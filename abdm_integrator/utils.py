@@ -8,7 +8,6 @@ from abdm_integrator.const import SESSIONS_PATH
 from abdm_integrator.exceptions import (
     ERROR_FUTURE_DATE_MESSAGE,
     ERROR_PAST_DATE_MESSAGE,
-    ABDMAccessTokenException,
     ABDMGatewayError,
     ABDMServiceUnavailable,
 )
@@ -29,8 +28,11 @@ class ABDMRequestHelper:
             resp = requests.post(url=self.gateway_base_url + SESSIONS_PATH, data=json.dumps(self.token_payload),
                                  headers=headers)
             resp.raise_for_status()
-        except Exception:
-            raise ABDMAccessTokenException
+        except requests.Timeout:
+            raise ABDMServiceUnavailable()
+        except requests.HTTPError as err:
+            error = self.gateway_json_from_response(err.response).get('error')
+            raise ABDMGatewayError(error=error)
         return resp.json().get("accessToken")
 
     def abha_get(self, api_path, additional_headers=None, params=None):

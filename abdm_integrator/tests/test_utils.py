@@ -3,7 +3,7 @@ from unittest.mock import Mock, patch
 import requests
 from django.test import SimpleTestCase
 
-from abdm_integrator.exceptions import ABDMAccessTokenException
+from abdm_integrator.exceptions import ABDMGatewayError
 from abdm_integrator.utils import ABDMRequestHelper
 
 
@@ -29,7 +29,7 @@ class TestABDMRequestHelper(SimpleTestCase):
     @patch('abdm_integrator.utils.requests.post')
     def test_get_access_token_failure(self, mocked_post):
         mocked_post.return_value = self._mock_response(status_code=400)
-        with self.assertRaises(ABDMAccessTokenException):
+        with self.assertRaises(ABDMGatewayError):
             ABDMRequestHelper().get_access_token()
 
     @patch('abdm_integrator.utils.ABDMRequestHelper.get_access_token')
@@ -73,5 +73,5 @@ class TestABDMRequestHelper(SimpleTestCase):
     @patch('abdm_integrator.utils.requests.post')
     def test_gateway_post_failure(self, mocked_post, *args):
         mocked_post.return_value = self._mock_response(status_code=400)
-        with self.assertRaises(requests.HTTPError):
+        with self.assertRaises(ABDMGatewayError):
             ABDMRequestHelper().gateway_post(api_path='', payload={})

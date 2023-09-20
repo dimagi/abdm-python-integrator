@@ -25,6 +25,13 @@ class ConsentRequest(models.Model):
         self.status = status
         self.save()
 
+    def update_user_amendable_details(self, consent_permission, health_info_types):
+        self.health_info_from_date = consent_permission['dateRange']['from']
+        self.health_info_to_date = consent_permission['dateRange']['to']
+        self.expiry_date = consent_permission['dataEraseAt']
+        self.health_info_types = health_info_types
+        self.save()
+
 
 class ConsentArtefact(models.Model):
     consent_request = models.ForeignKey(ConsentRequest, to_field='consent_request_id', on_delete=models.PROTECT,

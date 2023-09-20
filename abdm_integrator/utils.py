@@ -1,4 +1,5 @@
 import json
+import uuid
 from datetime import datetime
 
 import requests
@@ -73,6 +74,10 @@ class ABDMRequestHelper:
         if content_type and 'application/json' in content_type:
             resp_json = _get_json_from_resp(resp)
         return resp_json
+
+    @staticmethod
+    def common_request_data():
+        return {'requestId': str(uuid.uuid4()), 'timestamp': datetime.utcnow().isoformat()}
 
 
 def _get_json_from_resp(resp):

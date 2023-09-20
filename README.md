@@ -23,7 +23,7 @@ pip install abdm_python_integrator@git+https://github.com/dimagi/abdm-python-int
     url(r'^abdm/', include('abdm_python_integrator.urls')),
     ```
 3. Add below settings to your Django settings file.
-
+   [test_settings](test_settings.py)
     ```python
     ABDM_INTEGRATOR = {
         # Client ID provided by ABDM. 
@@ -39,8 +39,8 @@ pip install abdm_python_integrator@git+https://github.com/dimagi/abdm-python-int
         'X_CM_ID': 'sbx',
         
         # Base URL for Abha APIS (M1).
-        # Required setting. Below value is for sandbox ABDM sandbox environment.
-        'ABHA_URL': 'https://healthidsbx.abdm.gov.in/api/',
+        # Required setting. Below value is for ABDM sandbox environment.
+        'ABHA_URL': 'https://healthidsbx.abdm.gov.in/api',
         
         # Base URL for Gateway APIS (M2/M3 and Access Token).
         # Required setting. Below value is for ABDM sandbox environment.

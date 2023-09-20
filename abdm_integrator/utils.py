@@ -5,7 +5,13 @@ import requests
 from rest_framework import serializers
 
 from abdm_integrator.const import SESSIONS_PATH
-from abdm_integrator.exceptions import ERROR_FUTURE_DATE_MESSAGE, ERROR_PAST_DATE_MESSAGE, ABDMAccessTokenException
+from abdm_integrator.exceptions import (
+    ERROR_FUTURE_DATE_MESSAGE,
+    ERROR_PAST_DATE_MESSAGE,
+    ABDMAccessTokenException,
+    ABDMGatewayError,
+    ABDMServiceUnavailable,
+)
 from abdm_integrator.settings import app_settings
 
 
@@ -48,7 +54,13 @@ class ABDMRequestHelper:
         return _get_json_from_resp(resp)
 
     def gateway_post(self, api_path, payload):
-        resp = self._post(self.gateway_base_url + api_path, payload)
+        try:
+            resp = self._post(self.gateway_base_url + api_path, payload)
+        except requests.Timeout:
+            raise ABDMServiceUnavailable()
+        except requests.HTTPError as err:
+            error = self.gateway_json_from_response(err.response).get('error')
+            raise ABDMGatewayError(error=error)
         return self.gateway_json_from_response(resp)
 
     @staticmethod

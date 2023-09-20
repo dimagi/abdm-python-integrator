@@ -1,9 +1,11 @@
 import json
+from datetime import datetime
 
 import requests
+from rest_framework import serializers
 
 from abdm_integrator.const import SESSIONS_PATH
-from abdm_integrator.exceptions import ABDMAccessTokenException
+from abdm_integrator.exceptions import ERROR_FUTURE_DATE_MESSAGE, ERROR_PAST_DATE_MESSAGE, ABDMAccessTokenException
 from abdm_integrator.settings import app_settings
 
 
@@ -64,3 +66,13 @@ def _get_json_from_resp(resp):
         return resp.json()
     except ValueError:
         return {}
+
+
+def future_date_validator(value):
+    if value <= datetime.utcnow():
+        raise serializers.ValidationError(ERROR_FUTURE_DATE_MESSAGE)
+
+
+def past_date_validator(value):
+    if value > datetime.utcnow():
+        raise serializers.ValidationError(ERROR_PAST_DATE_MESSAGE)

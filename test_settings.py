@@ -8,13 +8,13 @@ DATABASES = {
     }
 }
 
-ROOT_URLCONF = "abdm_python_integrator.urls"
+ROOT_URLCONF = "abdm_integrator.urls"
 
 INSTALLED_APPS = (
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "rest_framework.authtoken",
-    "abdm_python_integrator",
+    "abdm_integrator",
 )
 
 ABDM_INTEGRATOR = {

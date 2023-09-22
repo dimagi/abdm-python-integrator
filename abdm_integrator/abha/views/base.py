@@ -1,7 +1,7 @@
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 
-from abdm_python_integrator.settings import app_settings
+from abdm_integrator.settings import app_settings
 
 
 class ABHABaseView(APIView):

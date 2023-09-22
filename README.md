@@ -13,14 +13,14 @@ This package is intended to be used by developers aiming to perform integration 
 ## Installation
 
 ```commandline
-pip install abdm_python_integrator@git+https://github.com/dimagi/abdm-python-integrator.git
+pip install abdm-python-integrator@git+https://github.com/dimagi/abdm-python-integrator.git
 ```
 
 ## Settings
-1. Add `abdm_python_integrator` to Django `INSTALLED_APPS` setting.
+1. Add `abdm_integrator` to Django `INSTALLED_APPS` setting.
 2. Include app urls into your Django root url config.
     ```
-    url(r'^abdm/', include('abdm_python_integrator.urls')),
+    url(r'^abdm/', include('abdm_integrator.urls')),
     ```
 3. Add below settings to your Django settings file.
    [test_settings](test_settings.py)

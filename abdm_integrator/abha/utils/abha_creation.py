@@ -1,13 +1,13 @@
 import re
 
-from abdm_python_integrator.abha.const import (
+from abdm_integrator.abha.const import (
     CREATE_HEALTH_ID_URL,
     GENERATE_AADHAAR_OTP_URL,
     GENERATE_MOBILE_OTP_URL,
     VERIFY_AADHAAR_OTP_URL,
     VERIFY_MOBILE_OTP_URL,
 )
-from abdm_python_integrator.utils import ABDMRequestHelper
+from abdm_integrator.utils import ABDMRequestHelper
 
 
 def generate_aadhaar_otp(aadhaar_number):

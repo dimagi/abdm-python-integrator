@@ -3,9 +3,9 @@ import json
 
 import requests
 
-from abdm_python_integrator.const import SESSIONS_PATH
-from abdm_python_integrator.exceptions import ABDMAccessTokenException, ABDMConfigurationError
-from abdm_python_integrator.settings import app_settings
+from abdm_integrator.const import SESSIONS_PATH
+from abdm_integrator.exceptions import ABDMAccessTokenException, ABDMConfigurationError
+from abdm_integrator.settings import app_settings
 
 
 class ABDMRequestHelper:

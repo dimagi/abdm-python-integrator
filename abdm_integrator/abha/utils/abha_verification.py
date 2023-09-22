@@ -2,7 +2,7 @@ import base64
 
 import requests
 
-from abdm_python_integrator.abha.const import (
+from abdm_integrator.abha.const import (
     ACCOUNT_INFORMATION_URL,
     AUTH_OTP_URL,
     CONFIRM_WITH_AADHAAR_OTP_URL,
@@ -11,8 +11,8 @@ from abdm_python_integrator.abha.const import (
     HEALTH_CARD_PNG_FORMAT,
     SEARCH_BY_HEALTH_ID_URL,
 )
-from abdm_python_integrator.settings import app_settings
-from abdm_python_integrator.utils import ABDMRequestHelper
+from abdm_integrator.settings import app_settings
+from abdm_integrator.utils import ABDMRequestHelper
 
 
 def generate_auth_otp(health_id, auth_method):

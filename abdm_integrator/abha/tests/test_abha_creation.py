@@ -5,14 +5,14 @@ from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 
-from abdm_python_integrator.abha.const import (
+from abdm_integrator.abha.const import (
     CREATE_HEALTH_ID_URL,
     GENERATE_AADHAAR_OTP_URL,
     GENERATE_MOBILE_OTP_URL,
     VERIFY_AADHAAR_OTP_URL,
     VERIFY_MOBILE_OTP_URL,
 )
-from abdm_python_integrator.abha.exceptions import INVALID_AADHAAR_MESSAGE, INVALID_MOBILE_MESSAGE
+from abdm_integrator.abha.exceptions import INVALID_AADHAAR_MESSAGE, INVALID_MOBILE_MESSAGE
 
 
 class TestABHACreation(APITestCase):
@@ -39,7 +39,7 @@ class TestABHACreation(APITestCase):
 
     def test_aadhaar_otp_generation_success(self):
         abdm_txn_id_mock = {"txnId": "1234"}
-        with patch('abdm_python_integrator.utils.ABDMRequestHelper.abha_post',
+        with patch('abdm_integrator.utils.ABDMRequestHelper.abha_post',
                    side_effect=self._mock_abdm_http_post):
             response = self.client.post(reverse("generate_aadhaar_otp"), {"aadhaar": "123412341234"})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -58,7 +58,7 @@ class TestABHACreation(APITestCase):
 
     def test_mobile_otp_generation_success(self):
         abdm_txn_id_mock = {"txnId": "1234"}
-        with patch('abdm_python_integrator.utils.ABDMRequestHelper.abha_post',
+        with patch('abdm_integrator.utils.ABDMRequestHelper.abha_post',
                    side_effect=self._mock_abdm_http_post):
             response = self.client.post(reverse("generate_mobile_otp"),
                                         {"txn_id": "1234", "mobile_number": "9999988888"})
@@ -79,7 +79,7 @@ class TestABHACreation(APITestCase):
 
     def test_aadhaar_otp_verification_success(self):
         abdm_txn_id_mock = {"txnId": "1234"}
-        with patch('abdm_python_integrator.utils.ABDMRequestHelper.abha_post',
+        with patch('abdm_integrator.utils.ABDMRequestHelper.abha_post',
                    side_effect=self._mock_abdm_http_post):
             response = self.client.post(reverse("verify_aadhaar_otp"),
                                         {"txn_id": "1234", "otp": "1111"})
@@ -92,7 +92,7 @@ class TestABHACreation(APITestCase):
         self.assertEqual(self.invalid_req_msg, response.json().get("message"))
 
     def test_mobile_otp_verification_success(self):
-        with patch('abdm_python_integrator.utils.ABDMRequestHelper.abha_post',
+        with patch('abdm_integrator.utils.ABDMRequestHelper.abha_post',
                    side_effect=self._mock_abdm_http_post):
             response = self.client.post(reverse("verify_mobile_otp"),
                                         {"txn_id": "1234", "otp": "1111", "health_id": "123-456"})

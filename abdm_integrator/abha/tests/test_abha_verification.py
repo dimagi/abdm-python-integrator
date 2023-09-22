@@ -5,7 +5,7 @@ from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 
-from abdm_python_integrator.abha.const import (
+from abdm_integrator.abha.const import (
     AUTH_OTP_URL,
     CONFIRM_WITH_AADHAAR_OTP_URL,
     CONFIRM_WITH_MOBILE_OTP_URL,
@@ -43,7 +43,7 @@ class TestABHAVerification(APITestCase):
         return health_card_response_mock
 
     def test_getting_auth_methods_success(self):
-        with patch('abdm_python_integrator.utils.ABDMRequestHelper.abha_post',
+        with patch('abdm_integrator.utils.ABDMRequestHelper.abha_post',
                    side_effect=TestABHAVerification._mock_abdm_http_post):
             response = self.client.get(reverse("get_auth_methods"), {"health_id": "123456"})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -55,7 +55,7 @@ class TestABHAVerification(APITestCase):
         self.assertEqual(self.invalid_req_msg, response.json().get("message"))
 
     def test_generate_auth_otp_success(self):
-        with patch('abdm_python_integrator.utils.ABDMRequestHelper.abha_post',
+        with patch('abdm_integrator.utils.ABDMRequestHelper.abha_post',
                    side_effect=TestABHAVerification._mock_abdm_http_post):
             response = self.client.post(reverse("generate_auth_otp"),
                                         {"health_id": "123456", "auth_method": "MOBILE_OTP"})
@@ -68,7 +68,7 @@ class TestABHAVerification(APITestCase):
         self.assertEqual(self.invalid_req_msg, response.json().get("message"))
 
     def test_confirm_with_mobile_otp_success(self):
-        with patch('abdm_python_integrator.utils.ABDMRequestHelper.abha_post',
+        with patch('abdm_integrator.utils.ABDMRequestHelper.abha_post',
                    side_effect=TestABHAVerification._mock_abdm_http_post):
             response = self.client.post(reverse("confirm_with_mobile_otp"),
                                         {"txn_id": "123456", "otp": "1111"})
@@ -81,7 +81,7 @@ class TestABHAVerification(APITestCase):
         self.assertEqual(self.invalid_req_msg, response.json().get("message"))
 
     def test_confirm_with_aadhaar_otp_success(self):
-        with patch('abdm_python_integrator.utils.ABDMRequestHelper.abha_post',
+        with patch('abdm_integrator.utils.ABDMRequestHelper.abha_post',
                    side_effect=TestABHAVerification._mock_abdm_http_post):
             response = self.client.post(reverse("confirm_with_aadhaar_otp"),
                                         {"txn_id": "123456", "otp": "1111"})
@@ -94,7 +94,7 @@ class TestABHAVerification(APITestCase):
         self.assertEqual(self.invalid_req_msg, response.json().get("message"))
 
     def test_search_health_id_success(self):
-        with patch('abdm_python_integrator.utils.ABDMRequestHelper.abha_post',
+        with patch('abdm_integrator.utils.ABDMRequestHelper.abha_post',
                    side_effect=TestABHAVerification._mock_abdm_http_post):
             response = self.client.post(reverse("search_health_id"), {"health_id": "11113333"})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -105,10 +105,10 @@ class TestABHAVerification(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(self.invalid_req_msg, response.json().get("message"))
 
-    @patch('abdm_python_integrator.utils.ABDMRequestHelper.get_access_token')
+    @patch('abdm_integrator.utils.ABDMRequestHelper.get_access_token')
     def test_get_health_card_success(self, post_mock):
         post_mock.return_value = 'test'
-        with patch('abdm_python_integrator.abha.utils.abha_verification.requests.get',
+        with patch('abdm_integrator.abha.utils.abha_verification.requests.get',
                    side_effect=TestABHAVerification._get_health_card_mock_response):
             response = self.client.post(reverse("get_health_card_png"), {"user_token": "fake_token"})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -120,7 +120,7 @@ class TestABHAVerification(APITestCase):
         self.assertEqual(self.invalid_req_msg, response.json().get("message"))
 
     def test_get_health_id_existence_check_success(self):
-        with patch('abdm_python_integrator.utils.ABDMRequestHelper.abha_post',
+        with patch('abdm_integrator.utils.ABDMRequestHelper.abha_post',
                    side_effect=TestABHAVerification._mock_abdm_http_post):
             response = self.client.post(reverse("exists_by_health_id"), {"health_id": "user@abdm"})
         self.assertEqual(response.status_code, status.HTTP_200_OK)

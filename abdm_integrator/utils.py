@@ -1,30 +1,18 @@
-import functools
 import json
 
 import requests
 
 from abdm_integrator.const import SESSIONS_PATH
-from abdm_integrator.exceptions import ABDMAccessTokenException, ABDMConfigurationError
+from abdm_integrator.exceptions import ABDMAccessTokenException
 from abdm_integrator.settings import app_settings
 
 
 class ABDMRequestHelper:
-    REQUIRED_CONFIGS = ['ABHA_URL', 'GATEWAY_URL', 'CLIENT_ID', 'CLIENT_SECRET', 'X_CM_ID']
-    gateway_base_url = None
-    abha_base_url = None
-    token_payload = None
-
-    @classmethod
-    @functools.cache
-    def _check_configs(cls):
-        if any(not hasattr(app_settings, config) for config in cls.REQUIRED_CONFIGS):
-            raise ABDMConfigurationError("Missing required configurations for ABDM!")
-        cls.gateway_base_url = app_settings.GATEWAY_URL
-        cls.abha_base_url = app_settings.ABHA_URL
-        cls.token_payload = {"clientId": app_settings.CLIENT_ID, "clientSecret": app_settings.CLIENT_SECRET}
+    gateway_base_url = app_settings.GATEWAY_URL
+    abha_base_url = app_settings.ABHA_URL
+    token_payload = {"clientId": app_settings.CLIENT_ID, "clientSecret": app_settings.CLIENT_SECRET}
 
     def __init__(self):
-        self._check_configs()
         self.headers = {'Content-Type': "application/json", 'X-CM-ID': app_settings.X_CM_ID}
 
     def get_access_token(self):

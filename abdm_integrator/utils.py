@@ -32,8 +32,8 @@ class ABDMRequestHelper:
         except requests.Timeout:
             raise ABDMServiceUnavailable()
         except requests.HTTPError as err:
-            error = self.gateway_json_from_response(err.response).get('error')
-            raise ABDMGatewayError(error=error)
+            error = self.gateway_json_from_response(err.response).get('error', {})
+            raise ABDMGatewayError(error.get('code'), error.get('message'))
         return resp.json().get("accessToken")
 
     def abha_get(self, api_path, additional_headers=None, params=None):
@@ -62,8 +62,8 @@ class ABDMRequestHelper:
         except requests.Timeout:
             raise ABDMServiceUnavailable()
         except requests.HTTPError as err:
-            error = self.gateway_json_from_response(err.response).get('error')
-            raise ABDMGatewayError(error=error)
+            error = self.gateway_json_from_response(err.response).get('error', {})
+            raise ABDMGatewayError(error.get('code'), error.get('message'))
         return self.gateway_json_from_response(resp)
 
     @staticmethod

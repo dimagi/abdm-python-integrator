@@ -38,3 +38,17 @@ class GatewayPermissionSerializer(serializers.Serializer):
     dateRange = DateRangeSerializer()
     dataEraseAt = serializers.DateTimeField()
     frequency = FrequencySerializer()
+
+
+class GatewayRequestIdSerializer(serializers.Serializer):
+    requestId = serializers.UUIDField()
+
+
+class GatewayCallbackResponseBaseSerializer(serializers.Serializer):
+    class GatewayResponseErrorSerializer(serializers.Serializer):
+        code = serializers.IntegerField()
+        message = serializers.CharField()
+
+    requestId = serializers.UUIDField()
+    error = GatewayResponseErrorSerializer(required=False, allow_null=True)
+    resp = GatewayRequestIdSerializer()

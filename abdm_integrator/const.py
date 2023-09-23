@@ -1,4 +1,5 @@
 SESSIONS_PATH = '/v0.5/sessions'
+GATEWAY_CALLBACK_URL_PREFIX = 'api/gateway/v0.5'
 
 
 class ConsentStatus:

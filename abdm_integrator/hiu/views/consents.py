@@ -1,18 +1,22 @@
 import requests
 from rest_framework.response import Response
-from rest_framework.status import HTTP_201_CREATED
+from rest_framework.status import HTTP_201_CREATED, HTTP_202_ACCEPTED
 
-from abdm_integrator.exceptions import ABDMServiceUnavailable, ABDMGatewayError, CustomError
-from abdm_integrator.hiu.const import HIUGatewayAPIPath, ABHA_EXISTS_BY_HEALTH_ID_PATH
+from abdm_integrator.const import ConsentStatus
+from abdm_integrator.exceptions import ABDMGatewayError, ABDMServiceUnavailable, CustomError
+from abdm_integrator.hiu.const import ABHA_EXISTS_BY_HEALTH_ID_PATH, HIUGatewayAPIPath
 from abdm_integrator.hiu.exceptions import HIUError
 from abdm_integrator.hiu.models import ConsentRequest
-from abdm_integrator.hiu.serializers.consents import ConsentRequestSerializer, GenerateConsentSerializer
-from abdm_integrator.hiu.views.base import HIUBaseView
+from abdm_integrator.hiu.serializers.consents import (
+    ConsentRequestSerializer,
+    GatewayConsentRequestOnInitSerializer,
+    GenerateConsentSerializer,
+)
+from abdm_integrator.hiu.views.base import HIUBaseView, HIUGatewayBaseView
 from abdm_integrator.utils import ABDMRequestHelper
 
 
 class GenerateConsent(HIUBaseView):
-
     def post(self, request, format=None):
         serializer = GenerateConsentSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -40,7 +44,6 @@ class GenerateConsent(HIUBaseView):
             error = ABDMRequestHelper.gateway_json_from_response(err.response)
             raise ABDMGatewayError(error.get('code'), error.get('message'))
 
-
     def gateway_consent_request_init(self, consent_data):
         payload = ABDMRequestHelper.common_request_data()
         payload['consent'] = consent_data
@@ -51,3 +54,22 @@ class GenerateConsent(HIUBaseView):
         consent_request = ConsentRequest(user=user, gateway_request_id=gateway_request_id, details=consent_data)
         consent_request.update_user_amendable_details(consent_data['permission'], consent_data['hiTypes'])
         return consent_request
+
+
+class GatewayConsentRequestOnInit(HIUGatewayBaseView):
+    def post(self, request, format=None):
+        GatewayConsentRequestOnInitSerializer(data=request.data).is_valid(raise_exception=True)
+        self.process_request(request.data)
+        return Response(status=HTTP_202_ACCEPTED)
+
+    def process_request(self, request_data):
+        consent_request = ConsentRequest.objects.get(
+            gateway_request_id=request_data['resp']['requestId']
+        )
+        if request_data.get('consentRequest'):
+            consent_request.consent_request_id = request_data['consentRequest']['id']
+            consent_request.status = ConsentStatus.REQUESTED
+        elif request_data.get('error'):
+            consent_request.status = ConsentStatus.ERROR
+            consent_request.error = request_data['error']
+        consent_request.save()

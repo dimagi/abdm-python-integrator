@@ -1,14 +1,16 @@
 import requests
+from django.db import transaction
 from rest_framework.response import Response
 from rest_framework.status import HTTP_201_CREATED, HTTP_202_ACCEPTED
 
-from abdm_integrator.const import ConsentStatus
+from abdm_integrator.const import ArtefactFetchStatus, ConsentStatus
 from abdm_integrator.exceptions import ABDMGatewayError, ABDMServiceUnavailable, CustomError
 from abdm_integrator.hiu.const import ABHA_EXISTS_BY_HEALTH_ID_PATH, HIUGatewayAPIPath
 from abdm_integrator.hiu.exceptions import HIUError
-from abdm_integrator.hiu.models import ConsentRequest
+from abdm_integrator.hiu.models import ConsentArtefact, ConsentRequest
 from abdm_integrator.hiu.serializers.consents import (
     ConsentRequestSerializer,
+    GatewayConsentRequestNotifySerializer,
     GatewayConsentRequestOnInitSerializer,
     GenerateConsentSerializer,
 )
@@ -73,3 +75,78 @@ class GatewayConsentRequestOnInit(HIUGatewayBaseView):
             consent_request.status = ConsentStatus.ERROR
             consent_request.error = request_data['error']
         consent_request.save()
+
+
+class GatewayConsentRequestNotify(HIUGatewayBaseView):
+
+    def post(self, request, format=None):
+        GatewayConsentRequestNotifySerializer(data=request.data).is_valid(raise_exception=True)
+        # TODO Run as a background task in celery
+        GatewayConsentRequestNotifyProcessor(request.data).process_request()
+        return Response(status=HTTP_202_ACCEPTED)
+
+
+class GatewayConsentRequestNotifyProcessor:
+
+    def __init__(self, request_data):
+        self.request_data = request_data
+
+    @transaction.atomic
+    def process_request(self):
+        consent_status = self.request_data['notification']['status']
+        if consent_status == ConsentStatus.REVOKED:
+            return self.handle_revoked()
+        consent_request = ConsentRequest.objects.get(
+            consent_request_id=self.request_data['notification']['consentRequestId']
+        )
+        consent_request.update_status(consent_status)
+        if consent_status == ConsentStatus.GRANTED:
+            self.handle_granted(consent_request)
+        elif consent_status == ConsentStatus.EXPIRED:
+            self.handle_expired(consent_request)
+
+    def handle_granted(self, consent_request):
+        for artefact in self.request_data['notification']['consentArtefacts']:
+            consent_artefact = ConsentArtefact(artefact_id=artefact['id'], consent_request=consent_request)
+            consent_artefact.save()
+            self.artefact_fetch(consent_artefact)
+
+    def handle_expired(self, consent_request):
+        artefact_ids = []
+        for artefact in consent_request.artefacts.all():
+            artefact_ids.append(artefact.artefact_id)
+            artefact.delete()
+        self.gateway_consents_on_notify(artefact_ids)
+
+    def handle_revoked(self):
+        artefact_ids = [artefact['id'] for artefact in self.request_data['notification']['consentArtefacts']]
+        consent_request = ConsentRequest.objects.get(artefacts__artefact_id=artefact_ids[0])
+        for artefact_id in artefact_ids:
+            ConsentArtefact.objects.get(artefact_id=artefact_id).delete()
+        if consent_request.artefacts.all().count() == 0:
+            consent_request.update_status(ConsentStatus.REVOKED)
+        self.gateway_consents_on_notify(artefact_ids)
+
+    def artefact_fetch(self, consent_artefact):
+        payload = ABDMRequestHelper.common_request_data()
+        consent_artefact.gateway_request_id = payload['requestId']
+        try:
+            self.gateway_fetch_artefact_details(consent_artefact.artefact_id, payload)
+            consent_artefact.fetch_status = ArtefactFetchStatus.REQUESTED
+        except (ABDMGatewayError, ABDMServiceUnavailable) as err:
+            consent_artefact.error = err.error
+            consent_artefact.fetch_status = ArtefactFetchStatus.ERROR
+        consent_artefact.save()
+
+    def gateway_fetch_artefact_details(self, artefact_id, payload):
+        payload['consentId'] = artefact_id
+        ABDMRequestHelper().gateway_post(HIUGatewayAPIPath.CONSENTS_FETCH, payload)
+        return payload['requestId']
+
+    def gateway_consents_on_notify(self, artefact_ids):
+        payload = ABDMRequestHelper.common_request_data()
+        payload['acknowledgement'] = [{'status': 'OK', 'consentId': artefact_id}
+                                      for artefact_id in artefact_ids]
+        payload['resp'] = {'requestId': self.request_data['requestId']}
+        ABDMRequestHelper().gateway_post(HIUGatewayAPIPath.CONSENT_REQUEST_ON_NOTIFY, payload)
+        return payload['requestId']

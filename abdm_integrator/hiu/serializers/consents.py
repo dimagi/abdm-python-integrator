@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from abdm_integrator.const import ConsentPurpose, HealthInformationType
+from abdm_integrator.const import ConsentPurpose, ConsentStatus, HealthInformationType
 from abdm_integrator.hiu.models import ConsentRequest
 from abdm_integrator.serializers import (
     GatewayCallbackResponseBaseSerializer,
@@ -49,3 +49,14 @@ class ConsentRequestSerializer(serializers.ModelSerializer):
 
 class GatewayConsentRequestOnInitSerializer(GatewayCallbackResponseBaseSerializer):
     consentRequest = GatewayIdSerializer(required=False)
+
+
+class GatewayConsentRequestNotifySerializer(serializers.Serializer):
+
+    class NotificationSerializer(serializers.Serializer):
+        consentRequestId = serializers.CharField(required=False, allow_blank=True)
+        status = serializers.ChoiceField(choices=ConsentStatus.GATEWAY_CHOICES)
+        consentArtefacts = serializers.ListField(required=False, child=GatewayIdSerializer())
+
+    requestId = serializers.UUIDField()
+    notification = NotificationSerializer()

@@ -24,6 +24,20 @@ class ConsentStatus:
     ]
 
 
+class ArtefactFetchStatus:
+    PENDING = 'PENDING'
+    REQUESTED = 'REQUESTED'
+    RECEIVED = 'RECEIVED'
+    ERROR = 'ERROR'
+
+    CHOICES = [
+        (PENDING, 'Pending request from Gateway'),
+        (REQUESTED, 'Requested'),
+        (RECEIVED, 'Received'),
+        (ERROR, 'Error occurred'),
+    ]
+
+
 class ConsentPurpose:
     CARE_MANAGEMENT = 'CAREMGT'
     BREAK_THE_GLASS = 'BTG'

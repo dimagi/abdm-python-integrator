@@ -1,6 +1,6 @@
 from django.db import models
 
-from abdm_integrator.const import ConsentStatus
+from abdm_integrator.const import ArtefactFetchStatus, ConsentStatus
 from abdm_integrator.settings import app_settings
 
 
@@ -39,6 +39,8 @@ class ConsentArtefact(models.Model):
     gateway_request_id = models.UUIDField(unique=True)
     artefact_id = models.UUIDField(unique=True)
     details = models.JSONField(null=True)
+    fetch_status = models.CharField(choices=ArtefactFetchStatus.CHOICES, default=ArtefactFetchStatus.PENDING,
+                                    max_length=40)
     error = models.JSONField(null=True)
     date_created = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)

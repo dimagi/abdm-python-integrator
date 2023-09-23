@@ -33,6 +33,10 @@ class ABDMServiceUnavailable(APIException):
     default_detail = 'ABDM Service temporarily unavailable, try again later.'
     default_code = 'service_unavailable'
 
+    @property
+    def error(self):
+        return {'code': self.default_code, 'message': self.default_detail}
+
 
 @dataclass
 class CustomAPIException(Exception):

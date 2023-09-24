@@ -3,6 +3,7 @@ from django.urls import path
 from abdm_integrator.const import GATEWAY_CALLBACK_URL_PREFIX
 from abdm_integrator.hiu.views.consents import (
     GatewayConsentRequestNotify,
+    GatewayConsentRequestOnFetch,
     GatewayConsentRequestOnInit,
     GenerateConsent,
 )
@@ -14,4 +15,6 @@ hiu_urls = [
          name='gateway_consent_request_on_init'),
     path(f'{GATEWAY_CALLBACK_URL_PREFIX}/consents/hiu/notify', GatewayConsentRequestNotify.as_view(),
          name='gateway_consent_request_notify'),
+    path(f'{GATEWAY_CALLBACK_URL_PREFIX}/consents/on-fetch', GatewayConsentRequestOnFetch.as_view(),
+         name='gateway_consent_request_on_fetch'),
 ]

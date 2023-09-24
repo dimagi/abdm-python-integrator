@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from abdm_integrator.const import DataAccessMode, TimeUnit
+from abdm_integrator.const import ConsentPurpose, DataAccessMode, TimeUnit
 
 
 class GatewayIdSerializer(serializers.Serializer):
@@ -52,3 +52,9 @@ class GatewayCallbackResponseBaseSerializer(serializers.Serializer):
     requestId = serializers.UUIDField()
     error = GatewayResponseErrorSerializer(required=False, allow_null=True)
     resp = GatewayRequestIdSerializer()
+
+
+class GatewayPurposeSerializer(serializers.Serializer):
+    code = serializers.ChoiceField(choices=ConsentPurpose.CHOICES)
+    text = serializers.CharField()
+    refUri = serializers.CharField(required=False, allow_null=True)

@@ -11,6 +11,7 @@ from abdm_integrator.hiu.models import ConsentArtefact, ConsentRequest
 from abdm_integrator.hiu.serializers.consents import (
     ConsentRequestSerializer,
     GatewayConsentRequestNotifySerializer,
+    GatewayConsentRequestOnFetchSerializer,
     GatewayConsentRequestOnInitSerializer,
     GenerateConsentSerializer,
 )
@@ -150,3 +151,29 @@ class GatewayConsentRequestNotifyProcessor:
         payload['resp'] = {'requestId': self.request_data['requestId']}
         ABDMRequestHelper().gateway_post(HIUGatewayAPIPath.CONSENT_REQUEST_ON_NOTIFY, payload)
         return payload['requestId']
+
+
+class GatewayConsentRequestOnFetch(HIUGatewayBaseView):
+
+    def post(self, request, format=None):
+        GatewayConsentRequestOnFetchSerializer(data=request.data).is_valid(raise_exception=True)
+        self.process_request(request.data)
+        return Response(status=HTTP_202_ACCEPTED)
+
+    @transaction.atomic
+    def process_request(self, request_data):
+        consent_artefact = ConsentArtefact.objects.get(gateway_request_id=request_data['resp']['requestId'])
+        if request_data.get('consent'):
+            consent_artefact.details = request_data['consent']['consentDetail']
+            consent_artefact.fetch_status = ArtefactFetchStatus.RECEIVED
+            if consent_artefact.consent_request.artefacts.filter(details__isnull=False).count() == 0:
+                self.update_consent_request_from_artefact(consent_artefact)
+        elif request_data.get('error'):
+            consent_artefact.fetch_status = ArtefactFetchStatus.ERROR
+            consent_artefact.error = request_data['error']
+        consent_artefact.save()
+
+    def update_consent_request_from_artefact(self, consent_artefact):
+        consent_request = consent_artefact.consent_request
+        consent_request.update_user_amendable_details(consent_artefact.details['permission'],
+                                                      consent_artefact.details['hiTypes'])

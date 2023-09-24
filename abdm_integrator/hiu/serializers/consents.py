@@ -7,6 +7,7 @@ from abdm_integrator.serializers import (
     GatewayCareContextSerializer,
     GatewayIdSerializer,
     GatewayPermissionSerializer,
+    GatewayPurposeSerializer,
     GatewayRequesterSerializer,
 )
 from abdm_integrator.utils import future_date_validator, past_date_validator
@@ -60,3 +61,28 @@ class GatewayConsentRequestNotifySerializer(serializers.Serializer):
 
     requestId = serializers.UUIDField()
     notification = NotificationSerializer()
+
+
+class GatewayConsentRequestOnFetchSerializer(GatewayCallbackResponseBaseSerializer):
+    class ConsentSerializer(serializers.Serializer):
+
+        class ConsentDetailSerializer(serializers.Serializer):
+            schemaVersion = serializers.CharField(required=False)
+            consentId = serializers.UUIDField()
+            createdAt = serializers.DateTimeField()
+            patient = GatewayIdSerializer()
+            careContexts = serializers.ListField(child=GatewayCareContextSerializer(), min_length=1)
+            purpose = GatewayPurposeSerializer()
+            hip = GatewayIdSerializer()
+            hiu = GatewayIdSerializer()
+            consentManager = GatewayIdSerializer()
+            requester = GatewayRequesterSerializer()
+            hiTypes = serializers.ListField(child=serializers.ChoiceField(choices=HealthInformationType.CHOICES),
+                                            min_length=1)
+            permission = GatewayPermissionSerializer()
+
+        status = serializers.ChoiceField(choices=ConsentStatus.GATEWAY_CHOICES)
+        consentDetail = ConsentDetailSerializer(required=False, allow_null=True)
+        signature = serializers.CharField(allow_null=True, allow_blank=True)
+
+    consent = ConsentSerializer(required=False)

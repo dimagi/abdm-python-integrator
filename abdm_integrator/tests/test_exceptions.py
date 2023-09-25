@@ -11,6 +11,7 @@ from rest_framework.views import APIView
 
 from abdm_integrator.exceptions import (
     ERROR_CODE_INVALID,
+    ERROR_CODE_REQUIRED_MESSAGE,
     STANDARD_ERRORS,
     ABDMGatewayError,
     ABDMServiceUnavailable,
@@ -18,6 +19,7 @@ from abdm_integrator.exceptions import (
     CustomError,
 )
 from abdm_integrator.settings import app_settings
+from abdm_integrator.tests.utils import ErrorResponseAssertMixin
 
 TEST_ERROR_CODE_PREFIX = '9'
 TEST_CUSTOM_ERRORS = {
@@ -48,40 +50,32 @@ urlpatterns = [
         "ENABLE_IN_DEBUG_FOR_UNHANDLED_EXCEPTIONS": True
     },
 )
-class TestAPIErrors(APITestCase):
+class TestAPIErrors(APITestCase, ErrorResponseAssertMixin):
     """Test that the error response obtained from ABDM APIs matches the desired format"""
 
     @patch('abdm_integrator.tests.test_exceptions.TestAPIView.post',
-           side_effect=serializers.ValidationError({'field1': 'This is required.'}))
+           side_effect=serializers.ValidationError({'field1': ERROR_CODE_REQUIRED_MESSAGE}))
     def test_400_error(self, mocked_object):
         res = self.client.post(reverse('test_view'))
         json_resp = res.json()
         self.assertEqual(res.status_code, 400)
-        self.assertEqual(json_resp['error']['code'], 9400)
-        self.assertEqual(json_resp['error']['message'], STANDARD_ERRORS.get(400))
-        self.assertEqual(json_resp['error']['details'][0],
-                         {'code': 'invalid', 'detail': 'This is required.', 'attr': 'field1'})
+        self.assert_error(json_resp['error'], int(f'{TEST_ERROR_CODE_PREFIX}400'), STANDARD_ERRORS.get(400))
+        self.assert_error_details(json_resp['error']['details'][0], ERROR_CODE_INVALID,
+                                  ERROR_CODE_REQUIRED_MESSAGE, 'field1')
 
     @patch('abdm_integrator.tests.test_exceptions.TestAPIView.post', side_effect=NotAuthenticated)
     def test_401_error(self, mocked_object):
         res = self.client.post(reverse('test_view'))
-        json_resp = res.json()
-        self.assertEqual(res.status_code, 401)
-        self.assertEqual(json_resp['error']['code'], 9401)
-        self.assertEqual(json_resp['error']['message'], STANDARD_ERRORS.get(401))
-        self.assertEqual(json_resp['error']['details'][0],
-                         {'code': 'not_authenticated',
-                          'detail': 'Authentication credentials were not provided.', 'attr': None})
+        self.assert_for_authentication_error(res, TEST_ERROR_CODE_PREFIX)
 
     @patch('abdm_integrator.tests.test_exceptions.TestAPIView.post', side_effect=NotFound)
     def test_404_error(self, mocked_object):
         res = self.client.post(reverse('test_view'))
         json_resp = res.json()
         self.assertEqual(res.status_code, 404)
-        self.assertEqual(json_resp['error']['code'], 9404)
-        self.assertEqual(json_resp['error']['message'], STANDARD_ERRORS.get(404))
-        self.assertEqual(json_resp['error']['details'][0],
-                         {'code': 'not_found', 'detail': 'Not found.', 'attr': None})
+        self.assert_error(json_resp['error'], int(f'{TEST_ERROR_CODE_PREFIX}404'), STANDARD_ERRORS.get(404))
+        self.assert_error_details(json_resp['error']['details'][0], NotFound.default_code,
+                                  NotFound.default_detail, None)
 
     @patch('abdm_integrator.tests.test_exceptions.TestAPIView.post',
            side_effect=Exception('Unhandled error'))
@@ -91,8 +85,7 @@ class TestAPIErrors(APITestCase):
         res = client.post(reverse('test_view'))
         json_resp = res.json()
         self.assertEqual(res.status_code, 500)
-        self.assertEqual(json_resp['error']['code'], 9500)
-        self.assertEqual(json_resp['error']['message'], STANDARD_ERRORS.get(500))
+        self.assert_error(json_resp['error'], int(f'{TEST_ERROR_CODE_PREFIX}500'), STANDARD_ERRORS.get(500))
         self.assertIsNone(json_resp['error'].get('details'))
 
     @patch('abdm_integrator.tests.test_exceptions.TestAPIView.post', side_effect=ABDMServiceUnavailable)
@@ -100,13 +93,7 @@ class TestAPIErrors(APITestCase):
         # Test Client catches unhandled error signal sent by drf_standardized_exception_handler and re raises it.
         client = APIClient(raise_request_exception=False)
         res = client.post(reverse('test_view'))
-        json_resp = res.json()
-        self.assertEqual(res.status_code, ABDMServiceUnavailable.status_code)
-        self.assertEqual(json_resp['error']['code'], 9503)
-        self.assertEqual(json_resp['error']['message'], STANDARD_ERRORS.get(503))
-        self.assertEqual(json_resp['error']['details'][0],
-                         {'code': ABDMServiceUnavailable.default_code,
-                          'detail': ABDMServiceUnavailable.default_detail, 'attr': None})
+        self.assert_for_abdm_service_unavailable_error(res, TEST_ERROR_CODE_PREFIX)
 
     @patch('abdm_integrator.tests.test_exceptions.TestAPIView.post')
     def test_abdm_gateway_error(self, mocked_object):
@@ -116,10 +103,9 @@ class TestAPIErrors(APITestCase):
         res = self.client.post(reverse('test_view'))
         json_resp = res.json()
         self.assertEqual(res.status_code, ABDMGatewayError.status_code)
-        self.assertEqual(json_resp['error']['code'], gateway_error['code'])
-        self.assertEqual(json_resp['error']['message'], ABDMGatewayError.error_message)
-        self.assertEqual(json_resp['error']['details'][0],
-                         {'code': ABDMGatewayError.detail_code, 'detail': gateway_error['message'], 'attr': None})
+        self.assert_error(json_resp['error'], gateway_error['code'], ABDMGatewayError.error_message)
+        self.assert_error_details(json_resp['error']['details'][0], ABDMGatewayError.detail_code,
+                                  gateway_error['message'], None)
 
     @patch('abdm_integrator.tests.test_exceptions.TestAPIView.post')
     def test_abdm_custom_error(self, mocked_object):
@@ -131,9 +117,7 @@ class TestAPIErrors(APITestCase):
                                                 detail_attr=custom_error['details_attr'])
         res = self.client.post(reverse('test_view'))
         json_resp = res.json()
-        self.assertEqual(json_resp['error']['code'], custom_error['code'])
-        self.assertEqual(json_resp['error']['message'], TEST_CUSTOM_ERRORS.get(custom_error['code']))
         self.assertEqual(res.status_code, custom_error['status'])
-        self.assertEqual(json_resp['error']['details'][0],
-                         {'code': ERROR_CODE_INVALID, 'detail': custom_error['details_message'],
-                          'attr': custom_error['details_attr']})
+        self.assert_error(json_resp['error'], custom_error['code'], TEST_CUSTOM_ERRORS.get(custom_error['code']))
+        self.assert_error_details(json_resp['error']['details'][0], ERROR_CODE_INVALID,
+                                  custom_error['details_message'], custom_error['details_attr'])

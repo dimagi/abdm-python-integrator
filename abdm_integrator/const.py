@@ -11,12 +11,12 @@ class ConsentStatus:
     EXPIRED = 'EXPIRED'
     ERROR = 'ERROR'
 
-    GATEWAY_CHOICES = [
+    HIP_GATEWAY_CHOICES = [
         (GRANTED, 'Granted'),
-        (DENIED, 'Denied'),
         (REVOKED, 'Revoked'),
         (EXPIRED, 'Expired'),
     ]
+    GATEWAY_CHOICES = HIP_GATEWAY_CHOICES + [(DENIED, 'Denied')]
     CONSENT_REQUEST_CHOICES = GATEWAY_CHOICES + [
         (PENDING, 'Pending request from Gateway'),
         (REQUESTED, 'Requested'),

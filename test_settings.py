@@ -16,6 +16,7 @@ INSTALLED_APPS = (
     "rest_framework.authtoken",
     "abdm_integrator.abha",
     "abdm_integrator.hiu",
+    "abdm_integrator.hip"
 )
 
 ABDM_INTEGRATOR = {

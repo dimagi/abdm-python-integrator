@@ -1,14 +1,24 @@
 import requests
 from django.db import transaction
+from django.db.models import Q
+from rest_framework import viewsets
 from rest_framework.response import Response
+from rest_framework.serializers import ValidationError
 from rest_framework.status import HTTP_201_CREATED, HTTP_202_ACCEPTED
 
 from abdm_integrator.const import ArtefactFetchStatus, ConsentStatus
-from abdm_integrator.exceptions import ABDMGatewayError, ABDMServiceUnavailable, CustomError
+from abdm_integrator.exceptions import (
+    ERROR_CODE_REQUIRED,
+    ERROR_CODE_REQUIRED_MESSAGE,
+    ABDMGatewayError,
+    ABDMServiceUnavailable,
+    CustomError,
+)
 from abdm_integrator.hiu.const import ABHA_EXISTS_BY_HEALTH_ID_PATH, HIUGatewayAPIPath
 from abdm_integrator.hiu.exceptions import HIUError
 from abdm_integrator.hiu.models import ConsentArtefact, ConsentRequest
 from abdm_integrator.hiu.serializers.consents import (
+    ConsentArtefactSerializer,
     ConsentRequestSerializer,
     GatewayConsentRequestNotifySerializer,
     GatewayConsentRequestOnFetchSerializer,
@@ -16,7 +26,7 @@ from abdm_integrator.hiu.serializers.consents import (
     GenerateConsentSerializer,
 )
 from abdm_integrator.hiu.views.base import HIUBaseView, HIUGatewayBaseView
-from abdm_integrator.utils import ABDMRequestHelper
+from abdm_integrator.utils import ABDMRequestHelper, APIResultsSetPagination
 
 
 class GenerateConsent(HIUBaseView):
@@ -177,3 +187,41 @@ class GatewayConsentRequestOnFetch(HIUGatewayBaseView):
         consent_request = consent_artefact.consent_request
         consent_request.update_user_amendable_details(consent_artefact.details['permission'],
                                                       consent_artefact.details['hiTypes'])
+
+
+class ConsentFetch(HIUBaseView, viewsets.ReadOnlyModelViewSet):
+    serializer_class = ConsentRequestSerializer
+    pagination_class = APIResultsSetPagination
+
+    def get_queryset(self):
+        queryset = ConsentRequest.objects.all().order_by('-date_created')
+        request_params = self.request.query_params
+        if request_params.get('abha_id'):
+            queryset = queryset.filter(details__patient__id=request_params['abha_id'])
+        if request_params.get('status'):
+            queryset = queryset.filter(status=request_params['status'])
+        if request_params.get('from_date'):
+            queryset = queryset.filter(health_info_to_date__date__gte=request_params['from_date'])
+        if request_params.get('to_date'):
+            queryset = queryset.filter(health_info_from_date__date__lte=request_params['to_date'])
+        if request_params.get('search'):
+            queryset = queryset.filter(Q(status__icontains=request_params['search']) |
+                                       Q(health_info_types__icontains=request_params['search']))
+        return queryset
+
+
+class ConsentArtefactFetch(HIUBaseView, viewsets.ReadOnlyModelViewSet):
+    serializer_class = ConsentArtefactSerializer
+    pagination_class = APIResultsSetPagination
+
+    def get_queryset(self):
+        queryset = ConsentArtefact.objects.all().order_by('-date_created')
+        if self.action == 'list':
+            request_params = self.request.query_params
+            if not request_params.get('consent_request_id'):
+                raise ValidationError(detail={'consent_request_id': ERROR_CODE_REQUIRED_MESSAGE},
+                                      code=ERROR_CODE_REQUIRED)
+            queryset = queryset.filter(consent_request=request_params['consent_request_id'])
+            if request_params.get('search'):
+                queryset = queryset.filter(details__hip__name__icontains=request_params['search'])
+        return queryset

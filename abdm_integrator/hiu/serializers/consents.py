@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 from abdm_integrator.const import ConsentPurpose, ConsentStatus, HealthInformationType
-from abdm_integrator.hiu.models import ConsentRequest
+from abdm_integrator.hiu.models import ConsentArtefact, ConsentRequest
 from abdm_integrator.serializers import (
     GatewayCallbackResponseBaseSerializer,
     GatewayCareContextSerializer,
@@ -45,6 +45,12 @@ class GenerateConsentSerializer(serializers.Serializer):
 class ConsentRequestSerializer(serializers.ModelSerializer):
     class Meta:
         model = ConsentRequest
+        exclude = ('gateway_request_id', )
+
+
+class ConsentArtefactSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ConsentArtefact
         exclude = ('gateway_request_id', )
 
 

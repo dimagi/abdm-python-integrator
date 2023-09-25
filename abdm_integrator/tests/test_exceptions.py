@@ -11,9 +11,6 @@ from rest_framework.views import APIView
 
 from abdm_integrator.exceptions import (
     ERROR_CODE_INVALID,
-    GATEWAY_ERROR_DETAIL_CODE,
-    GATEWAY_ERROR_MESSAGE,
-    GATEWAY_ERROR_STATUS,
     STANDARD_ERRORS,
     ABDMGatewayError,
     ABDMServiceUnavailable,
@@ -118,11 +115,11 @@ class TestAPIErrors(APITestCase):
                                                      detail_message=gateway_error['message'])
         res = self.client.post(reverse('test_view'))
         json_resp = res.json()
-        self.assertEqual(res.status_code, GATEWAY_ERROR_STATUS)
+        self.assertEqual(res.status_code, ABDMGatewayError.status_code)
         self.assertEqual(json_resp['error']['code'], gateway_error['code'])
-        self.assertEqual(json_resp['error']['message'], GATEWAY_ERROR_MESSAGE)
+        self.assertEqual(json_resp['error']['message'], ABDMGatewayError.error_message)
         self.assertEqual(json_resp['error']['details'][0],
-                         {'code': GATEWAY_ERROR_DETAIL_CODE, 'detail': gateway_error['message'], 'attr': None})
+                         {'code': ABDMGatewayError.detail_code, 'detail': gateway_error['message'], 'attr': None})
 
     @patch('abdm_integrator.tests.test_exceptions.TestAPIView.post')
     def test_abdm_custom_error(self, mocked_object):

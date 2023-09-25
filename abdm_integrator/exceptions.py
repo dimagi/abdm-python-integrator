@@ -8,11 +8,9 @@ from rest_framework.status import HTTP_500_INTERNAL_SERVER_ERROR
 ERROR_FUTURE_DATE_MESSAGE = 'This field must be in future'
 ERROR_PAST_DATE_MESSAGE = 'This field must be in past'
 
-GATEWAY_ERROR_STATUS = 554
-GATEWAY_ERROR_DETAIL_CODE = 'abdm_gateway_error'
-GATEWAY_ERROR_MESSAGE = 'ABDM Gateway Error'
-
 ERROR_CODE_INVALID = 'invalid'
+ERROR_CODE_REQUIRED = 'required'
+ERROR_CODE_REQUIRED_MESSAGE = 'This field is required.'
 
 STANDARD_ERRORS = {
     400: 'Required attributes not provided or Request information is not as expected',
@@ -20,7 +18,7 @@ STANDARD_ERRORS = {
     404: 'Resource not found',
     405: 'Method not allowed',
     500: 'Unknown error occurred',
-    503: 'Gateway Service down',
+    503: 'ABDM Gateway Service down',
 }
 
 
@@ -65,8 +63,8 @@ class CustomAPIException(Exception):
 
 class ABDMGatewayError(CustomAPIException):
     status_code = 554
-    error_message = GATEWAY_ERROR_MESSAGE
-    detail_code = GATEWAY_ERROR_DETAIL_CODE
+    error_message = 'ABDM Gateway Error'
+    detail_code = 'abdm_gateway_error'
     detail_attr = None
 
     def __init__(self, error_code, detail_message):

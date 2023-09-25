@@ -3,7 +3,9 @@ import uuid
 from datetime import datetime
 
 import requests
+from django.utils.dateparse import parse_datetime
 from rest_framework import serializers
+from rest_framework.pagination import PageNumberPagination
 
 from abdm_integrator.const import SESSIONS_PATH
 from abdm_integrator.exceptions import (
@@ -95,3 +97,18 @@ def future_date_validator(value):
 def past_date_validator(value):
     if value > datetime.utcnow():
         raise serializers.ValidationError(ERROR_PAST_DATE_MESSAGE)
+
+
+def abdm_iso_to_datetime(value):
+    return parse_datetime(value).replace(tzinfo=None)
+
+
+def json_from_file(file_path):
+    with open(file_path) as file:
+        return json.load(file)
+
+
+class APIResultsSetPagination(PageNumberPagination):
+    page_size = 10
+    page_size_query_param = 'page_size'
+    max_page_size = 1000

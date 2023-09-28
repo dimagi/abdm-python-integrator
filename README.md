@@ -78,6 +78,15 @@ pip install abdm-python-integrator@git+https://github.com/dimagi/abdm-python-int
         # Implement interface 'HRPAbhaRegisteredCheck' as defined in 'integrations.py'
         # If this check is not needed, skip this setting or set the value to None.
         'HRP_ABHA_REGISTERED_CHECK_CLASS': None,
+
+           
+        # OPTIONAL setting. Default value is 'abdm_integrator.celery_app'.
+        # Should point to Celery App
+        'CELERY_APP': 'abdm_integrator.celery_app',
+    
+        # OPTIONAL setting. Default value is None which mean celery default queue would be used.
+        # Queue to be used for running async operations for some of Gateway Facing APIs
+        'CELERY_QUEUE': None,
     }
     ```
 
@@ -92,6 +101,9 @@ pip install abdm-python-integrator@git+https://github.com/dimagi/abdm-python-int
     ```
     url(r'^abdm/', include('abdm_integrator.urls')),
     ```
+
+> NOTE: If you are using the default celery settings for  `ABDM_INTEGRATOR`, add desired celery configurations in django  settings with `CELERY_` prefix.\
+ Sample command to run Celery ` celery -A abdm_integrator.celery_app worker -l info`
 
 
 ## Testing

@@ -29,3 +29,6 @@ ABDM_INTEGRATOR = {
     "AUTHENTICATION_CLASS": "rest_framework.authentication.TokenAuthentication",
     "HRP_ABHA_REGISTERED_CHECK_CLASS": None,
 }
+
+CELERY_TASK_ALWAYS_EAGER = True
+CELERY_TASK_EAGER_PROPAGATES = True

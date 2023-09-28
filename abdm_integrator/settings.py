@@ -12,11 +12,14 @@ DEFAULTS = {
     'USER_MODEL': 'auth.user',
     'AUTHENTICATION_CLASS': None,
     'HRP_ABHA_REGISTERED_CHECK_CLASS': None,
+    'CELERY_APP': 'abdm_integrator.celery_app.app',
+    'CELERY_QUEUE': None,
 }
 
 IMPORT_STRINGS = (
     'AUTHENTICATION_CLASS',
     'HRP_ABHA_REGISTERED_CHECK_CLASS',
+    'CELERY_APP'
 )
 
 

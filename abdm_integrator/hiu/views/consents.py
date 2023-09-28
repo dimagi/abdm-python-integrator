@@ -25,6 +25,7 @@ from abdm_integrator.hiu.serializers.consents import (
     GatewayConsentRequestOnInitSerializer,
     GenerateConsentSerializer,
 )
+from abdm_integrator.hiu.tasks import process_hiu_consent_notification_request
 from abdm_integrator.hiu.views.base import HIUBaseView, HIUGatewayBaseView
 from abdm_integrator.utils import ABDMRequestHelper, APIResultsSetPagination
 
@@ -92,8 +93,7 @@ class GatewayConsentRequestNotify(HIUGatewayBaseView):
 
     def post(self, request, format=None):
         GatewayConsentRequestNotifySerializer(data=request.data).is_valid(raise_exception=True)
-        # TODO Run as a background task in celery
-        GatewayConsentRequestNotifyProcessor(request.data).process_request()
+        process_hiu_consent_notification_request.delay(request.data)
         return Response(status=HTTP_202_ACCEPTED)
 
 
@@ -142,7 +142,7 @@ class GatewayConsentRequestNotifyProcessor:
         consent_artefact.gateway_request_id = payload['requestId']
         try:
             self.gateway_fetch_artefact_details(consent_artefact.artefact_id, payload)
-        except (ABDMGatewayError, ABDMServiceUnavailable) as err:
+        except ABDMGatewayError as err:
             consent_artefact.error = err.error
             consent_artefact.fetch_status = ArtefactFetchStatus.ERROR
         consent_artefact.save()

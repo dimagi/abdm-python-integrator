@@ -15,8 +15,10 @@ is needed for integration.
 
 ## Requirements
 - python >= 3.8
+- celery
 
 For python dependencies, refer `dependencies` section in [pyproject.toml](pyproject.toml)
+For celery, add desired configuration in django settings. Refer [Celery documentation](https://docs.celeryq.dev/en/stable/getting-started/introduction.html).
 
 ## Installation
 
@@ -41,7 +43,7 @@ pip install abdm-python-integrator@git+https://github.com/dimagi/abdm-python-int
         # Client ID provided by ABDM. 
         'CLIENT_ID': 'dummy-value',
     
-       # REQUIRED setting.
+        # REQUIRED setting.
         # Client Secret provided by ABDM.
         'CLIENT_SECRET': 'dummy-value',
         

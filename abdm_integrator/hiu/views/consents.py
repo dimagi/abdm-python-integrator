@@ -119,7 +119,6 @@ class GatewayConsentRequestNotifyProcessor:
     def handle_granted(self, consent_request):
         for artefact in self.request_data['notification']['consentArtefacts']:
             consent_artefact = ConsentArtefact(artefact_id=artefact['id'], consent_request=consent_request)
-            consent_artefact.save()
             self.artefact_fetch(consent_artefact)
 
     def handle_expired(self, consent_request):
@@ -143,7 +142,6 @@ class GatewayConsentRequestNotifyProcessor:
         consent_artefact.gateway_request_id = payload['requestId']
         try:
             self.gateway_fetch_artefact_details(consent_artefact.artefact_id, payload)
-            consent_artefact.fetch_status = ArtefactFetchStatus.REQUESTED
         except (ABDMGatewayError, ABDMServiceUnavailable) as err:
             consent_artefact.error = err.error
             consent_artefact.fetch_status = ArtefactFetchStatus.ERROR

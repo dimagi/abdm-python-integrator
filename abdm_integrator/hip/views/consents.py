@@ -6,6 +6,7 @@ from abdm_integrator.const import ConsentStatus
 from abdm_integrator.hip.const import HIPGatewayAPIPath
 from abdm_integrator.hip.models import ConsentArtefact
 from abdm_integrator.hip.serializers.consents import GatewayConsentRequestNotifySerializer
+from abdm_integrator.hip.tasks import process_hip_consent_notification_request
 from abdm_integrator.hip.views.base import HIPGatewayBaseView
 from abdm_integrator.utils import ABDMRequestHelper
 
@@ -14,8 +15,7 @@ class GatewayConsentRequestNotify(HIPGatewayBaseView):
 
     def post(self, request, format=None):
         GatewayConsentRequestNotifySerializer(data=request.data).is_valid(raise_exception=True)
-        # TODO Use Celery for processing
-        GatewayConsentRequestNotifyProcessor(request.data).process_request()
+        process_hip_consent_notification_request.delay(request.data)
         return Response(status=HTTP_202_ACCEPTED)
 
 

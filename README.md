@@ -61,28 +61,26 @@ pip install abdm-python-integrator@git+https://github.com/dimagi/abdm-python-int
         # Base URL for Gateway APIS (M2/M3 and Access Token).
         # Below value is for ABDM sandbox environment.
         'GATEWAY_URL': 'https://dev.abdm.gov.in/gateway',
-        
-        # REQUIRED setting. Defaults to Django User model.
-        # User Model. Specify as 'app_label.Model'
-        # Used for storing request user for consents and health information requests
-        'USER_MODEL': 'auth.User',
-        
+
         # REQUIRED setting. 
         # Any Authentication class that is compatible with Rest Framework Authentication mechanism.
-        # Used for APIs other than those exposed to ABDM Gateway.
-        # REQUIRED setting. Below value uses REST Framework Token Authentication.
+        # Below value uses REST Framework Token Authentication.
         'AUTHENTICATION_CLASS': 'rest_framework.authentication.TokenAuthentication',
         
+        # OPTIONAL setting. Defaults to Django User model.
+        # A custom model can be specified as 'app_label.Model'
+        'USER_MODEL': 'auth.User',
+                
         # OPTIONAL setting. Default value is None.
         # Class responsible for checking if ABHA is already registered onto HRP system while creating new ABHA ID.
         # Implement interface 'HRPAbhaRegisteredCheck' as defined in 'integrations.py'
         # If this check is not needed, skip this setting or set the value to None.
         'HRP_ABHA_REGISTERED_CHECK_CLASS': None,
-
            
-        # OPTIONAL setting. Default value is 'abdm_integrator.celery_app'.
-        # Should point to Celery App
-        'CELERY_APP': 'abdm_integrator.celery_app',
+        # OPTIONAL setting. Default value is None.
+        # Configrable setting that points to the Celery App Instance. 
+        # If None, it uses the default celery app configured in Project.
+        'CELERY_APP': None,
     
         # OPTIONAL setting. Default value is None which mean celery default queue would be used.
         # Queue to be used for running async operations for some of Gateway Facing APIs
@@ -101,9 +99,6 @@ pip install abdm-python-integrator@git+https://github.com/dimagi/abdm-python-int
     ```
     url(r'^abdm/', include('abdm_integrator.urls')),
     ```
-
-> NOTE: If you are using the default celery settings for  `ABDM_INTEGRATOR`, add desired celery configurations in django  settings with `CELERY_` prefix.\
- Sample command to run Celery ` celery -A abdm_integrator.celery_app worker -l info`
 
 
 ## Testing

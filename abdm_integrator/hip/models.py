@@ -8,3 +8,6 @@ class ConsentArtefact(models.Model):
     grant_acknowledgement = models.BooleanField()
     date_created = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        app_label = 'abdm_hip'

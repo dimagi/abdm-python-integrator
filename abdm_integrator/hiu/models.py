@@ -21,6 +21,9 @@ class ConsentRequest(models.Model):
     health_info_types = models.JSONField(default=list)
     expiry_date = models.DateTimeField()
 
+    class Meta:
+        app_label = 'abdm_hiu'
+
     def update_status(self, status):
         self.status = status
         self.save()
@@ -44,3 +47,6 @@ class ConsentArtefact(models.Model):
     error = models.JSONField(null=True)
     date_created = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        app_label = 'abdm_hiu'

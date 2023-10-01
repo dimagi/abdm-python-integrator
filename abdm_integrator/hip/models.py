@@ -1,6 +1,6 @@
 from django.db import models
 
-from abdm_integrator.const import LinkRequestStatus
+from abdm_integrator.const import HealthInformationStatus, LinkRequestStatus
 from abdm_integrator.settings import app_settings
 
 
@@ -40,6 +40,39 @@ class LinkCareContext(models.Model):
     link_request = models.ForeignKey(LinkRequest, on_delete=models.PROTECT,
                                      related_name='care_contexts')
     health_info_types = models.JSONField(default=list)
+
+    class Meta:
+        app_label = 'abdm_hip'
+
+
+class HealthInformationRequest(models.Model):
+    consent_artefact = models.ForeignKey(ConsentArtefact, to_field='artefact_id', on_delete=models.PROTECT,
+                                         related_name='health_information_request')
+    transaction_id = models.UUIDField(unique=True)
+    status = models.CharField(choices=HealthInformationStatus.HIP_CHOICES,
+                              default=HealthInformationStatus.ACKNOWLEDGED, max_length=40)
+    error = models.JSONField(null=True)
+    date_created = models.DateTimeField(auto_now_add=True)
+    last_modified = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        app_label = 'abdm_hip'
+
+    def update_status(self, status):
+        self.status = status
+        self.save()
+
+
+class HealthDataTransfer(models.Model):
+    health_information_request = models.ForeignKey(HealthInformationRequest, to_field='transaction_id',
+                                                   on_delete=models.PROTECT,
+                                                   related_name='health_data_transfer')
+    page_number = models.SmallIntegerField()
+    care_contexts = models.JSONField()
+    status = models.BooleanField(default=False)
+    error = models.TextField(null=True)
+    date_created = models.DateTimeField(auto_now_add=True)
+    last_modified = models.DateTimeField(auto_now=True)
 
     class Meta:
         app_label = 'abdm_hip'

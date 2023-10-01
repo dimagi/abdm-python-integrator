@@ -1,0 +1,25 @@
+{
+  "requestId": "a1s2c932-2f70-3ds3-a3b5-2sfd46b12a18d",
+  "timestamp": "2023-10-02T07:34:21.916Z",
+  "transactionId": "a1s2c932-2f70-3ds3-a3b5-2sfd46b12a18d",
+  "hiRequest": {
+    "consent": {
+      "id": "string"
+    },
+    "dateRange": {
+      "from": "2023-10-02T07:34:21.916Z",
+      "to": "2023-10-02T07:34:21.916Z"
+    },
+    "dataPushUrl": "string",
+    "keyMaterial": {
+      "cryptoAlg": "ECDH",
+      "curve": "Curve25519",
+      "dhPublicKey": {
+        "expiry": "2023-10-01T07:34:21.916Z",
+        "parameters": "Curve25519/32byte random key",
+        "keyValue": "string"
+      },
+      "nonce": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+    }
+  }
+}

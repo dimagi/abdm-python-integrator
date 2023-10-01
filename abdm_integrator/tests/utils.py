@@ -1,4 +1,9 @@
+from unittest.mock import Mock
+
+import requests
+from celery import Celery
 from rest_framework.exceptions import NotAuthenticated
+from rest_framework.status import HTTP_200_OK
 
 from abdm_integrator.exceptions import STANDARD_ERRORS, ABDMServiceUnavailable
 
@@ -30,3 +35,19 @@ class ErrorResponseAssertMixin:
                           STANDARD_ERRORS.get(ABDMServiceUnavailable.status_code))
         self.assert_error_details(json_res['error']['details'][0], ABDMServiceUnavailable.default_code,
                                   ABDMServiceUnavailable.default_detail, None)
+
+
+def generate_mock_response(status_code=HTTP_200_OK, json_response=None):
+    mock_response = requests.Response()
+    mock_response.status_code = status_code
+    mock_response.json = Mock(return_value=json_response)
+    mock_response.headers = {'content-type': 'application/json'}
+    return mock_response
+
+
+def init_test_celery_app():
+    app = Celery('test')
+    app.config_from_object('django.conf:settings', namespace='CELERY')
+    app.autodiscover_tasks()
+    app.set_default()
+    return app

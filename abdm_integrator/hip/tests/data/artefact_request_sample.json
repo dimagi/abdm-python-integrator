@@ -1,0 +1,52 @@
+{
+  "notification": {
+    "consentDetail": {
+      "consentId": "04193e8a-a767-4ba9-a908-36d7a7de075e",
+      "createdAt": "2023-05-01T07:48:11.957079126",
+      "purpose": {
+        "text": "Care Management",
+        "code": "CAREMGT",
+        "refUri": "NULL"
+      },
+      "patient": {
+        "id": "test_patient@sbx"
+      },
+      "consentManager": {
+        "id": "sbx"
+      },
+      "hip": {
+        "id": "6004",
+        "name": "NULL"
+      },
+      "hiTypes": [
+        "DiagnosticReport",
+        "Prescription"
+      ],
+      "permission": {
+        "accessMode": "VIEW",
+        "dateRange": {
+          "from": "2016-05-01T07:48:11.937158712",
+          "to": "2023-10-02T07:48:11.937158973"
+        },
+        "dataEraseAt": "2023-07-01T07:48:11.80979",
+        "frequency": {
+          "unit": "HOUR",
+          "value": 1,
+          "repeats": 0
+        }
+      },
+      "careContexts": [
+        {
+          "patientReference": "PT-101",
+          "careContextReference": "CC-101"
+        }
+      ]
+    },
+    "status": "GRANTED",
+    "signature": "0LkQX1CcObS91JVwnHIlup1qECTxFprYMgFZTGlbtOB7yM6KQwgMwWPkn8iOF2S8XNw==",
+    "consentId": "04193e8a-a767-4ba9-a908-36d7a7de075e",
+    "grantAcknowledgement": "false"
+  },
+  "requestId": "6f3d7fc9-325e-4a18-bc4f-0c75e4f96499",
+  "timestamp": "2023-05-01T07:48:11.991456083"
+}

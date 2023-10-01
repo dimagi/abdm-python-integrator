@@ -58,3 +58,16 @@ class GatewayPurposeSerializer(serializers.Serializer):
     code = serializers.ChoiceField(choices=ConsentPurpose.CHOICES)
     text = serializers.CharField()
     refUri = serializers.CharField(required=False, allow_null=True)
+
+
+class GatewayKeyMaterialSerializer(serializers.Serializer):
+
+    class DHPublicKeySerializer(serializers.Serializer):
+        expiry = serializers.DateTimeField()
+        parameters = serializers.CharField()
+        keyValue = serializers.CharField()
+
+    cryptoAlg = serializers.CharField()
+    curve = serializers.CharField()
+    dhPublicKey = DHPublicKeySerializer()
+    nonce = serializers.CharField()

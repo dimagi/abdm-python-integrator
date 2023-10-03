@@ -1,0 +1,2 @@
+class ABDMAccessTokenException(Exception):
+    pass

@@ -13,8 +13,10 @@ from abdm_integrator.user_auth.exceptions import (
     user_auth_gateway_error_response_handler,
 )
 from abdm_integrator.user_auth.serializers import (
+    AuthConfirmSerializer,
     AuthFetchModesSerializer,
     AuthInitSerializer,
+    GatewayAuthOnConfirmSerializer,
     GatewayAuthOnFetchModesSerializer,
     GatewayAuthOnInitSerializer,
 )
@@ -59,7 +61,7 @@ class AuthFetchModes(UserAuthBaseView):
         payload = ABDMRequestHelper.common_request_data()
         payload['query'] = request_data
         ABDMRequestHelper().gateway_post(UserAuthGatewayAPIPath.FETCH_AUTH_MODES, payload)
-        return payload["requestId"]
+        return payload['requestId']
 
     def remove_direct_mode(self, response_data):
         if (response_data and response_data.get('auth')
@@ -97,6 +99,32 @@ class GatewayAuthOnInit(UserAuthGatewayBaseView):
 
     def post(self, request, format=None):
         serializer = GatewayAuthOnInitSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        cache.set(serializer.data['resp']['requestId'], serializer.data, 10)
+        return Response(status=HTTP_202_ACCEPTED)
+
+
+class AuthConfirm(UserAuthBaseView):
+
+    def post(self, request, format=None):
+        serializer = AuthConfirmSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        gateway_request_id = self.gateway_auth_confirm(serializer.data)
+        response_data = poll_for_data_in_cache(gateway_request_id)
+        return self.generate_response_from_callback(response_data)
+
+    def gateway_auth_confirm(self, request_data):
+        payload = ABDMRequestHelper.common_request_data()
+        payload['transactionId'] = request_data.pop('transactionId')
+        payload['credential'] = request_data['credential']
+        ABDMRequestHelper().gateway_post(UserAuthGatewayAPIPath.AUTH_CONFIRM, payload)
+        return payload['requestId']
+
+
+class GatewayAuthOnConfirm(UserAuthGatewayBaseView):
+
+    def post(self, request, format=None):
+        serializer = GatewayAuthOnConfirmSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         cache.set(serializer.data['resp']['requestId'], serializer.data, 10)
         return Response(status=HTTP_202_ACCEPTED)

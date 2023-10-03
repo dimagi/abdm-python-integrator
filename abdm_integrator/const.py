@@ -126,3 +126,11 @@ class AuthenticationMode:
     DEMOGRAPHICS = 'DEMOGRAPHICS'
     CHOICES = [(MOBILE_OTP, 'SMS OTP'), (DIRECT, 'Direct'), (AADHAAR_OTP, 'Aadhar OTP'),
                (DEMOGRAPHICS, 'Demographics')]
+
+
+class LinkRequestStatus:
+    PENDING = 'PENDING'
+    SUCCESS = 'SUCCESS'
+    ERROR = 'ERROR'
+
+    CHOICES = [(PENDING, 'Pending request from Gateway'), (SUCCESS, 'Success'), (ERROR, 'Error')]

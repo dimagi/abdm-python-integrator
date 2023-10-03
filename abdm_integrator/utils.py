@@ -1,8 +1,10 @@
 import json
+import time
 import uuid
 from datetime import datetime
 
 import requests
+from django.core.cache import cache
 from django.utils.dateparse import parse_datetime
 from rest_framework import serializers
 from rest_framework.pagination import PageNumberPagination
@@ -115,3 +117,15 @@ class APIResultsSetPagination(PageNumberPagination):
     page_size = 10
     page_size_query_param = 'page_size'
     max_page_size = 1000
+
+
+def poll_for_data_in_cache(cache_key, total_attempts=30, interval=2):
+    attempt = 1
+    while attempt <= total_attempts:
+        time.sleep(interval)
+        data = cache.get(cache_key)
+        if data:
+            cache.delete(cache_key)
+            return data
+        attempt += 1
+    return None

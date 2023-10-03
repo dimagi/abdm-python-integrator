@@ -23,6 +23,15 @@ class UserAuthBaseView(APIView):
     def get_exception_handler(self):
         return user_auth_error_response_handler.get_exception_handler()
 
+    @staticmethod
+    def generate_response_from_callback(response_data):
+        if not response_data:
+            raise ABDMGatewayCallbackTimeout()
+        if response_data.get('error'):
+            error = response_data['error']
+            raise ABDMGatewayError(error.get('code'), error.get('message'))
+        return Response(status=200, data=response_data['auth'])
+
 
 class UserAuthGatewayBaseView(APIView):
 
@@ -37,7 +46,9 @@ class AuthFetchModes(UserAuthBaseView):
         serializer.is_valid(raise_exception=True)
         gateway_request_id = self.gateway_auth_fetch_modes(serializer.data)
         response_data = poll_for_data_in_cache(gateway_request_id)
-        return self.generate_response(response_data)
+        # Authentication Mode DIRECT is not yet supported.
+        response_data = self.remove_direct_mode(response_data)
+        return self.generate_response_from_callback(response_data)
 
     def gateway_auth_fetch_modes(self, request_data):
         payload = ABDMRequestHelper.common_request_data()
@@ -45,16 +56,11 @@ class AuthFetchModes(UserAuthBaseView):
         ABDMRequestHelper().gateway_post(UserAuthGatewayAPIPath.FETCH_AUTH_MODES, payload)
         return payload["requestId"]
 
-    def generate_response(self, response_data):
-        if not response_data:
-            raise ABDMGatewayCallbackTimeout()
-        if response_data.get('error'):
-            error = response_data['error']
-            raise ABDMGatewayError(error.get('code'), error.get('message'))
-        # Authentication Mode DIRECT is not yet supported.
-        if AuthenticationMode.DIRECT in response_data['auth']['modes']:
+    def remove_direct_mode(self, response_data):
+        if (response_data and response_data.get('auth')
+                and AuthenticationMode.DIRECT in response_data['auth']['modes']):
             response_data['auth']['modes'].remove(AuthenticationMode.DIRECT)
-        return Response(status=200, data=response_data["auth"])
+        return response_data
 
 
 class GatewayAuthOnFetchModes(UserAuthGatewayBaseView):

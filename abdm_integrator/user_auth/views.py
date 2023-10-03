@@ -1,7 +1,7 @@
 from django.core.cache import cache
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from rest_framework.status import HTTP_202_ACCEPTED
+from rest_framework.status import HTTP_200_OK, HTTP_202_ACCEPTED
 from rest_framework.views import APIView
 
 from abdm_integrator.const import AuthenticationMode
@@ -12,7 +12,12 @@ from abdm_integrator.user_auth.exceptions import (
     user_auth_error_response_handler,
     user_auth_gateway_error_response_handler,
 )
-from abdm_integrator.user_auth.serializers import AuthFetchModesSerializer, GatewayAuthOnFetchModesSerializer
+from abdm_integrator.user_auth.serializers import (
+    AuthFetchModesSerializer,
+    AuthInitSerializer,
+    GatewayAuthOnFetchModesSerializer,
+    GatewayAuthOnInitSerializer,
+)
 from abdm_integrator.utils import ABDMRequestHelper, poll_for_data_in_cache
 
 
@@ -30,7 +35,7 @@ class UserAuthBaseView(APIView):
         if response_data.get('error'):
             error = response_data['error']
             raise ABDMGatewayError(error.get('code'), error.get('message'))
-        return Response(status=200, data=response_data['auth'])
+        return Response(status=HTTP_200_OK, data=response_data['auth'])
 
 
 class UserAuthGatewayBaseView(APIView):
@@ -67,6 +72,31 @@ class GatewayAuthOnFetchModes(UserAuthGatewayBaseView):
 
     def post(self, request, format=None):
         serializer = GatewayAuthOnFetchModesSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        cache.set(serializer.data['resp']['requestId'], serializer.data, 10)
+        return Response(status=HTTP_202_ACCEPTED)
+
+
+class AuthInit(UserAuthBaseView):
+
+    def post(self, request, format=None):
+        serializer = AuthInitSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        gateway_request_id = self.gateway_auth_init(serializer.data)
+        response_data = poll_for_data_in_cache(gateway_request_id)
+        return self.generate_response_from_callback(response_data)
+
+    def gateway_auth_init(self, request_data):
+        payload = ABDMRequestHelper.common_request_data()
+        payload['query'] = request_data
+        ABDMRequestHelper().gateway_post(UserAuthGatewayAPIPath.AUTH_INIT, payload)
+        return payload['requestId']
+
+
+class GatewayAuthOnInit(UserAuthGatewayBaseView):
+
+    def post(self, request, format=None):
+        serializer = GatewayAuthOnInitSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         cache.set(serializer.data['resp']['requestId'], serializer.data, 10)
         return Response(status=HTTP_202_ACCEPTED)

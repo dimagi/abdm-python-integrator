@@ -104,3 +104,25 @@ class TimeUnit:
         (MONTH, 'Month'),
         (YEAR, 'Year'),
     ]
+
+
+class AuthFetchModesPurpose:
+    LINK = 'LINK'
+    KYC = 'KYC'
+    KYC_AND_LINK = 'KYC_AND_LINK'
+    CHOICES = [(LINK, 'Link'), (KYC, 'KYC'), (KYC_AND_LINK, 'KYC and Link')]
+
+
+class RequesterType:
+    HIP = 'HIP'
+    HIU = 'HIU'
+    CHOICES = [(HIP, 'Health Information Provider'), (HIU, 'Health Information User')]
+
+
+class AuthenticationMode:
+    MOBILE_OTP = 'MOBILE_OTP'
+    DIRECT = 'DIRECT'
+    AADHAAR_OTP = 'AADHAAR_OTP'
+    DEMOGRAPHICS = 'DEMOGRAPHICS'
+    CHOICES = [(MOBILE_OTP, 'SMS OTP'), (DIRECT, 'Direct'), (AADHAAR_OTP, 'Aadhar OTP'),
+               (DEMOGRAPHICS, 'Demographics')]

@@ -124,8 +124,9 @@ class AuthenticationMode:
     DIRECT = 'DIRECT'
     AADHAAR_OTP = 'AADHAAR_OTP'
     DEMOGRAPHICS = 'DEMOGRAPHICS'
+    PASSWORD = 'PASSWORD'
     CHOICES = [(MOBILE_OTP, 'SMS OTP'), (DIRECT, 'Direct'), (AADHAAR_OTP, 'Aadhar OTP'),
-               (DEMOGRAPHICS, 'Demographics')]
+               (DEMOGRAPHICS, 'Demographics'), (PASSWORD, 'Password')]
 
 
 class LinkRequestStatus:

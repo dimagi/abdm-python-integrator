@@ -122,17 +122,14 @@ class GatewayConsentRequestNotifyProcessor:
             self.artefact_fetch(consent_artefact)
 
     def handle_expired(self, consent_request):
-        artefact_ids = []
-        for artefact in consent_request.artefacts.all():
-            artefact_ids.append(artefact.artefact_id)
-            artefact.delete()
+        artefact_ids = list(consent_request.artefacts.values_list('artefact_id', flat=True))
+        consent_request.artefacts.all().delete()
         self.gateway_consents_on_notify(artefact_ids)
 
     def handle_revoked(self):
         artefact_ids = [artefact['id'] for artefact in self.request_data['notification']['consentArtefacts']]
         consent_request = ConsentRequest.objects.get(artefacts__artefact_id=artefact_ids[0])
-        for artefact_id in artefact_ids:
-            ConsentArtefact.objects.get(artefact_id=artefact_id).delete()
+        ConsentArtefact.objects.filter(artefact_id__in=artefact_ids).delete()
         if consent_request.artefacts.all().count() == 0:
             consent_request.update_status(ConsentStatus.REVOKED)
         self.gateway_consents_on_notify(artefact_ids)

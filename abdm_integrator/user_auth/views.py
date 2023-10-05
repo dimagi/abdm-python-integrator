@@ -21,6 +21,7 @@ from abdm_integrator.user_auth.serializers import (
     GatewayAuthOnInitSerializer,
 )
 from abdm_integrator.utils import ABDMRequestHelper, poll_for_data_in_cache
+import logging
 
 
 class UserAuthBaseView(APIView):
@@ -98,6 +99,7 @@ class AuthInit(UserAuthBaseView):
 class GatewayAuthOnInit(UserAuthGatewayBaseView):
 
     def post(self, request, format=None):
+        logging.info("GatewayAuthOnInit", request.data)
         serializer = GatewayAuthOnInitSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         cache.set(serializer.data['resp']['requestId'], serializer.data, 10)

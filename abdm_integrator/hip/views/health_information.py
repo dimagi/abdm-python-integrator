@@ -27,7 +27,7 @@ from abdm_integrator.utils import ABDMRequestHelper, abdm_iso_to_datetime
 class GatewayHealthInformationRequest(HIPGatewayBaseView):
 
     def post(self, request, format=None):
-        print(f'GatewayHealthInformationRequest : {request.data}')
+        print(f'HIP: Callback: GatewayHealthInformationRequest : {request.data}')
         GatewayHealthInformationRequestSerializer(data=request.data).is_valid(raise_exception=True)
         process_hip_health_information_request.delay(request.data)
         return Response(status=HTTP_202_ACCEPTED)
@@ -53,6 +53,7 @@ class GatewayHealthInformationRequestProcessor:
                                           for status in care_contexts_wise_status)
         health_information_request.update_status(
             HealthInformationStatus.TRANSFERRED if overall_transfer_status else HealthInformationStatus.FAILED)
+        # TODO Maybe skip sending error description to Gateway
         self.gateway_health_information_on_transfer(artefact.artefact_id, overall_transfer_status,
                                                     care_contexts_wise_status)
 
@@ -116,21 +117,23 @@ class GatewayHealthInformationRequestProcessor:
     def gateway_health_information_on_transfer(self, artefact_id, transfer_status,
                                                care_contexts_status):
         payload = ABDMRequestHelper.common_request_data()
-        payload['notification'] = {'consent_id': artefact_id,
+        payload['notification'] = {'consent_id': str(artefact_id),
                                    'transaction_id': self.request_data['transactionId'],
                                    'doneAt': datetime.utcnow().isoformat()}
+        # TODO HIP ID
         payload['notification']['notifier'] = {'type': 'HIP', 'id': 6004}
         session_status = HealthInformationStatus.TRANSFERRED if transfer_status else HealthInformationStatus.FAILED
         # TODO Get HIP ID from database
         payload['notification']['statusNotification'] = {'sessionStatus': session_status, 'hipId': 6004}
         payload['notification']['statusNotification']['statusResponses'] = care_contexts_status
-        ABDMRequestHelper().gateway_post(HIPGatewayAPIPath.HEALTH_INFO_ON_TRANSFER_PATH, payload)
+        print("Final Transfer Status: ", payload)
+        # ABDMRequestHelper().gateway_post(HIPGatewayAPIPath.HEALTH_INFO_ON_TRANSFER_PATH, payload)
         return payload['requestId']
 
 
 class HealthDataTransferProcessor:
     media_type = HEALTH_INFORMATION_MEDIA_TYPE
-    entries_per_page = 2
+    entries_per_page = 5  # TODO Change to 10
 
     def __init__(self, transaction_id, care_contexts, hi_request, health_information_request):
         self.transaction_id = transaction_id
@@ -138,7 +141,8 @@ class HealthDataTransferProcessor:
         self.hiu_transfer_material = hi_request['keyMaterial']
         self.hiu_data_push_url = hi_request['dataPushUrl']
         self.health_information_request = health_information_request
-        self.crypto = ABDMCrypto()
+        self.crypto = ABDMCrypto(x509=True)
+        self.care_contexts_status = []
 
     @property
     def page_count(self):
@@ -155,17 +159,30 @@ class HealthDataTransferProcessor:
     def _process_page(self, page_number, care_contexts):
         payload = {'pageCount': self.page_count, 'transactionId': self.transaction_id,
                    'keyMaterial': self.crypto.transfer_material, 'pageNumber': page_number, 'entries': []}
-        error = None
-        send_status = False
-        try:
-            for care_context in care_contexts:
+        care_contexts_status = []
+        care_contexts_transfer = []
+
+        # Process Care Context
+        for care_context in care_contexts:
+            try:
                 entries = self._process_care_context(care_context)
                 payload['entries'].extend(entries)
-            send_status = self.send_data(payload)
-        except Exception as err:
-            error = err
-        self.save_health_data_transfer(page_number, care_contexts, send_status, error)
-        return self._generate_care_contexts_status(care_contexts, send_status, error)
+                care_contexts_transfer.append(care_context)
+            except Exception as err:
+                care_contexts_status.append(self._generate_care_context_status(care_context, str(err)))
+
+        # Send Care Contexts and Health data even if one entry in page is valid
+        if care_contexts_transfer:
+            error = None
+            try:
+                self.send_data(payload)
+            except Exception as err:
+                error = str(err)
+            care_contexts_status.extend(self._generate_care_contexts_status(care_contexts_transfer, error))
+
+        # Save Page Information
+        self.save_health_data_transfer(page_number, care_contexts_status)
+        return care_contexts_status
 
     def _process_care_context(self, care_context):
         entries = []
@@ -179,17 +196,18 @@ class HealthDataTransferProcessor:
         for bundle in fhir_data:
             encrypted_entry = self.get_encrypted_entry(care_context['careContextReference'], bundle)
             entries.append(encrypted_entry)
+
         return entries
 
-    def save_health_data_transfer(self, page_number, care_contexts, send_status, error=None):
+    def save_health_data_transfer(self, page_number, care_contexts_status):
+
         HealthDataTransfer.objects.create(health_information_request=self.health_information_request,
-                                          page_number=page_number, care_contexts=care_contexts,
-                                          status=send_status, error=error)
+                                          page_number=page_number, care_contexts_status=care_contexts_status)
 
     def fetch_linked_care_context(self, care_context_reference, patient_reference, hip_id):
         return LinkCareContext.objects.get(care_context_number=care_context_reference,
                                            link_request__hip_id=hip_id,
-                                           ink_request__patient_reference=patient_reference,
+                                           link_request__patient_reference=patient_reference,
                                            link_request__status=LinkRequestStatus.SUCCESS
                                            )
 
@@ -203,7 +221,7 @@ class HealthDataTransferProcessor:
         return health_info_types
 
     def get_fhir_data_hrp(self, linked_care_context, health_info_types):
-        linked_care_context_serialized = LinkCareContextFetchSerializer(linked_care_context)
+        linked_care_context_serialized = LinkCareContextFetchSerializer(linked_care_context).data
         try:
             fhir_data = (app_settings.HRP_INTEGRATION_CLASS().
                          fetch_health_data(linked_care_context.care_context_number,
@@ -241,10 +259,13 @@ class HealthDataTransferProcessor:
         for i in range(0, len(data), count):
             yield data[i:i + count]
 
-    @staticmethod
-    def _generate_care_contexts_status(care_contexts, send_status, error=None):
-        hi_status = HealthInformationStatus.DELIVERED if send_status else HealthInformationStatus.ERRORED
-        description = error if error else 'Delivered'
-        return [{'careContextReference': care_context['careContextReference'], 'hiStatus': hi_status,
-                 'description': description}
+    def _generate_care_contexts_status(self, care_contexts, error=None):
+        return [self._generate_care_context_status(care_context, error)
                 for care_context in care_contexts]
+
+    @staticmethod
+    def _generate_care_context_status(care_context, error):
+        hi_status = HealthInformationStatus.ERRORED if error else HealthInformationStatus.DELIVERED
+        description = error if error else 'Delivered'
+        return {'careContextReference': care_context['careContextReference'], 'hiStatus': hi_status,
+                'description': description}

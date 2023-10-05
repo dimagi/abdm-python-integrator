@@ -61,6 +61,7 @@ class GenerateConsent(HIUBaseView):
     def gateway_consent_request_init(self, consent_data):
         payload = ABDMRequestHelper.common_request_data()
         payload['consent'] = consent_data
+        print("Consent Request Call: ", payload)
         ABDMRequestHelper().gateway_post(HIUGatewayAPIPath.CONSENT_REQUEST_INIT, payload)
         return payload['requestId']
 

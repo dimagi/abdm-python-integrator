@@ -3,7 +3,7 @@ from base64 import b64encode
 from dataclasses import asdict, dataclass
 from datetime import datetime, timedelta
 
-from fidelius import CryptoController, KeyMaterial
+from fidelius import CryptoController, KeyMaterial, EncryptionRequest, DecryptionRequest
 
 CRYPTO_ALGORITHM = 'ECDH'
 CURVE = 'Curve25519'
@@ -15,12 +15,10 @@ class ABDMCrypto:
     Wrapper class to perform cryptography operations as per ABDM policy
     """
 
-    # TODO Add Error Handling
-
-    def __init__(self, key_material_json=None):
+    def __init__(self, key_material_json=None, x509=False):
         self.key_material = (ABDMKeyMaterial.from_dict(key_material_json) if key_material_json
                              else self._generate_key_material())
-        self.transfer_material = self._get_transfer_material()
+        self.transfer_material = self._get_transfer_material(x509)
 
     @staticmethod
     def _generate_key_material():
@@ -32,7 +30,7 @@ class ABDMCrypto:
             x509_public_key=key_material.x509_public_key,
         )
 
-    def _get_transfer_material(self):
+    def _get_transfer_material(self, x509=False):
         """
         Converts into a format that can be transferred as per ABDM policy
         """
@@ -42,30 +40,31 @@ class ABDMCrypto:
             'dhPublicKey': {
                 'expiry': (datetime.utcnow() + timedelta(seconds=KEY_MATERIAL_EXPIRY)).isoformat(),
                 'parameters': 'Curve25519',
-                'keyValue': self.key_material.public_key
+                'keyValue': self.key_material.x509_public_key if x509 else self.key_material.public_key
             },
             'nonce': self.key_material.nonce
         }
 
     def encrypt(self, data, peer_transfer_material):
-        return CryptoController.encrypt(
-            {
-                'string_to_encrypt': data,
-                'sender_nonce': self.key_material.nonce,
-                'requester_nonce': peer_transfer_material['nonce'],
-                'sender_private_key': self.key_material.private_key,
-                'requester_public_key': peer_transfer_material['dhPublicKey']['keyValue']
-            })
+        encryption_request = EncryptionRequest(
+                string_to_encrypt = data,
+                sender_nonce = self.key_material.nonce,
+                requester_nonce = peer_transfer_material['nonce'],
+                sender_private_key = self.key_material.private_key,
+                requester_public_key = peer_transfer_material['dhPublicKey']['keyValue']
+            )
+
+        return CryptoController.encrypt(encryption_request)
 
     def decrypt(self, data, peer_transfer_material):
-        return CryptoController.decrypt(
-            {
-                'encrypted_data': data,
-                'requester_nonce': self.key_material.nonce,
-                'sender_nonce': peer_transfer_material['nonce'],
-                'requester_private_key': self.key_material.private_key,
-                'sender_public_key': peer_transfer_material['dhPublicKey']['keyValue']
-            })
+        decryption_request = DecryptionRequest(
+                encrypted_data = data,
+                requester_nonce = self.key_material.nonce,
+                sender_nonce = peer_transfer_material['nonce'],
+                requester_private_key = self.key_material.private_key,
+                sender_public_key = peer_transfer_material['dhPublicKey']['keyValue']
+            )
+        return CryptoController.decrypt(decryption_request)
 
     @staticmethod
     def generate_checksum(data):

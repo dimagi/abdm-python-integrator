@@ -68,9 +68,7 @@ class HealthDataTransfer(models.Model):
                                                    on_delete=models.PROTECT,
                                                    related_name='health_data_transfer')
     page_number = models.SmallIntegerField()
-    care_contexts = models.JSONField()
-    status = models.BooleanField(default=False)
-    error = models.TextField(null=True)
+    care_contexts_status = models.JSONField()
     date_created = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
 

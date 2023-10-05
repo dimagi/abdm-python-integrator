@@ -3,6 +3,7 @@ import time
 import uuid
 from datetime import datetime
 
+import logging
 import requests
 from django.core.cache import cache
 from django.utils.dateparse import parse_datetime
@@ -42,12 +43,14 @@ class ABDMRequestHelper:
         return resp.json().get("accessToken")
 
     def abha_get(self, api_path, additional_headers=None, params=None, timeout=None):
+        print(f"Abha Call Get : Path - {api_path}")
         self.headers.update({"Authorization": f"Bearer {self.get_access_token()}"})
         if additional_headers:
             self.headers.update(additional_headers)
         resp = requests.get(url=self.abha_base_url + api_path, headers=self.headers, params=params,
                             timeout=timeout or self.default_timeout)
         resp.raise_for_status()
+        print(f"Response: Status - {resp.status_code}, JSON - {_get_json_from_resp(resp)}")
         # ABHA APIS may not return 'application/json' content type in headers as per swagger doc
         return _get_json_from_resp(resp)
 
@@ -55,15 +58,18 @@ class ABDMRequestHelper:
         self.headers.update({"Authorization": f"Bearer {self.get_access_token()}"})
         resp = requests.post(url=url, headers=self.headers, data=json.dumps(payload),
                              timeout=timeout or self.default_timeout)
+        print(f"Response: Status - {resp.status_code}, JSON - {_get_json_from_resp(resp)}")
         resp.raise_for_status()
         return resp
 
     def abha_post(self, api_path, payload, timeout=None):
+        logging.info(f"Abha Call Post : Path - {api_path}, PayloadL - {payload}")
         resp = self._post(self.abha_base_url + api_path, payload, timeout)
         # ABHA APIS may not return 'application/json' content type in headers as per swagger doc
         return _get_json_from_resp(resp)
 
     def gateway_post(self, api_path, payload, timeout=None):
+        logging.info(f"Gateway Call : Path - {api_path} PayloadL - {payload}")
         try:
             resp = self._post(self.gateway_base_url + api_path, payload, timeout)
         except requests.Timeout:

@@ -11,7 +11,7 @@ from abdm_integrator.hiu.views.consents import (
 )
 from abdm_integrator.hiu.views.health_information import (
     GatewayHealthInformationOnRequest,
-    ReceiveHealthInformation,
+    ReceiveHealthInformation, RequestHealthInformation,
 )
 
 hiu_urls = [
@@ -21,6 +21,7 @@ hiu_urls = [
     path('api/hiu/consent_artefacts', ConsentArtefactFetch.as_view({'get': 'list'}), name='artefacts_list'),
     path('api/hiu/consent_artefacts/<int:pk>', ConsentArtefactFetch.as_view({'get': 'retrieve'}),
          name='artefacts_retrieve'),
+    path('api/hiu/health-information/request', RequestHealthInformation.as_view(), name='request_health_information'),
     path('api/hiu/health-information/receive', ReceiveHealthInformation.as_view(),
          name='receive_health_information'),
     # APIS that will be triggered by ABDM Gateway

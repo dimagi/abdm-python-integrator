@@ -8,6 +8,8 @@ HEALTH_INFORMATION_MEDIA_TYPE = 'application/fhir+json'
 
 CELERY_TASK = app_settings.CELERY_APP.task if app_settings.CELERY_APP else celery.shared_task
 
+CELERY_TASK = app_settings.CELERY_APP.task if app_settings.CELERY_APP else celery.shared_task
+
 
 class ConsentStatus:
     PENDING = 'PENDING'

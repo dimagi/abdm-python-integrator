@@ -230,6 +230,7 @@ class TestListConsentsAndArtefactsAPI(APITestCase, ErrorResponseAssertMixin):
         res = self.client.get(reverse('consents_list'))
         self.assertEqual(res.status_code, HTTP_200_OK)
         self.assertEqual(res.json()["count"], 2)
+        self.assertEqual(res.json()['results'][0]['id'], 2)
 
     def test_list_consents_authentication_error(self):
         res = APIClient().get(reverse('consents_list'))
@@ -300,6 +301,7 @@ class TestListConsentsAndArtefactsAPI(APITestCase, ErrorResponseAssertMixin):
         res = self.client.get(reverse('artefacts_list'), data=params)
         self.assertEqual(res.status_code, HTTP_200_OK)
         self.assertEqual(res.json()["count"], 2)
+        self.assertEqual(res.json()['results'][0]['id'], 2)
         for result in res.json()["results"]:
             self.assertEqual(result["consent_request"], params['consent_request_id'])
 

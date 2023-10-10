@@ -129,3 +129,7 @@ def poll_for_data_in_cache(cache_key, total_attempts=30, interval=2):
             return data
         attempt += 1
     return None
+
+
+def cache_key_with_prefix(request_id):
+    return 'abdm_{}'.format(request_id)

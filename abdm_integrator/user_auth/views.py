@@ -7,7 +7,7 @@ from rest_framework.views import APIView
 from abdm_integrator.const import AuthenticationMode
 from abdm_integrator.exceptions import ABDMGatewayCallbackTimeout, ABDMGatewayError
 from abdm_integrator.settings import app_settings
-from abdm_integrator.user_auth.const import UserAuthGatewayAPIPath
+from abdm_integrator.user_auth.const import CALLBACK_RESPONSE_CACHE_TIMEOUT, UserAuthGatewayAPIPath
 from abdm_integrator.user_auth.exceptions import (
     user_auth_error_response_handler,
     user_auth_gateway_error_response_handler,
@@ -20,7 +20,7 @@ from abdm_integrator.user_auth.serializers import (
     GatewayAuthOnFetchModesSerializer,
     GatewayAuthOnInitSerializer,
 )
-from abdm_integrator.utils import ABDMRequestHelper, poll_for_data_in_cache
+from abdm_integrator.utils import ABDMRequestHelper, cache_key_with_prefix, poll_for_data_in_cache
 
 
 class UserAuthBaseView(APIView):
@@ -52,7 +52,7 @@ class AuthFetchModes(UserAuthBaseView):
         serializer = AuthFetchModesSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         gateway_request_id = self.gateway_auth_fetch_modes(serializer.data)
-        response_data = poll_for_data_in_cache(gateway_request_id)
+        response_data = poll_for_data_in_cache(cache_key_with_prefix(gateway_request_id))
         # Authentication Mode DIRECT is not yet supported.
         response_data = self.remove_direct_mode(response_data)
         return self.generate_response_from_callback(response_data)
@@ -75,7 +75,8 @@ class GatewayAuthOnFetchModes(UserAuthGatewayBaseView):
     def post(self, request, format=None):
         serializer = GatewayAuthOnFetchModesSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        cache.set(serializer.data['resp']['requestId'], serializer.data, 10)
+        cache.set(cache_key_with_prefix(serializer.data['resp']['requestId']), serializer.data,
+                  CALLBACK_RESPONSE_CACHE_TIMEOUT)
         return Response(status=HTTP_202_ACCEPTED)
 
 
@@ -85,7 +86,7 @@ class AuthInit(UserAuthBaseView):
         serializer = AuthInitSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         gateway_request_id = self.gateway_auth_init(serializer.data)
-        response_data = poll_for_data_in_cache(gateway_request_id)
+        response_data = poll_for_data_in_cache(cache_key_with_prefix(gateway_request_id))
         return self.generate_response_from_callback(response_data)
 
     def gateway_auth_init(self, request_data):
@@ -100,7 +101,8 @@ class GatewayAuthOnInit(UserAuthGatewayBaseView):
     def post(self, request, format=None):
         serializer = GatewayAuthOnInitSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        cache.set(serializer.data['resp']['requestId'], serializer.data, 10)
+        cache.set(cache_key_with_prefix(serializer.data['resp']['requestId']), serializer.data,
+                  CALLBACK_RESPONSE_CACHE_TIMEOUT)
         return Response(status=HTTP_202_ACCEPTED)
 
 
@@ -110,7 +112,7 @@ class AuthConfirm(UserAuthBaseView):
         serializer = AuthConfirmSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         gateway_request_id = self.gateway_auth_confirm(serializer.data)
-        response_data = poll_for_data_in_cache(gateway_request_id)
+        response_data = poll_for_data_in_cache(cache_key_with_prefix(gateway_request_id))
         return self.generate_response_from_callback(response_data)
 
     def gateway_auth_confirm(self, request_data):
@@ -126,5 +128,6 @@ class GatewayAuthOnConfirm(UserAuthGatewayBaseView):
     def post(self, request, format=None):
         serializer = GatewayAuthOnConfirmSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        cache.set(serializer.data['resp']['requestId'], serializer.data, 10)
+        cache.set(cache_key_with_prefix(serializer.data['resp']['requestId']), serializer.data,
+                  CALLBACK_RESPONSE_CACHE_TIMEOUT)
         return Response(status=HTTP_202_ACCEPTED)

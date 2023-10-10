@@ -8,6 +8,7 @@ from unittest.mock import Mock, patch
 import requests
 from django.contrib.auth.models import User
 from django.utils.dateparse import parse_date
+from rest_framework.authtoken.models import Token
 from rest_framework.reverse import reverse
 from rest_framework.status import HTTP_200_OK, HTTP_201_CREATED, HTTP_400_BAD_REQUEST
 from rest_framework.test import APIClient, APITestCase
@@ -36,9 +37,10 @@ class TestGenerateConsentRequestAPI(APITestCase, ErrorResponseAssertMixin):
         super().setUpClass()
         cls.user = User.objects.create_superuser(username='test_user', password='test')
         cls.consent_request_sample = json_from_file(cls.consent_sample_json_path)
+        cls.token = Token.objects.create(user=cls.user)
 
     def setUp(self):
-        self.client.force_authenticate(user=self.user)
+        self.client.credentials(HTTP_AUTHORIZATION=f'Token {self.token}')
 
     def tearDown(self):
         ConsentRequest.objects.all().delete()
@@ -149,6 +151,7 @@ class TestListConsentsAndArtefactsAPI(APITestCase, ErrorResponseAssertMixin):
     def setUpClass(cls):
         super().setUpClass()
         cls.user = User.objects.create_superuser(username='test_user', password='test')
+        cls.token = Token.objects.create(user=cls.user)
         cls.consent_request_id_1 = str(uuid.uuid4())
         cls.consent_request_id_2 = str(uuid.uuid4())
         cls.patient_1 = 'test1@sbx'
@@ -217,7 +220,7 @@ class TestListConsentsAndArtefactsAPI(APITestCase, ErrorResponseAssertMixin):
         ConsentRequest.objects.create(**consent_data_2, user=cls.user)
 
     def setUp(self):
-        self.client.force_authenticate(user=self.user)
+        self.client.credentials(HTTP_AUTHORIZATION=f'Token {self.token}')
 
     @classmethod
     def tearDownClass(cls):

@@ -1,10 +1,11 @@
 from unittest.mock import Mock, patch
 
 import requests
+from django.core.cache import cache
 from django.test import SimpleTestCase
 
 from abdm_integrator.exceptions import ABDMGatewayError
-from abdm_integrator.utils import ABDMRequestHelper
+from abdm_integrator.utils import ABDMRequestHelper, poll_for_data_in_cache
 
 
 class TestABDMRequestHelper(SimpleTestCase):
@@ -75,3 +76,15 @@ class TestABDMRequestHelper(SimpleTestCase):
         mocked_post.return_value = self._mock_response(status_code=400)
         with self.assertRaises(ABDMGatewayError):
             ABDMRequestHelper().gateway_post(api_path='', payload={})
+
+
+class TestUtils(SimpleTestCase):
+
+    def test_poll_data_present_in_cache(self):
+        cache.set('test_1', 101)
+        data = poll_for_data_in_cache('test_1', 2, 0.1)
+        self.assertEqual(data, 101)
+
+    def test_poll_data_absent_in_cache(self):
+        data = poll_for_data_in_cache('test_2', 2, 0.1)
+        self.assertIsNone(data)

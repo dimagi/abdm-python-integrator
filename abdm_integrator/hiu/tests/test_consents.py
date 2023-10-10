@@ -3,7 +3,7 @@ import os
 import uuid
 from copy import deepcopy
 from datetime import datetime, timedelta
-from unittest.mock import Mock, patch
+from unittest.mock import patch
 
 import requests
 from django.contrib.auth.models import User
@@ -24,7 +24,7 @@ from abdm_integrator.exceptions import (
 )
 from abdm_integrator.hiu.exceptions import HIUError
 from abdm_integrator.hiu.models import ConsentArtefact, ConsentRequest
-from abdm_integrator.tests.utils import ErrorResponseAssertMixin
+from abdm_integrator.tests.utils import ErrorResponseAssertMixin, generate_mock_response
 from abdm_integrator.utils import abdm_iso_to_datetime, json_from_file
 
 
@@ -49,14 +49,6 @@ class TestGenerateConsentRequestAPI(APITestCase, ErrorResponseAssertMixin):
     def tearDownClass(cls):
         User.objects.all().delete()
         super().tearDownClass()
-
-    @staticmethod
-    def _mock_response(status_code=HTTP_200_OK, json_response=None):
-        mock_response = requests.Response()
-        mock_response.status_code = status_code
-        mock_response.json = Mock(return_value=json_response)
-        mock_response.headers = {'content-type': 'application/json'}
-        return mock_response
 
     @classmethod
     def _sample_generate_consent_data(cls):
@@ -124,7 +116,7 @@ class TestGenerateConsentRequestAPI(APITestCase, ErrorResponseAssertMixin):
     @patch('abdm_integrator.utils.requests.post')
     def test_generate_consent_request_gateway_error(self, mocked_post):
         gateway_error = {'error': {'code': 2500, 'message': 'Invalid request'}}
-        mocked_post.return_value = self._mock_response(HTTP_400_BAD_REQUEST, gateway_error)
+        mocked_post.return_value = generate_mock_response(HTTP_400_BAD_REQUEST, gateway_error)
         request_data = self._sample_generate_consent_data()
         res = self.client.post(reverse('generate_consent_request'), data=json.dumps(request_data),
                                content_type='application/json')

@@ -2,6 +2,7 @@ from unittest.mock import Mock, patch
 
 from django.contrib.auth.models import User
 from rest_framework import status
+from rest_framework.authtoken.models import Token
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 
@@ -20,9 +21,10 @@ class TestABHAVerification(APITestCase):
     def setUpClass(cls):
         cls.invalid_req_msg = "Unable to process the current request due to incorrect data entered."
         cls.user = User.objects.create_superuser(username='test_user', password='test')
+        cls.token = Token.objects.create(user=cls.user)
 
     def setUp(self) -> None:
-        self.client.force_authenticate(user=self.user)
+        self.client.credentials(HTTP_AUTHORIZATION=f'Token {self.token}')
 
     @staticmethod
     def _mock_abdm_http_post(url, payload):

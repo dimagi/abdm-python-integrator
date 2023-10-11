@@ -11,6 +11,9 @@ ERROR_PAST_DATE_MESSAGE = 'This field must be in past'
 ERROR_CODE_INVALID = 'invalid'
 ERROR_CODE_REQUIRED = 'required'
 ERROR_CODE_REQUIRED_MESSAGE = 'This field is required.'
+ERROR_CODE_INVALID_CHOICE = 'invalid_choice'
+ERROR_CODE_INVALID_CHOICE_MESSAGE = '"{}" is not a valid choice.'
+
 
 STANDARD_ERRORS = {
     400: 'Required attributes not provided or Request information is not as expected',

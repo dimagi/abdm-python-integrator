@@ -20,15 +20,14 @@ from abdm_integrator.exceptions import (
     ERROR_CODE_REQUIRED_MESSAGE,
     ERROR_FUTURE_DATE_MESSAGE,
     STANDARD_ERRORS,
-    ABDMGatewayError,
 )
 from abdm_integrator.hiu.exceptions import HIUError
 from abdm_integrator.hiu.models import ConsentArtefact, ConsentRequest
-from abdm_integrator.tests.utils import ErrorResponseAssertMixin, generate_mock_response
+from abdm_integrator.tests.utils import APITestHelperMixin
 from abdm_integrator.utils import abdm_iso_to_datetime, json_from_file
 
 
-class TestGenerateConsentRequestAPI(APITestCase, ErrorResponseAssertMixin):
+class TestGenerateConsentRequestAPI(APITestCase, APITestHelperMixin):
     dir_path = os.path.dirname(os.path.abspath(__file__))
     consent_sample_json_path = os.path.join(dir_path, 'data/generate_consent_request_sample.json')
 
@@ -115,29 +114,20 @@ class TestGenerateConsentRequestAPI(APITestCase, ErrorResponseAssertMixin):
 
     @patch('abdm_integrator.utils.requests.post')
     def test_generate_consent_request_gateway_error(self, mocked_post):
-        gateway_error = {'error': {'code': 2500, 'message': 'Invalid request'}}
-        mocked_post.return_value = generate_mock_response(HTTP_400_BAD_REQUEST, gateway_error)
-        request_data = self._sample_generate_consent_data()
-        res = self.client.post(reverse('generate_consent_request'), data=json.dumps(request_data),
-                               content_type='application/json')
-        json_res = res.json()
-        self.assertEqual(res.status_code, ABDMGatewayError.status_code)
-        self.assert_error(json_res['error'], gateway_error['error']['code'], ABDMGatewayError.error_message)
-        self.assert_error_details(json_res['error']['details'][0], ABDMGatewayError.detail_code,
-                                  gateway_error['error']['message'], None)
-        self.assertEqual(ConsentRequest.objects.all().count(), 0)
+        self.gateway_error_test(mocked_post, reverse('generate_consent_request'),
+                                self._sample_generate_consent_data())
 
     @patch('abdm_integrator.utils.requests.post', side_effect=requests.Timeout)
     def test_generate_consent_request_service_unavailable_error(self, mocked_post):
         client = APIClient(raise_request_exception=False)
-        client.force_authenticate(self.user)
+        client.credentials(HTTP_AUTHORIZATION=f'Token {self.token}')
         request_data = self._sample_generate_consent_data()
         res = client.post(reverse('generate_consent_request'), data=json.dumps(request_data),
                           content_type='application/json')
         self.assert_for_abdm_service_unavailable_error(res, HIUError.CODE_PREFIX)
 
 
-class TestListConsentsAndArtefactsAPI(APITestCase, ErrorResponseAssertMixin):
+class TestListConsentsAndArtefactsAPI(APITestCase, APITestHelperMixin):
 
     @classmethod
     def setUpClass(cls):

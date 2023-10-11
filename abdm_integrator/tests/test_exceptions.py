@@ -19,7 +19,7 @@ from abdm_integrator.exceptions import (
     CustomError,
 )
 from abdm_integrator.settings import app_settings
-from abdm_integrator.tests.utils import ErrorResponseAssertMixin
+from abdm_integrator.tests.utils import APITestHelperMixin
 
 TEST_ERROR_CODE_PREFIX = '9'
 TEST_CUSTOM_ERRORS = {
@@ -50,7 +50,7 @@ urlpatterns = [
         "ENABLE_IN_DEBUG_FOR_UNHANDLED_EXCEPTIONS": True
     },
 )
-class TestAPIErrors(APITestCase, ErrorResponseAssertMixin):
+class TestAPIErrors(APITestCase, APITestHelperMixin):
     """Test that the error response obtained from ABDM APIs matches the desired format"""
 
     @patch('abdm_integrator.tests.test_exceptions.TestAPIView.post',

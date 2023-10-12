@@ -1,6 +1,7 @@
 from rest_framework import serializers
 
 from abdm_integrator.const import HealthInformationType
+from abdm_integrator.hip.models import LinkCareContext
 from abdm_integrator.serializers import GatewayCallbackResponseBaseSerializer
 
 
@@ -28,3 +29,10 @@ class GatewayOnAddContextsSerializer(GatewayCallbackResponseBaseSerializer):
         status = serializers.ChoiceField(choices=['SUCCESS'])
 
     acknowledgement = AcknowledgementSerializer(required=False, allow_null=True)
+
+
+class LinkCareContextFetchSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = LinkCareContext
+        fields = '__all__'
+        depth = 2

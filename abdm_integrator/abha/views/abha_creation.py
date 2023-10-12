@@ -55,7 +55,9 @@ class VerifyMobileOTP(ABHABaseView):
             resp["user_token"] = resp.pop("token")
             resp.pop("refreshToken")
             resp["exists_on_abdm"] = not resp.pop("new")
-            if app_settings.HRP_ABHA_REGISTERED_CHECK_CLASS is not None:
-                resp["exists_on_hq"] = (app_settings.HRP_ABHA_REGISTERED_CHECK_CLASS().
-                                        check_if_abha_registered(request.user, health_id))
+            try:
+                resp["exists_on_hq"] = (app_settings.HRP_INTEGRATION_CLASS()
+                                        .check_if_abha_registered(health_id, request.user))
+            except NotImplementedError:
+                pass
         return parse_response(resp)

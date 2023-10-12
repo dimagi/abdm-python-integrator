@@ -61,11 +61,13 @@ class SearchHealthId(ABHABaseView):
     @method_decorator(required_request_params(["health_id"]))
     def post(self, request, format=None):
         health_id = request.data.get("health_id")
-        if app_settings.HRP_ABHA_REGISTERED_CHECK_CLASS is not None:
-            if (app_settings.HRP_ABHA_REGISTERED_CHECK_CLASS().
-                    check_if_abha_registered(request.user, health_id)):
+        try:
+            if (app_settings.HRP_INTEGRATION_CLASS().
+                    check_if_abha_registered(health_id, request.user)):
                 return get_bad_response(ABHA_ERROR_MESSAGES[ABHA_IN_USE_ERROR_CODE],
                                         error_code=ABHA_IN_USE_ERROR_CODE)
+        except NotImplementedError:
+            pass
         resp = abdm_util.search_by_health_id(health_id)
         return parse_response(resp)
 
@@ -83,10 +85,12 @@ class GetExistenceByHealthId(ABHABaseView):
     @method_decorator(required_request_params(["health_id"]))
     def post(self, request, format=None):
         health_id = request.data.get("health_id")
-        if app_settings.HRP_ABHA_REGISTERED_CHECK_CLASS is not None:
-            if app_settings.HRP_ABHA_REGISTERED_CHECK_CLASS().check_if_abha_registered(request.user, health_id):
+        try:
+            if app_settings.HRP_INTEGRATION_CLASS().check_if_abha_registered(health_id, request.user):
                 return get_bad_response(ABHA_ERROR_MESSAGES[ABHA_IN_USE_ERROR_CODE],
                                         error_code=ABHA_IN_USE_ERROR_CODE)
+        except NotImplementedError:
+            pass
         resp = abdm_util.exists_by_health_id(health_id)
         if "status" in resp:
             resp = {"health_id": health_id, "exists": resp.get("status")}

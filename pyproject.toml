@@ -22,7 +22,8 @@ dependencies = [
     "djangorestframework >= 3.12",
     "requests",
     "drf-standardized-errors",
-    "celery"
+    "celery",
+    "fidelius @ git+https://github.com/dimagi/pyfidelius.git@master"
 ]
 dynamic = ["version"]
 

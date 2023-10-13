@@ -21,7 +21,8 @@ dependencies = [
     "django >= 3.2",
     "djangorestframework >= 3.12",
     "requests",
-    "drf-standardized-errors"
+    "drf-standardized-errors",
+    "celery"
 ]
 dynamic = ["version"]
 
@@ -29,8 +30,10 @@ dynamic = ["version"]
 [project.optional-dependencies]
 code-quality = ["flake8", "flake8-isort"]
 
+[tool.setuptools.packages.find]
+include = ["abdm_integrator*"]
+exclude = ["*tests*"]
 
-# ==== isort ====
 [tool.isort]
 line_length = 115
 known_first_party = [

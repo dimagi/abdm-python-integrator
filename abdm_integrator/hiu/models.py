@@ -1,6 +1,6 @@
 from django.db import models
 
-from abdm_integrator.const import ArtefactFetchStatus, ConsentStatus
+from abdm_integrator.const import ArtefactFetchStatus, ConsentStatus, HealthInformationStatus
 from abdm_integrator.settings import app_settings
 
 
@@ -45,6 +45,37 @@ class ConsentArtefact(models.Model):
     fetch_status = models.CharField(choices=ArtefactFetchStatus.CHOICES, default=ArtefactFetchStatus.REQUESTED,
                                     max_length=40)
     error = models.JSONField(null=True)
+    date_created = models.DateTimeField(auto_now_add=True)
+    last_modified = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        app_label = 'abdm_hiu'
+
+
+class HealthInformationRequest(models.Model):
+    user = models.ForeignKey(app_settings.USER_MODEL, on_delete=models.PROTECT,
+                             related_name='health_information_requests')
+    consent_artefact = models.ForeignKey(ConsentArtefact, to_field='artefact_id', on_delete=models.CASCADE,
+                                         related_name='health_information_request')
+    gateway_request_id = models.UUIDField(unique=True)
+    transaction_id = models.UUIDField(null=True, unique=True)
+    key_material = models.JSONField()
+    status = models.CharField(choices=HealthInformationStatus.HIU_CHOICES,
+                              default=HealthInformationStatus.PENDING, max_length=40)
+    error = models.JSONField(null=True)
+    date_created = models.DateTimeField(auto_now_add=True)
+    last_modified = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        app_label = 'abdm_hiu'
+
+
+class HealthDataReceiver(models.Model):
+    health_information_request = models.ForeignKey(HealthInformationRequest, to_field='transaction_id',
+                                                   on_delete=models.CASCADE,
+                                                   related_name='health_data_receipts')
+    page_number = models.SmallIntegerField()
+    care_contexts_status = models.JSONField()
     date_created = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
 

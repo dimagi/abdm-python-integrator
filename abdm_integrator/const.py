@@ -160,6 +160,7 @@ class HealthInformationStatus:
     DELIVERED = 'DELIVERED'
     FAILED = 'FAILED'
     ERRORED = 'ERRORED'
+    OK = 'OK'
 
     HIP_CHOICES = [
         (ACKNOWLEDGED, 'Acknowledged'),

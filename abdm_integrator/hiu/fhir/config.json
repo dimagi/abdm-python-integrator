@@ -1,0 +1,777 @@
+[
+    {
+        "resource_type": "Patient",
+        "sections": [
+            {
+                "section": "Patient Details",
+                "entries": [
+                    {
+                        "path": "$.name[0].text",
+                        "label": "Patient Registered As"
+                    },
+                    {
+                        "path": "$.name[0].given[0]",
+                        "label": "Given Name"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "resource_type": "Encounter",
+        "sections": [
+            {
+                "section": "Visit Details",
+                "entries": [
+                    {
+                        "path": "$.class.display",
+                        "label": "Visit Type"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "resource_type": "Practitioner",
+        "sections": [
+            {
+                "section": "Practitioner Details",
+                "entries": [
+                    {
+                        "path": "$.name[0].prefix",
+                        "label": "Prefix"
+                    },
+                    {
+                        "path": "$.name[0].text",
+                        "label": "Name"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "resource_type": "MedicationRequest",
+        "sections": [
+            {
+                "section": "Prescription Medicine Name and Reason",
+                "entries": [
+                    {
+                        "path": "$.medicationCodeableConcept.coding[0].display",
+                        "label": "Medicine Name"
+                    },
+                    {
+                        "path": "$.reasonCode[0].coding[0].display",
+                        "label": "Reason of Medicine"
+                    }
+                ]
+            },
+            {
+                "section": "Prescription Medicine Instruction",
+                "entries": [
+                    {
+                        "path": "$.dosageInstruction[0].text",
+                        "label": "Instructions"
+                    },
+                    {
+                        "path": "$.dosageInstruction[0].additionalInstruction[0].coding[0].display",
+                        "label": "With/Without Food"
+                    },
+                    {
+                        "path": "$.dosageInstruction[0].timing.repeat.frequency",
+                        "label": "How many times"
+                    },
+                    {
+                        "path": "$.dosageInstruction[0].timing.repeat.period",
+                        "label": "How many days"
+                    },
+                    {
+                        "path": "$.dosageInstruction[0].timing.repeat.periodUnit",
+                        "label": "Period Unit"
+                    },
+                    {
+                        "path": "$.dosageInstruction[0].route.coding[0].display",
+                        "label": "Route"
+                    },
+                    {
+                        "path": "$.dosageInstruction[0].method.coding[0].display",
+                        "label": "Method"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "resource_type": "MedicationStatement",
+        "sections": [
+            {
+                "section": "Medication Statement",
+                "entries": [
+                    {
+                        "path": "$.medication.coding[0].display",
+                        "label": "Medicine"
+                    },
+                    {
+                        "path": "$.reasonCode.coding[0].display",
+                        "label": "Reason"
+                    },
+                    {
+                        "path": "$.dosageInstruction[0].display",
+                        "label": "Instructions"
+                    },
+                    {
+                        "path": "$.dosageInstruction[0].additionalInstruction[0].coding[k].display",
+                        "label": "Additional Instruction"
+                    },
+                    {
+                        "path": "$.dosageInstruction[0].route[0].coding[k].display",
+                        "label": "Route"
+                    },
+                    {
+                        "path": "$.dosageInstruction[0].method[0].coding[k].display",
+                        "label": "Method"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "resource_type": "Binary",
+        "sections": [
+            {
+                "section": "Documents",
+                "entries": [
+                    {
+                        "path": "$.data",
+                        "label": "Attachment"
+                    },
+                    {
+                        "path": "$.contentType",
+                        "label": "Content Type"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "resource_type": "DiagnosticReport",
+        "sections": [
+            {
+                "section": "Diagnostic Report",
+                "entries": [
+                    {
+                        "path": "$.category[0].coding[0].display",
+                        "label": "Report Category"
+                    },
+                    {
+                        "path": "$.code.coding[0].display",
+                        "label": "Report Name"
+                    },
+                    {
+                        "path": "$.media[0].link",
+                        "label": "Link"
+                    },
+                    {
+                        "path": "$.conclusion",
+                        "label": "Conclusion"
+                    },
+                    {
+                        "path": "$.conclusionCode[0].coding[0].display",
+                        "label": "Conclusion Category"
+                    },
+                    {
+                        "path": "$.presentedForm[0].contentType",
+                        "label": "Content Type"
+                    },
+                    {
+                        "path": "$.presentedForm[0].data",
+                        "label": "Attachment"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "resource_type": "DiagnosticReportImaging",
+        "sections": [
+            {
+                "section": "Diagnostic Report Imaging",
+                "entries": [
+                    {
+                        "path": "$.category[0].coding[0].display",
+                        "label": "Report Category"
+                    },
+                    {
+                        "path": "$.code.coding[0].display",
+                        "label": "Report Name"
+                    },
+                    {
+                        "path": "$.media[0].link",
+                        "label": "Link"
+                    },
+                    {
+                        "path": "$.conclusion",
+                        "label": "Conclusion"
+                    },
+                    {
+                        "path": "$.conclusionCode[0].coding[0].display",
+                        "label": "Conclusion Category"
+                    },
+                    {
+                        "path": "$.presentedForm[0].contentType",
+                        "label": "Content Type"
+                    },
+                    {
+                        "path": "$.presentedForm[0].data",
+                        "label": "Attachment"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "resource_type": "DiagnosticReportLab",
+        "sections": [
+            {
+                "section": "Diagnostic Report Lab",
+                "entries": [
+                    {
+                        "path": "$.category[0].coding[0].display",
+                        "label": "Report Category"
+                    },
+                    {
+                        "path": "$.code.coding[0].display",
+                        "label": "Report Name"
+                    },
+                    {
+                        "path": "$.media[0].link",
+                        "label": "Link"
+                    },
+                    {
+                        "path": "$.conclusion",
+                        "label": "Conclusion"
+                    },
+                    {
+                        "path": "$.conclusionCode[0].coding[0].display",
+                        "label": "Conclusion Category"
+                    },
+                    {
+                        "path": "$.presentedForm[0].contentType",
+                        "label": "Content Type"
+                    },
+                    {
+                        "path": "$.presentedForm[0].data",
+                        "label": "Attachment"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "resource_type": "Condition",
+        "sections": [
+            {
+                "section": "Condition",
+                "entries": [
+                    {
+                        "path": "$.code.coding[0].display",
+                        "label": "Condition"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "resource_type": "Observation",
+        "sections": [
+            {
+                "section": "Observation",
+                "entries": [
+                    {
+                        "path": "$.code.coding[0].display",
+                        "label": "Observation"
+                    },
+                    {
+                        "path": "$.valueQuantity.value",
+                        "label": "Value"
+                    },
+                    {
+                        "path": "$.valueQuantity.unit",
+                        "label": "Unit"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "resource_type": "AllergyIntolerance",
+        "sections": [
+            {
+                "section": "AllergyIntolerance",
+                "entries": [
+                    {
+                        "path": "$.code.coding[0].display",
+                        "label": "Allergy Tolerance"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "resource_type": "Procedure",
+        "sections": [
+            {
+                "section": "Procedure ",
+                "entries": [
+                    {
+                        "path": "$.code.coding[0].display",
+                        "label": "Procedure Name"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "resource_type": "FamilyMemberHistory",
+        "sections": [
+            {
+                "section": "FamilyMemberHistory",
+                "entries": [
+                    {
+                        "path": "$.relationship.coding[0].code.display",
+                        "label": "Relationship"
+                    },
+                    {
+                        "path": "$.reasonCode.coding[0].code.display",
+                        "label": "Reason Type"
+                    },
+                    {
+                        "path": "$.condition[0].code.coding[0].display",
+                        "label": "Condition"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "resource_type": "CarePlan",
+        "sections": [
+            {
+                "section": "Care Plan ",
+                "entries": [
+                    {
+                        "path": "$.category[0].coding[0].display",
+                        "label": "Care Plan Type"
+                    },
+                    {
+                        "path": "$.category[0].title",
+                        "label": "Care Plan Title"
+                    },
+                    {
+                        "path": "$.category[0].description",
+                        "label": "Care Plan Description"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "resource_type": "DocumentReference",
+        "sections": [
+            {
+                "section": "Document Reference",
+                "entries": [
+                    {
+                        "path": "$.content[0].attachment.contentType",
+                        "label": "Content Type"
+                    },
+                    {
+                        "path": "$.content[0].attachment.data",
+                        "label": "Attachment"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "resource_type": "Immunization",
+        "sections": [
+            {
+                "section": "Immunization ",
+                "entries": [
+                    {
+                        "path": "$.vaccineCode[0]coding[0].display",
+                        "label": "Immunization Name"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "resource_type": "ImmunizationRecommendation",
+        "sections": [
+            {
+                "section": "ImmunizationRecommendation ",
+                "entries": [
+                    {
+                        "path": "$.recommendation[0].vaccineCode[0].coding[k].display",
+                        "label": "Vaccine Name"
+                    },
+                    {
+                        "path": "$.recommendation[0].forecastReason.coding[0].display",
+                        "label": "Reason"
+                    },
+                    {
+                        "path": "$.recommendation[0].targetDisease.coding[0].display",
+                        "label": "For Disease"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "resource_type": "OPConsultRecord",
+        "sections": [
+            {
+                "resource_type": "Condition",
+                "sections": [
+                    {
+                        "section": "Condition ",
+                        "entries": [
+                            {
+                                "path": "$.code.coding[0].display",
+                                "label": "Condition/Complaint"
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "resource_type": "Observation",
+                "sections": [
+                    {
+                        "section": "Observation ",
+                        "entries": [
+                            {
+                                "path": "$.code.coding[0].display",
+                                "label": "Observation"
+                            },
+                            {
+                                "path": "$.valueQuantity.value",
+                                "label": "Value(if any)"
+                            },
+                            {
+                                "path": "$.valueQuantity.unit",
+                                "label": "Units(if any)"
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "resource_type": "AllergyIntolerance",
+                "sections": [
+                    {
+                        "section": "AllergyIntolerance ",
+                        "entries": [
+                            {
+                                "path": "$object.code.coding[0].display",
+                                "label": "Allergies"
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "resource_type": "Procedure",
+                "sections": [
+                    {
+                        "section": "Procedure",
+                        "entries": [
+                            {
+                                "path": "$.code[0].coding[0].display",
+                                "label": "Procedure Name"
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "resource_type": "FamilyMemberHistory",
+                "sections": [
+                    {
+                        "section": "FamilyMemberHistory",
+                        "entries": [
+                            {
+                                "path": "$.relationship.coding[0].code.display",
+                                "label": "Relationship"
+                            },
+                            {
+                                "path": "$.reasonCode.coding[0].code.display",
+                                "label": "Reason Type"
+                            },
+                            {
+                                "path": "$.condition[0].code.coding[0].display",
+                                "label": "Condition"
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "resource_type": "ServiceRequest",
+                "sections": [
+                    {
+                        "section": "ServiceRequest",
+                        "entries": [
+                            {
+                                "path": "$.code[0].coding[0].display",
+                                "label": "Service Request Details"
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "resource_type": "MedicationRequest or MedicationStatement",
+                "sections": [
+                    {
+                        "section": "MedicationRequest or MedicationStatement",
+                        "entries": [
+                            {
+                                "path": "$.medication.coding[0].display",
+                                "label": "Medicine"
+                            },
+                            {
+                                "path": "$.reasonCode.coding[0].display",
+                                "label": "Reason"
+                            },
+                            {
+                                "path": "$.dosageInstruction[0].display",
+                                "label": "Instructions"
+                            },
+                            {
+                                "path": "$.dosageInstruction[0].additionalInstruction[0].coding[k].display",
+                                "label": "Additional Instruction"
+                            },
+                            {
+                                "path": "$.dosageInstruction[0].route[0].coding[k].display",
+                                "label": "Route"
+                            },
+                            {
+                                "path": "$.dosageInstruction[0].method[0].coding[k].display",
+                                "label": "Method"
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "resource_type": "Appointment",
+                "sections": [
+                    {
+                        "section": "Appointment",
+                        "entries": [
+                            {
+                                "path": "$.serviceCategory[0].coding[0].display",
+                                "label": "Service Category"
+                            },
+                            {
+                                "path": "$.serviceType[0].coding[0].display",
+                                "label": "Service Type"
+                            },
+                            {
+                                "path": "$.specialty[0].coding[0].display",
+                                "label": "Speciality"
+                            },
+                            {
+                                "path": "$.appointmentType.coding[0].display",
+                                "label": "Appointment Type"
+                            },
+                            {
+                                "path": "$.reasonCode.coding[0].display",
+                                "label": "Reason Type"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "resource_type": "WellnessRecord",
+        "sections": [
+            {
+                "section": "ObservationVitalSigns",
+                "entries": [
+                    {
+                        "path": "$.code.coding[0].display",
+                        "label": "Observation"
+                    },
+                    {
+                        "path": "$.valueQuantity.value",
+                        "label": "Value"
+                    },
+                    {
+                        "path": "$.valueQuantity.unit",
+                        "label": "Unit"
+                    },
+                    {
+                        "path": "$.valueQuantity.code",
+                        "label": "Code"
+                    }
+                ]
+            },
+            {
+                "section": "ObservationBodyMeasurement",
+                "entries": [
+                    {
+                        "path": "$.code.coding[0].display",
+                        "label": "Observation"
+                    },
+                    {
+                        "path": "$.valueQuantity.value",
+                        "label": "Value"
+                    },
+                    {
+                        "path": "$.valueQuantity.unit",
+                        "label": "Unit"
+                    },
+                    {
+                        "path": "$.valueQuantity.code",
+                        "label": "Code"
+                    }
+                ]
+            },
+            {
+                "section": "ObservationPhysicalActivity",
+                "entries": [
+                    {
+                        "path": "$.code.coding[0].display",
+                        "label": "Observation"
+                    },
+                    {
+                        "path": "$.valueQuantity.value",
+                        "label": "Value"
+                    },
+                    {
+                        "path": "$.valueQuantity.unit",
+                        "label": "Unit"
+                    },
+                    {
+                        "path": "$.valueQuantity.code",
+                        "label": "Code"
+                    }
+                ]
+            },
+            {
+                "section": "ObservationGeneralAssessment",
+                "entries": [
+                    {
+                        "path": "$.code.coding[0].display",
+                        "label": "Observation"
+                    },
+                    {
+                        "path": "$.valueQuantity.value",
+                        "label": "Value"
+                    },
+                    {
+                        "path": "$.valueQuantity.unit",
+                        "label": "Unit"
+                    },
+                    {
+                        "path": "$.valueQuantity.code",
+                        "label": "Code"
+                    }
+                ]
+            },
+            {
+                "section": "ObservationWomenHealth",
+                "entries": [
+                    {
+                        "path": "$.code.coding[0].display",
+                        "label": "Observation"
+                    },
+                    {
+                        "path": "$.valueQuantity.value",
+                        "label": "Value"
+                    },
+                    {
+                        "path": "$.valueQuantity.unit",
+                        "label": "Unit"
+                    },
+                    {
+                        "path": "$.valueQuantity.code",
+                        "label": "Code"
+                    }
+                ]
+            },
+            {
+                "section": "ObservationLifestyle",
+                "entries": [
+                    {
+                        "path": "$.code.coding[0].display",
+                        "label": "Observation"
+                    },
+                    {
+                        "path": "$.valueCodeableConcept.coding[0].display",
+                        "label": "Value"
+                    }
+                ]
+            },
+            {
+                "resource_type": "Condition",
+                "sections": [
+                    {
+                        "section": "Condition ",
+                        "entries": [
+                            {
+                                "path": "$.code.coding[0].display",
+                                "label": "Condition/Complaint"
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "resource_type": "Observation",
+                "sections": [
+                    {
+                        "section": "Observation ",
+                        "entries": [
+                            {
+                                "path": "$.code.coding[0].display",
+                                "label": "Observation"
+                            },
+                            {
+                                "path": "$.valueQuantity.value",
+                                "label": "Value(if any)"
+                            },
+                            {
+                                "path": "$.valueQuantity.unit",
+                                "label": "Units(if any)"
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "resource_type": "DocumentReference",
+                "sections": [
+                    {
+                        "section": "DocumentReference ",
+                        "entries": [
+                            {
+                                "path": "$.content[0].attachment.contentType",
+                                "label": "Content Type"
+                            },
+                            {
+                                "path": "$.content[0].attachment.data",
+                                "label": "Attachment"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    }
+]

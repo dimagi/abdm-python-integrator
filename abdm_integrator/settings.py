@@ -14,6 +14,7 @@ DEFAULTS = {
     'HRP_INTEGRATION_CLASS': 'abdm_integrator.integrations.HRPIntegration',
     'CELERY_APP': None,
     'CELERY_QUEUE': None,
+    'HIU_PARSE_FHIR_BUNDLE': False,
 }
 
 IMPORT_STRINGS = (

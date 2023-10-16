@@ -84,6 +84,10 @@ pip install abdm-python-integrator@git+https://github.com/dimagi/abdm-python-int
         # OPTIONAL setting. Default value is None which mean celery default queue would be used.
         # Queue to be used for running async operations for some of Gateway Facing APIs
         'CELERY_QUEUE': None,
+   
+        # OPTIONAL setting. Default value is False.
+        # If set to True, parses FHIR bundle at the HIU end to a format easier to display on the UI.
+        'HIU_PARSE_FHIR_BUNDLE': False
     }
     ```
 

@@ -79,7 +79,7 @@ class GatewayOnAddContexts(HIPGatewayBaseView):
         serializer = GatewayOnAddContextsSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         self.update_linking_status(serializer.data)
-        cache.set(serializer.data['resp']['requestId'], serializer.data, 10)
+        cache.set(cache_key_with_prefix(serializer.data['resp']['requestId']), serializer.data, 10)
         return Response(status=HTTP_202_ACCEPTED)
 
     def update_linking_status(self, request_data):

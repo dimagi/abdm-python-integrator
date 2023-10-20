@@ -1,6 +1,5 @@
 from copy import deepcopy
 
-from django.core.cache import cache
 from django.db import transaction
 from rest_framework.response import Response
 from rest_framework.status import HTTP_200_OK, HTTP_202_ACCEPTED
@@ -15,7 +14,7 @@ from abdm_integrator.hip.serializers.care_contexts import (
     LinkCareContextRequestSerializer,
 )
 from abdm_integrator.hip.views.base import HIPBaseView, HIPGatewayBaseView
-from abdm_integrator.utils import ABDMRequestHelper, cache_key_with_prefix, poll_for_data_in_cache
+from abdm_integrator.utils import ABDMCache, ABDMRequestHelper, poll_for_data_in_cache
 
 
 class LinkCareContextRequest(HIPBaseView):
@@ -31,7 +30,7 @@ class LinkCareContextRequest(HIPBaseView):
         self.ensure_not_already_linked(serializer.data)
         gateway_request_id = self.gateway_add_care_contexts(serializer.data)
         self.save_link_request(request.user, gateway_request_id, serializer.data)
-        response_data = poll_for_data_in_cache(cache_key_with_prefix(gateway_request_id))
+        response_data = poll_for_data_in_cache(gateway_request_id)
         return self.generate_response_from_callback(response_data)
 
     def ensure_not_already_linked(self, request_data):
@@ -87,7 +86,7 @@ class GatewayOnAddContexts(HIPGatewayBaseView):
         serializer = GatewayOnAddContextsSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         self.update_linking_status(serializer.data)
-        cache.set(cache_key_with_prefix(serializer.data['resp']['requestId']), serializer.data, 10)
+        ABDMCache.set(serializer.data['resp']['requestId'], serializer.data, 10)
         return Response(status=HTTP_202_ACCEPTED)
 
     def update_linking_status(self, request_data):

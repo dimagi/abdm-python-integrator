@@ -5,7 +5,6 @@ from unittest.mock import patch
 
 import requests
 from django.contrib.auth.models import User
-from django.core.cache import cache
 from rest_framework.authtoken.models import Token
 from rest_framework.reverse import reverse
 from rest_framework.status import HTTP_200_OK, HTTP_400_BAD_REQUEST
@@ -20,7 +19,7 @@ from abdm_integrator.exceptions import (
 )
 from abdm_integrator.tests.utils import APITestHelperMixin
 from abdm_integrator.user_auth.exceptions import UserAuthError
-from abdm_integrator.utils import cache_key_with_prefix
+from abdm_integrator.utils import ABDMCache
 
 
 class TestUserAuthAPI(APITestCase, APITestHelperMixin):
@@ -76,7 +75,6 @@ class TestUserAuthAPI(APITestCase, APITestHelperMixin):
 
     @staticmethod
     def _mock_callback_response_with_cache(gateway_request_id, response_data):
-        cache_key = cache_key_with_prefix(gateway_request_id)
         mocked_callback_response = {
             'requestId': str(uuid.uuid4()),
             'timestamp': datetime.utcnow().isoformat(),
@@ -86,7 +84,7 @@ class TestUserAuthAPI(APITestCase, APITestHelperMixin):
             }
         }
         mocked_callback_response.update(response_data)
-        cache.set(cache_key, mocked_callback_response, 10)
+        ABDMCache.set(gateway_request_id, mocked_callback_response, 10)
 
     @patch('abdm_integrator.user_auth.views.ABDMRequestHelper.gateway_post', return_value={})
     @patch('abdm_integrator.user_auth.views.ABDMRequestHelper.common_request_data')

@@ -1,11 +1,10 @@
 from unittest.mock import Mock, patch
 
 import requests
-from django.core.cache import cache
 from django.test import SimpleTestCase
 
 from abdm_integrator.exceptions import ABDMGatewayError
-from abdm_integrator.utils import ABDMRequestHelper, poll_for_data_in_cache
+from abdm_integrator.utils import ABDMCache, ABDMRequestHelper, poll_for_data_in_cache
 
 
 class TestABDMRequestHelper(SimpleTestCase):
@@ -81,7 +80,7 @@ class TestABDMRequestHelper(SimpleTestCase):
 class TestUtils(SimpleTestCase):
 
     def test_poll_data_present_in_cache(self):
-        cache.set('test_1', 101)
+        ABDMCache.set('test_1', 101, 10)
         data = poll_for_data_in_cache('test_1', 2, 0.1)
         self.assertEqual(data, 101)
 

@@ -1,4 +1,3 @@
-from django.core.cache import cache
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.status import HTTP_200_OK, HTTP_202_ACCEPTED
@@ -20,7 +19,7 @@ from abdm_integrator.user_auth.serializers import (
     GatewayAuthOnFetchModesSerializer,
     GatewayAuthOnInitSerializer,
 )
-from abdm_integrator.utils import ABDMRequestHelper, cache_key_with_prefix, poll_for_data_in_cache
+from abdm_integrator.utils import ABDMCache, ABDMRequestHelper, poll_for_data_in_cache
 
 
 class UserAuthBaseView(APIView):
@@ -52,7 +51,7 @@ class AuthFetchModes(UserAuthBaseView):
         serializer = AuthFetchModesSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         gateway_request_id = self.gateway_auth_fetch_modes(serializer.data)
-        response_data = poll_for_data_in_cache(cache_key_with_prefix(gateway_request_id))
+        response_data = poll_for_data_in_cache(gateway_request_id)
         # Authentication Mode DIRECT is not yet supported.
         response_data = self.remove_direct_mode(response_data)
         return self.generate_response_from_callback(response_data)
@@ -64,8 +63,8 @@ class AuthFetchModes(UserAuthBaseView):
         return payload['requestId']
 
     def remove_direct_mode(self, response_data):
-        if (response_data and response_data.get('auth')
-                and AuthenticationMode.DIRECT in response_data['auth']['modes']):
+        if (response_data and response_data.get('auth') and
+                AuthenticationMode.DIRECT in response_data['auth']['modes']):
             response_data['auth']['modes'].remove(AuthenticationMode.DIRECT)
         return response_data
 
@@ -75,8 +74,7 @@ class GatewayAuthOnFetchModes(UserAuthGatewayBaseView):
     def post(self, request, format=None):
         serializer = GatewayAuthOnFetchModesSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        cache.set(cache_key_with_prefix(serializer.data['resp']['requestId']), serializer.data,
-                  CALLBACK_RESPONSE_CACHE_TIMEOUT)
+        ABDMCache.set(serializer.data['resp']['requestId'], serializer.data, CALLBACK_RESPONSE_CACHE_TIMEOUT)
         return Response(status=HTTP_202_ACCEPTED)
 
 
@@ -86,7 +84,7 @@ class AuthInit(UserAuthBaseView):
         serializer = AuthInitSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         gateway_request_id = self.gateway_auth_init(serializer.data)
-        response_data = poll_for_data_in_cache(cache_key_with_prefix(gateway_request_id))
+        response_data = poll_for_data_in_cache(gateway_request_id)
         return self.generate_response_from_callback(response_data)
 
     def gateway_auth_init(self, request_data):
@@ -101,8 +99,7 @@ class GatewayAuthOnInit(UserAuthGatewayBaseView):
     def post(self, request, format=None):
         serializer = GatewayAuthOnInitSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        cache.set(cache_key_with_prefix(serializer.data['resp']['requestId']), serializer.data,
-                  CALLBACK_RESPONSE_CACHE_TIMEOUT)
+        ABDMCache.set(serializer.data['resp']['requestId'], serializer.data, CALLBACK_RESPONSE_CACHE_TIMEOUT)
         return Response(status=HTTP_202_ACCEPTED)
 
 
@@ -112,7 +109,7 @@ class AuthConfirm(UserAuthBaseView):
         serializer = AuthConfirmSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         gateway_request_id = self.gateway_auth_confirm(serializer.data)
-        response_data = poll_for_data_in_cache(cache_key_with_prefix(gateway_request_id))
+        response_data = poll_for_data_in_cache(gateway_request_id)
         return self.generate_response_from_callback(response_data)
 
     def gateway_auth_confirm(self, request_data):
@@ -128,6 +125,5 @@ class GatewayAuthOnConfirm(UserAuthGatewayBaseView):
     def post(self, request, format=None):
         serializer = GatewayAuthOnConfirmSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        cache.set(cache_key_with_prefix(serializer.data['resp']['requestId']), serializer.data,
-                  CALLBACK_RESPONSE_CACHE_TIMEOUT)
+        ABDMCache.set(serializer.data['resp']['requestId'], serializer.data, CALLBACK_RESPONSE_CACHE_TIMEOUT)
         return Response(status=HTTP_202_ACCEPTED)

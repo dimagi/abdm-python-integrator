@@ -119,17 +119,38 @@ class APIResultsSetPagination(PageNumberPagination):
     max_page_size = 1000
 
 
+class ABDMCache:
+    """Wrapper class around Django's default cache for ABDM related cache operations"""
+    _cache = cache
+    prefix = 'abdm_'
+
+    @classmethod
+    def set(cls, key, value, timeout):
+        key = cls._key_with_prefix(key)
+        return cls._cache.set(key, value, timeout)
+
+    @classmethod
+    def get(cls, key):
+        key = cls._key_with_prefix(key)
+        return cls._cache.get(key)
+
+    @classmethod
+    def delete(cls, key):
+        key = cls._key_with_prefix(key)
+        return cls._cache.delete(key)
+
+    @classmethod
+    def _key_with_prefix(cls, key):
+        return f'{cls.prefix}{key}'
+
+
 def poll_for_data_in_cache(cache_key, total_attempts=30, interval=2):
     attempt = 1
     while attempt <= total_attempts:
         time.sleep(interval)
-        data = cache.get(cache_key)
+        data = ABDMCache.get(cache_key)
         if data:
-            cache.delete(cache_key)
+            ABDMCache.delete(cache_key)
             return data
         attempt += 1
     return None
-
-
-def cache_key_with_prefix(request_id):
-    return 'abdm_{}'.format(request_id)

@@ -1,3 +1,5 @@
+from copy import deepcopy
+
 from django.core.cache import cache
 from django.db import transaction
 from rest_framework.response import Response
@@ -17,17 +19,22 @@ from abdm_integrator.utils import ABDMRequestHelper, cache_key_with_prefix, poll
 
 
 class LinkCareContextRequest(HIPBaseView):
+    """
+    API to perform linking of Care Context initiated by HIP. Ensures that care contexts are not already linked,
+    makes a request to gateway, polls for callback response for a specific duration. The callback response is
+    shared through cache and based on success or error, generates appropriate response to the client.
+    """
 
     def post(self, request, format=None):
         serializer = LinkCareContextRequestSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        self.check_for_already_linked(serializer.data)
+        self.ensure_not_already_linked(serializer.data)
         gateway_request_id = self.gateway_add_care_contexts(serializer.data)
         self.save_link_request(request.user, gateway_request_id, serializer.data)
         response_data = poll_for_data_in_cache(cache_key_with_prefix(gateway_request_id))
         return self.generate_response_from_callback(response_data)
 
-    def check_for_already_linked(self, request_data):
+    def ensure_not_already_linked(self, request_data):
         care_contexts_references = [care_context['referenceNumber']
                                     for care_context in request_data['patient']['careContexts']]
         linked_care_contexts = list(LinkCareContext.objects.
@@ -47,7 +54,7 @@ class LinkCareContextRequest(HIPBaseView):
 
     def gateway_add_care_contexts(self, request_data):
         payload = ABDMRequestHelper.common_request_data()
-        payload['link'] = request_data
+        payload['link'] = deepcopy(request_data)
         ABDMRequestHelper().gateway_post(HIPGatewayAPIPath.ADD_CARE_CONTEXTS, payload)
         return payload['requestId']
 
@@ -58,10 +65,11 @@ class LinkCareContextRequest(HIPBaseView):
                                                   hip_id=request_data['hip_id'],
                                                   patient_reference=request_data['patient']['referenceNumber']
                                                   )
-        for care_context in request_data['patient']['careContexts']:
-            LinkCareContext.objects.create(care_context_number=care_context['referenceNumber'],
-                                           health_info_types=care_context['hiTypes'],
-                                           link_request=link_request)
+        link_care_contexts = [LinkCareContext(care_context_number=care_context['referenceNumber'],
+                                              health_info_types=care_context['hiTypes'],
+                                              link_request=link_request)
+                              for care_context in request_data['patient']['careContexts']]
+        LinkCareContext.objects.bulk_create(link_care_contexts)
         return link_request
 
     def generate_response_from_callback(self, response_data):

@@ -53,7 +53,7 @@ class AuthFetchModes(UserAuthBaseView):
         gateway_request_id = self.gateway_auth_fetch_modes(serializer.data)
         response_data = poll_for_data_in_cache(gateway_request_id)
         # Authentication Mode DIRECT is not yet supported.
-        response_data = self.remove_direct_mode(response_data)
+        response_data = self.remove_direct_and_password_mode(response_data)
         return self.generate_response_from_callback(response_data)
 
     def gateway_auth_fetch_modes(self, request_data):
@@ -62,10 +62,14 @@ class AuthFetchModes(UserAuthBaseView):
         ABDMRequestHelper().gateway_post(UserAuthGatewayAPIPath.FETCH_AUTH_MODES, payload)
         return payload['requestId']
 
-    def remove_direct_mode(self, response_data):
-        if (response_data and response_data.get('auth') and
-                AuthenticationMode.DIRECT in response_data['auth']['modes']):
-            response_data['auth']['modes'].remove(AuthenticationMode.DIRECT)
+    def remove_direct_and_password_mode(self, response_data):
+        if response_data and response_data.get('auth'):
+            if AuthenticationMode.DIRECT in response_data['auth']['modes']:
+                response_data['auth']['modes'].remove(AuthenticationMode.DIRECT)
+            # Invalid Password mode is being returned.
+            # See https://devforum.abdm.gov.in/t/care-context-link-otp-not-received/8006/2?u=ayadav
+            if AuthenticationMode.PASSWORD in response_data['auth']['modes']:
+                response_data['auth']['modes'].remove(AuthenticationMode.PASSWORD)
         return response_data
 
 

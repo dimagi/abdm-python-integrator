@@ -15,8 +15,10 @@ is needed for integration.
 
 ## Requirements
 - python >= 3.8
+- celery
 
 For python dependencies, refer `dependencies` section in [pyproject.toml](pyproject.toml)
+For celery, add desired configuration in django settings. Refer [Celery documentation](https://docs.celeryq.dev/en/stable/getting-started/introduction.html).
 
 ## Installation
 
@@ -41,7 +43,7 @@ pip install abdm-python-integrator@git+https://github.com/dimagi/abdm-python-int
         # Client ID provided by ABDM. 
         'CLIENT_ID': 'dummy-value',
     
-       # REQUIRED setting.
+        # REQUIRED setting.
         # Client Secret provided by ABDM.
         'CLIENT_SECRET': 'dummy-value',
         
@@ -59,23 +61,30 @@ pip install abdm-python-integrator@git+https://github.com/dimagi/abdm-python-int
         # Base URL for Gateway APIS (M2/M3 and Access Token).
         # Below value is for ABDM sandbox environment.
         'GATEWAY_URL': 'https://dev.abdm.gov.in/gateway',
-        
-        # REQUIRED setting. Defaults to Django User model.
-        # User Model. Specify as 'app_label.Model'
-        # Used for storing request user for consents and health information requests
-        'USER_MODEL': 'auth.User',
-        
+
         # REQUIRED setting. 
         # Any Authentication class that is compatible with Rest Framework Authentication mechanism.
-        # Used for APIs other than those exposed to ABDM Gateway.
-        # REQUIRED setting. Below value uses REST Framework Token Authentication.
+        # Below value uses REST Framework Token Authentication.
         'AUTHENTICATION_CLASS': 'rest_framework.authentication.TokenAuthentication',
         
+        # OPTIONAL setting. Defaults to Django User model.
+        # A custom model can be specified as 'app_label.Model'
+        'USER_MODEL': 'auth.User',
+                
         # OPTIONAL setting. Default value is None.
         # Class responsible for checking if ABHA is already registered onto HRP system while creating new ABHA ID.
         # Implement interface 'HRPAbhaRegisteredCheck' as defined in 'integrations.py'
         # If this check is not needed, skip this setting or set the value to None.
         'HRP_ABHA_REGISTERED_CHECK_CLASS': None,
+           
+        # OPTIONAL setting. Default value is None.
+        # Configrable setting that points to the Celery App Instance. 
+        # If None, it uses the default celery app configured in Project.
+        'CELERY_APP': None,
+    
+        # OPTIONAL setting. Default value is None which mean celery default queue would be used.
+        # Queue to be used for running async operations for some of Gateway Facing APIs
+        'CELERY_QUEUE': None,
     }
     ```
 

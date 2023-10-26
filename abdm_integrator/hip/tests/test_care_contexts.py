@@ -10,7 +10,7 @@ from rest_framework.reverse import reverse
 from rest_framework.status import HTTP_200_OK, HTTP_400_BAD_REQUEST
 from rest_framework.test import APIClient, APITestCase
 
-from abdm_integrator.const import LinkRequestStatus
+from abdm_integrator.const import LinkRequestInitiator, LinkRequestStatus
 from abdm_integrator.exceptions import (
     ERROR_CODE_INVALID,
     ERROR_CODE_REQUIRED,
@@ -18,7 +18,7 @@ from abdm_integrator.exceptions import (
     STANDARD_ERRORS,
 )
 from abdm_integrator.hip.exceptions import HIPError
-from abdm_integrator.hip.models import LinkCareContext, LinkRequest
+from abdm_integrator.hip.models import HIPLinkRequest, LinkCareContext, LinkRequestDetails
 from abdm_integrator.tests.utils import APITestHelperMixin
 from abdm_integrator.utils import ABDMCache
 
@@ -37,7 +37,8 @@ class TestHIPLinkCareContextAPI(APITestCase, APITestHelperMixin):
 
     def tearDown(self):
         LinkCareContext.objects.all().delete()
-        LinkRequest.objects.all().delete()
+        HIPLinkRequest.objects.all().delete()
+        LinkRequestDetails.objects.all().delete()
 
     @classmethod
     def tearDownClass(cls):
@@ -66,16 +67,19 @@ class TestHIPLinkCareContextAPI(APITestCase, APITestHelperMixin):
 
     @staticmethod
     def _insert_link_request(request_data, user, gateway_request_id):
-        link_request = LinkRequest.objects.create(user=user,
-                                                  gateway_request_id=gateway_request_id,
-                                                  hip_id=request_data['hip_id'],
-                                                  patient_reference=request_data['patient']['referenceNumber'],
-                                                  status=LinkRequestStatus.SUCCESS
-                                                  )
+        link_request_details = LinkRequestDetails.objects.create(
+           hip_id=request_data['hip_id'],
+           patient_reference=request_data['patient']['referenceNumber'],
+           patient_display=request_data['patient']['display'],
+           initiated_by=LinkRequestInitiator.HIP,
+           status=LinkRequestStatus.SUCCESS
+        )
+        HIPLinkRequest.objects.create(user=user, gateway_request_id=gateway_request_id,
+                                      link_request_details=link_request_details)
         for care_context in request_data['patient']['careContexts']:
-            LinkCareContext.objects.create(care_context_number=care_context['referenceNumber'],
-                                           health_info_types=care_context['hiTypes'],
-                                           link_request=link_request)
+            LinkCareContext.objects.create(reference=care_context['referenceNumber'],
+                                           display=care_context['display'],
+                                           link_request_details=link_request_details)
 
     @staticmethod
     def _mock_callback_response_with_cache(gateway_request_id, response_data):
@@ -89,6 +93,11 @@ class TestHIPLinkCareContextAPI(APITestCase, APITestHelperMixin):
         }
         mocked_callback_response.update(response_data)
         ABDMCache.set(gateway_request_id, mocked_callback_response, 10)
+
+    def _assert_records_count_in_db(self, count=0):
+        self.assertEqual(LinkRequestDetails.objects.all().count(), count)
+        self.assertEqual(LinkCareContext.objects.all().count(), count)
+        self.assertEqual(HIPLinkRequest.objects.all().count(), count)
 
     @patch('abdm_integrator.hip.views.care_contexts.ABDMRequestHelper.gateway_post', return_value={})
     @patch('abdm_integrator.hip.views.care_contexts.ABDMRequestHelper.common_request_data')
@@ -107,17 +116,20 @@ class TestHIPLinkCareContextAPI(APITestCase, APITestHelperMixin):
                                content_type='application/json')
         self.assertEqual(res.status_code, HTTP_200_OK)
         self.assertEqual(res.json(), callback_response['acknowledgement'])
-        self.assertEqual(LinkRequest.objects.all().count(), 1)
-        self.assertEqual(LinkCareContext.objects.all().count(), 1)
-        linked_request = LinkRequest.objects.all()[0]
-        self.assertEqual(linked_request.patient_reference, request_data['patient']['referenceNumber'])
-        self.assertEqual(linked_request.hip_id, request_data['hip_id'])
-        self.assertEqual(str(linked_request.gateway_request_id),
+        self._assert_records_count_in_db(1)
+        link_request_details = LinkRequestDetails.objects.all()[0]
+        self.assertEqual(link_request_details.patient_reference, request_data['patient']['referenceNumber'])
+        self.assertEqual(link_request_details.hip_id, request_data['hip_id'])
+        self.assertEqual(link_request_details.patient_display, request_data['patient']['display'])
+        self.assertEqual(link_request_details.initiated_by, LinkRequestInitiator.HIP)
+        hip_link_request = HIPLinkRequest.objects.all()[0]
+        self.assertEqual(str(hip_link_request.gateway_request_id),
                          mocked_common_request_data.return_value['requestId'])
+        self.assertEqual(hip_link_request.link_request_details, link_request_details)
         linked_care_context = LinkCareContext.objects.all()[0]
-        self.assertEqual(linked_care_context.care_context_number,
+        self.assertEqual(linked_care_context.reference,
                          request_data['patient']['careContexts'][0]['referenceNumber'])
-        self.assertEqual(linked_care_context.link_request, linked_request)
+        self.assertEqual(linked_care_context.link_request_details, link_request_details)
         self.assertEqual(linked_care_context.health_info_types,
                          request_data['patient']['careContexts'][0]['hiTypes'])
 
@@ -127,8 +139,7 @@ class TestHIPLinkCareContextAPI(APITestCase, APITestHelperMixin):
         res = client.post(self.link_care_context_url, data=json.dumps(request_data),
                           content_type='application/json')
         self.assert_for_authentication_error(res, HIPError.CODE_PREFIX)
-        self.assertEqual(LinkRequest.objects.all().count(), 0)
-        self.assertEqual(LinkCareContext.objects.all().count(), 0)
+        self._assert_records_count_in_db(0)
 
     def test_link_care_context_validation_error(self, *args):
         request_data = self._link_care_context_sample_request_data()
@@ -142,8 +153,7 @@ class TestHIPLinkCareContextAPI(APITestCase, APITestHelperMixin):
         self.assertEqual(len(json_res['error']['details']), 1)
         self.assert_error_details(json_res['error']['details'][0], ERROR_CODE_REQUIRED,
                                   ERROR_CODE_REQUIRED_MESSAGE, 'patient.referenceNumber')
-        self.assertEqual(LinkRequest.objects.all().count(), 0)
-        self.assertEqual(LinkCareContext.objects.all().count(), 0)
+        self._assert_records_count_in_db(0)
 
     @patch('abdm_integrator.hip.views.care_contexts.ABDMRequestHelper.common_request_data')
     def test_link_care_context_already_linked(self, mocked_common_request_data, *args):
@@ -162,15 +172,13 @@ class TestHIPLinkCareContextAPI(APITestCase, APITestHelperMixin):
         self.assertEqual(len(json_res['error']['details']), 1)
         self.assert_error_details(json_res['error']['details'][0], ERROR_CODE_INVALID,
                                   expected_error_message, None)
-        self.assertEqual(LinkRequest.objects.all().count(), 1)
-        self.assertEqual(LinkCareContext.objects.all().count(), 1)
+        self._assert_records_count_in_db(1)
 
     @patch('abdm_integrator.utils.requests.post')
     def test_link_care_context_gateway_error(self, mocked_post, *args):
         self.gateway_error_test(mocked_post, self.link_care_context_url,
                                 self._link_care_context_sample_request_data())
-        self.assertEqual(LinkRequest.objects.all().count(), 0)
-        self.assertEqual(LinkCareContext.objects.all().count(), 0)
+        self._assert_records_count_in_db(0)
 
     @patch('abdm_integrator.utils.requests.post', side_effect=requests.Timeout)
     def test_link_care_context_service_unavailable_error(self, *args):
@@ -180,5 +188,4 @@ class TestHIPLinkCareContextAPI(APITestCase, APITestHelperMixin):
         res = client.post(self.link_care_context_url, data=json.dumps(request_data),
                           content_type='application/json')
         self.assert_for_abdm_service_unavailable_error(res, HIPError.CODE_PREFIX)
-        self.assertEqual(LinkRequest.objects.all().count(), 0)
-        self.assertEqual(LinkCareContext.objects.all().count(), 0)
+        self._assert_records_count_in_db(0)

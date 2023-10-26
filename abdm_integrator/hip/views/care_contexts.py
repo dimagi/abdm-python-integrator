@@ -4,11 +4,11 @@ from django.db import transaction
 from rest_framework.response import Response
 from rest_framework.status import HTTP_200_OK, HTTP_202_ACCEPTED
 
-from abdm_integrator.const import LinkRequestStatus
+from abdm_integrator.const import LinkRequestInitiator, LinkRequestStatus
 from abdm_integrator.exceptions import ABDMGatewayCallbackTimeout, ABDMGatewayError, CustomError
 from abdm_integrator.hip.const import HIPGatewayAPIPath
 from abdm_integrator.hip.exceptions import HIPError
-from abdm_integrator.hip.models import LinkCareContext, LinkRequest
+from abdm_integrator.hip.models import HIPLinkRequest, LinkCareContext, LinkRequestDetails
 from abdm_integrator.hip.serializers.care_contexts import (
     GatewayOnAddContextsSerializer,
     LinkCareContextRequestSerializer,
@@ -36,13 +36,13 @@ class LinkCareContextRequest(HIPBaseView):
     def ensure_not_already_linked(self, request_data):
         care_contexts_references = [care_context['referenceNumber']
                                     for care_context in request_data['patient']['careContexts']]
-        linked_care_contexts = list(LinkCareContext.objects.
-                                    filter(care_context_number__in=care_contexts_references,
-                                           link_request__hip_id=request_data['hip_id'],
-                                           link_request__patient_reference=request_data['patient']
-                                           ['referenceNumber'],
-                                           link_request__status=LinkRequestStatus.SUCCESS
-                                           ).values_list('care_context_number', flat=True))
+        linked_care_contexts = list(LinkCareContext.objects.filter(
+            reference__in=care_contexts_references,
+            link_request_details__hip_id=request_data['hip_id'],
+            link_request_details__patient_reference=request_data['patient']['referenceNumber'],
+            link_request_details__status=LinkRequestStatus.SUCCESS
+        ).values_list('reference', flat=True))
+
         if linked_care_contexts:
             code = HIPError.CODE_CARE_CONTEXT_ALREADY_LINKED
             message = HIPError.CUSTOM_ERRORS[code].format(linked_care_contexts)
@@ -59,17 +59,24 @@ class LinkCareContextRequest(HIPBaseView):
 
     @transaction.atomic()
     def save_link_request(self, user, gateway_request_id, request_data):
-        link_request = LinkRequest.objects.create(user=user,
-                                                  gateway_request_id=gateway_request_id,
-                                                  hip_id=request_data['hip_id'],
-                                                  patient_reference=request_data['patient']['referenceNumber']
-                                                  )
-        link_care_contexts = [LinkCareContext(care_context_number=care_context['referenceNumber'],
+        link_request_details = LinkRequestDetails.objects.create(
+            hip_id=request_data['hip_id'],
+            patient_reference=request_data['patient']['referenceNumber'],
+            patient_display=request_data['patient']['display'],
+            initiated_by=LinkRequestInitiator.HIP
+        )
+        HIPLinkRequest.objects.create(user=user, gateway_request_id=gateway_request_id,
+                                      link_request_details=link_request_details)
+        # Store any additional info related to care context (* Do not store health data)
+        additional_info = {'domain': getattr(user, 'domain', None)}
+        link_care_contexts = [LinkCareContext(reference=care_context['referenceNumber'],
+                                              display=care_context['display'],
                                               health_info_types=care_context['hiTypes'],
-                                              link_request=link_request)
+                                              additional_info=additional_info,
+                                              link_request_details=link_request_details)
                               for care_context in request_data['patient']['careContexts']]
         LinkCareContext.objects.bulk_create(link_care_contexts)
-        return link_request
+        return link_request_details
 
     def generate_response_from_callback(self, response_data):
         if not response_data:
@@ -90,10 +97,12 @@ class GatewayOnAddContexts(HIPGatewayBaseView):
         return Response(status=HTTP_202_ACCEPTED)
 
     def update_linking_status(self, request_data):
-        linking_request = LinkRequest.objects.get(gateway_request_id=request_data['resp']['requestId'])
+        link_request_details = HIPLinkRequest.objects.get(
+            gateway_request_id=request_data['resp']['requestId']
+        ).link_request_details
         if request_data.get('error'):
-            linking_request.status = LinkRequestStatus.ERROR
-            linking_request.error = request_data['error']
+            link_request_details.status = LinkRequestStatus.ERROR
+            link_request_details.error = request_data['error']
         else:
-            linking_request.status = LinkRequestStatus.SUCCESS
-        linking_request.save()
+            link_request_details.status = LinkRequestStatus.SUCCESS
+        link_request_details.save()

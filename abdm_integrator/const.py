@@ -135,3 +135,10 @@ class LinkRequestStatus:
     ERROR = 'ERROR'
 
     CHOICES = [(PENDING, 'Pending request from Gateway'), (SUCCESS, 'Success'), (ERROR, 'Error')]
+
+
+class LinkRequestInitiator:
+    PATIENT = 'PATIENT'
+    HIP = 'HIP'
+
+    CHOICES = [(PATIENT, 'Patient'), (HIP, 'HIP')]

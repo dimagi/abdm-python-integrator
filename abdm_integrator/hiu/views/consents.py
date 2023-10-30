@@ -199,7 +199,7 @@ class ConsentFetch(HIUBaseView, viewsets.ReadOnlyModelViewSet):
     pagination_class = APIResultsSetPagination
 
     def get_queryset(self):
-        queryset = ConsentRequest.objects.all().order_by('-date_created')
+        queryset = ConsentRequest.objects.filter(user=self.request.user).order_by('-date_created')
         request_params = self.request.query_params
         if request_params.get('abha_id'):
             queryset = queryset.filter(details__patient__id=request_params['abha_id'])
@@ -220,7 +220,8 @@ class ConsentArtefactFetch(HIUBaseView, viewsets.ReadOnlyModelViewSet):
     pagination_class = APIResultsSetPagination
 
     def get_queryset(self):
-        queryset = ConsentArtefact.objects
+        queryset = ConsentArtefact.objects.filter(consent_request__user=self.request.user).order_by(
+            '-date_created')
         if self.action == 'list':
             request_params = self.request.query_params
             if not request_params.get('consent_request_id'):
@@ -229,5 +230,4 @@ class ConsentArtefactFetch(HIUBaseView, viewsets.ReadOnlyModelViewSet):
             queryset = queryset.filter(consent_request=request_params['consent_request_id'])
             if request_params.get('search'):
                 queryset = queryset.filter(details__hip__name__icontains=request_params['search'])
-        queryset = queryset.order_by('-date_created')
         return queryset

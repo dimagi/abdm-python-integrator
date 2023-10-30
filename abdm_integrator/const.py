@@ -32,11 +32,13 @@ class ConsentStatus:
 
 
 class ArtefactFetchStatus:
+    PENDING = 'PENDING'
     REQUESTED = 'REQUESTED'
     RECEIVED = 'RECEIVED'
     ERROR = 'ERROR'
 
     CHOICES = [
+        (PENDING, 'Pending'),
         (REQUESTED, 'Requested'),
         (RECEIVED, 'Received'),
         (ERROR, 'Error occurred'),

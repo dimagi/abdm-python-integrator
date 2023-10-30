@@ -74,7 +74,7 @@ class Migration(migrations.Migration):
                         verbose_name="ID",
                     ),
                 ),
-                ("gateway_request_id", models.UUIDField(unique=True)),
+                ("gateway_request_id", models.UUIDField(null=True, unique=True)),
                 ("artefact_id", models.UUIDField(unique=True)),
                 ("details", models.JSONField(null=True)),
                 ("error", models.JSONField(null=True)),
@@ -93,6 +93,7 @@ class Migration(migrations.Migration):
                     "fetch_status",
                     models.CharField(
                         choices=[
+                            ("PENDING", "Pending"),
                             ("REQUESTED", "Requested"),
                             ("RECEIVED", "Received"),
                             ("ERROR", "Error occurred"),

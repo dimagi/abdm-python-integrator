@@ -39,10 +39,10 @@ class ConsentRequest(models.Model):
 class ConsentArtefact(models.Model):
     consent_request = models.ForeignKey(ConsentRequest, to_field='consent_request_id', on_delete=models.PROTECT,
                                         related_name='artefacts')
-    gateway_request_id = models.UUIDField(unique=True)
+    gateway_request_id = models.UUIDField(unique=True, null=True)
     artefact_id = models.UUIDField(unique=True)
     details = models.JSONField(null=True)
-    fetch_status = models.CharField(choices=ArtefactFetchStatus.CHOICES, default=ArtefactFetchStatus.REQUESTED,
+    fetch_status = models.CharField(choices=ArtefactFetchStatus.CHOICES, default=ArtefactFetchStatus.PENDING,
                                     max_length=40)
     error = models.JSONField(null=True)
     date_created = models.DateTimeField(auto_now_add=True)

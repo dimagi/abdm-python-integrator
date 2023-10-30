@@ -102,7 +102,6 @@ class GatewayConsentRequestNotifyProcessor:
     def __init__(self, request_data):
         self.request_data = request_data
 
-    @transaction.atomic
     def process_request(self):
         consent_status = self.request_data['notification']['status']
         if consent_status == ConsentStatus.REVOKED:
@@ -110,22 +109,32 @@ class GatewayConsentRequestNotifyProcessor:
         consent_request = ConsentRequest.objects.get(
             consent_request_id=self.request_data['notification']['consentRequestId']
         )
-        consent_request.update_status(consent_status)
         if consent_status == ConsentStatus.GRANTED:
             self.handle_granted(consent_request)
         elif consent_status == ConsentStatus.EXPIRED:
             self.handle_expired(consent_request)
 
     def handle_granted(self, consent_request):
-        for artefact in self.request_data['notification']['consentArtefacts']:
-            consent_artefact = ConsentArtefact(artefact_id=artefact['id'], consent_request=consent_request)
-            self.artefact_fetch(consent_artefact)
+        consent_artefacts = []
+        with transaction.atomic():
+            consent_request.update_status(ConsentStatus.GRANTED)
+            for artefact in self.request_data['notification']['consentArtefacts']:
+                consent_artefact, _ = ConsentArtefact.objects.get_or_create(artefact_id=artefact['id'],
+                                                                            consent_request=consent_request)
+                consent_artefacts.append(consent_artefact)
 
+        for consent_artefact in consent_artefacts:
+            if consent_artefact.fetch_status == ArtefactFetchStatus.PENDING:
+                self.artefact_fetch(consent_artefact)
+
+    @transaction.atomic
     def handle_expired(self, consent_request):
         artefact_ids = list(consent_request.artefacts.values_list('artefact_id', flat=True))
         consent_request.artefacts.all().delete()
+        consent_request.update_status(ConsentStatus.EXPIRED)
         self.gateway_consents_on_notify(artefact_ids)
 
+    @transaction.atomic
     def handle_revoked(self):
         artefact_ids = [artefact['id'] for artefact in self.request_data['notification']['consentArtefacts']]
         consent_request = ConsentRequest.objects.get(artefacts__artefact_id=artefact_ids[0])
@@ -139,6 +148,7 @@ class GatewayConsentRequestNotifyProcessor:
         consent_artefact.gateway_request_id = payload['requestId']
         try:
             self.gateway_fetch_artefact_details(consent_artefact.artefact_id, payload)
+            consent_artefact.fetch_status = ArtefactFetchStatus.REQUESTED
         except ABDMGatewayError as err:
             consent_artefact.error = err.error
             consent_artefact.fetch_status = ArtefactFetchStatus.ERROR

@@ -38,7 +38,8 @@ class RequestHealthInformation(HIUBaseView):
         request_data = request.query_params
         RequestHealthInformationSerializer(data=request_data).is_valid(raise_exception=True)
 
-        artefact = get_object_or_404(ConsentArtefact, artefact_id=request_data['artefact_id'])
+        artefact = get_object_or_404(ConsentArtefact, artefact_id=request_data['artefact_id'],
+                                     consent_request__user=request.user)
         self.validate_artefact_expiry(artefact)
 
         current_url = request.build_absolute_uri(reverse('request_health_information'))

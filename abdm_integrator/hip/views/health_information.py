@@ -191,6 +191,7 @@ class HealthDataTransferProcessor:
         entries = []
         linked_care_context = self.fetch_linked_care_context(care_context)
         health_info_types = self.check_health_information_types(linked_care_context)
+        self.validate_health_info_date_range(linked_care_context)
         fhir_data = self.fetch_fhir_data_hrp(linked_care_context, health_info_types)
         for bundle in fhir_data:
             encrypted_entry = self.get_encrypted_entry(care_context['careContextReference'], bundle)
@@ -222,6 +223,15 @@ class HealthDataTransferProcessor:
             raise HealthDataTransferException(f'Validation failed for HI Types for care context: '
                                               f'{linked_care_context.reference}')
         return health_info_types
+
+    def validate_health_info_date_range(self, linked_care_context):
+        health_record_date = linked_care_context.additional_info.get('record_date')
+        if health_record_date:
+            requested_from_date = abdm_iso_to_datetime(self.hi_request['dateRange']['from'])
+            requested_to_date = abdm_iso_to_datetime(self.hi_request['dateRange']['to'])
+            if not (requested_from_date <= abdm_iso_to_datetime(health_record_date) <= requested_to_date):
+                raise HealthDataTransferException(f'Health record date is not in requested date range for'
+                                                  f'{linked_care_context.reference}')
 
     def fetch_fhir_data_hrp(self, linked_care_context, health_info_types):
         linked_care_context_serialized = LinkCareContextFetchSerializer(linked_care_context).data

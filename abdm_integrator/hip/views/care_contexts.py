@@ -67,12 +67,10 @@ class LinkCareContextRequest(HIPBaseView):
         )
         HIPLinkRequest.objects.create(user=user, gateway_request_id=gateway_request_id,
                                       link_request_details=link_request_details)
-        # Store any additional info related to care context (* Do not store health data)
-        additional_info = {'domain': getattr(user, 'domain', None)}
         link_care_contexts = [LinkCareContext(reference=care_context['referenceNumber'],
                                               display=care_context['display'],
                                               health_info_types=care_context['hiTypes'],
-                                              additional_info=additional_info,
+                                              additional_info=care_context['additionalInfo'],
                                               link_request_details=link_request_details)
                               for care_context in request_data['patient']['careContexts']]
         LinkCareContext.objects.bulk_create(link_care_contexts)

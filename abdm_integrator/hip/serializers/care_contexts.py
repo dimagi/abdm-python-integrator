@@ -3,6 +3,7 @@ from rest_framework import serializers
 from abdm_integrator.const import HealthInformationType
 from abdm_integrator.hip.models import LinkCareContext
 from abdm_integrator.serializers import GatewayCallbackResponseBaseSerializer
+from abdm_integrator.utils import past_date_validator
 
 
 class LinkCareContextRequestSerializer(serializers.Serializer):
@@ -10,9 +11,15 @@ class LinkCareContextRequestSerializer(serializers.Serializer):
     class PatientSerializer(serializers.Serializer):
 
         class CareContextSerializer(serializers.Serializer):
+            class AdditionalInfoSerializer(serializers.Serializer):
+                # represents project to which record belongs to. Send dummy value if not applicable.
+                domain = serializers.CharField()
+                record_date = serializers.DateTimeField(validators=[past_date_validator])
+
             referenceNumber = serializers.CharField()
             display = serializers.CharField()
             hiTypes = serializers.ListField(child=serializers.ChoiceField(choices=HealthInformationType.CHOICES))
+            additionalInfo = AdditionalInfoSerializer()
 
         referenceNumber = serializers.CharField()
         display = serializers.CharField()

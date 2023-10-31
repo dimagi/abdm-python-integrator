@@ -175,13 +175,13 @@ class HealthDataTransferProcessor:
             except Exception as err:
                 care_contexts_status.extend(self._generate_care_contexts_status([care_context], str(err)))
 
-        # Sends Health data to HIU even if one entry in the page is valid.
+        # In case no data is available, sends empty entries so that HIU is aware of that.
+        error = None
+        try:
+            self.send_data_to_hiu(payload)
+        except Exception as err:
+            error = str(err)
         if care_contexts_transfer:
-            error = None
-            try:
-                self.send_data_to_hiu(payload)
-            except Exception as err:
-                error = str(err)
             care_contexts_status.extend(self._generate_care_contexts_status(care_contexts_transfer, error))
 
         self.save_health_data_transfer(page_number, care_contexts_status)

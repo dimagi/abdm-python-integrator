@@ -12,7 +12,7 @@ class ReceiveHealthInformationSerializer(serializers.Serializer):
     pageNumber = serializers.IntegerField()
     pageCount = serializers.IntegerField()
     transactionId = serializers.UUIDField()
-    entries = serializers.ListField(min_length=1)
+    entries = serializers.ListField()
     keyMaterial = GatewayKeyMaterialSerializer()
 
     def validate_entries(self, value):

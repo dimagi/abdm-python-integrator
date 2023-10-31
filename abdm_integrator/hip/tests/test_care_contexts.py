@@ -80,12 +80,12 @@ class TestHIPLinkCareContextAPI(APITestCase, APITestHelperMixin):
         )
         HIPLinkRequest.objects.create(user=user, gateway_request_id=gateway_request_id,
                                       link_request_details=link_request_details)
-        for care_context in request_data['patient']['careContexts']:
-            LinkCareContext.objects.create(reference=care_context['referenceNumber'],
-                                           display=care_context['display'],
-                                           health_info_types=care_context['hiTypes'],
-                                           additional_info=care_context['additionalInfo'],
-                                           link_request_details=link_request_details)
+        link_care_contexts = [LinkCareContext(reference=care_context['referenceNumber'],
+                                              display=care_context['display'],
+                                              health_info_types=care_context['hiTypes'],
+                                              link_request_details=link_request_details)
+                              for care_context in request_data['patient']['careContexts']]
+        LinkCareContext.objects.bulk_create(link_care_contexts)
 
     @staticmethod
     def _mock_callback_response_with_cache(gateway_request_id, response_data):

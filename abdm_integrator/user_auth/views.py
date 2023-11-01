@@ -19,7 +19,7 @@ from abdm_integrator.user_auth.serializers import (
     GatewayAuthOnFetchModesSerializer,
     GatewayAuthOnInitSerializer,
 )
-from abdm_integrator.utils import ABDMCache, ABDMRequestHelper, poll_for_data_in_cache
+from abdm_integrator.utils import ABDMCache, ABDMRequestHelper, poll_and_pop_data_from_cache
 
 
 class UserAuthBaseView(APIView):
@@ -51,7 +51,7 @@ class AuthFetchModes(UserAuthBaseView):
         serializer = AuthFetchModesSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         gateway_request_id = self.gateway_auth_fetch_modes(serializer.data)
-        response_data = poll_for_data_in_cache(gateway_request_id)
+        response_data = poll_and_pop_data_from_cache(gateway_request_id)
         # Authentication Mode DIRECT is not yet supported.
         response_data = self.remove_direct_and_password_mode(response_data)
         return self.generate_response_from_callback(response_data)
@@ -88,7 +88,7 @@ class AuthInit(UserAuthBaseView):
         serializer = AuthInitSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         gateway_request_id = self.gateway_auth_init(serializer.data)
-        response_data = poll_for_data_in_cache(gateway_request_id)
+        response_data = poll_and_pop_data_from_cache(gateway_request_id)
         return self.generate_response_from_callback(response_data)
 
     def gateway_auth_init(self, request_data):
@@ -113,7 +113,7 @@ class AuthConfirm(UserAuthBaseView):
         serializer = AuthConfirmSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         gateway_request_id = self.gateway_auth_confirm(serializer.data)
-        response_data = poll_for_data_in_cache(gateway_request_id)
+        response_data = poll_and_pop_data_from_cache(gateway_request_id)
         return self.generate_response_from_callback(response_data)
 
     def gateway_auth_confirm(self, request_data):

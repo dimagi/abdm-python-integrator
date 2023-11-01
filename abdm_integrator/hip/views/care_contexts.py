@@ -14,7 +14,7 @@ from abdm_integrator.hip.serializers.care_contexts import (
     LinkCareContextRequestSerializer,
 )
 from abdm_integrator.hip.views.base import HIPBaseView, HIPGatewayBaseView
-from abdm_integrator.utils import ABDMCache, ABDMRequestHelper, poll_for_data_in_cache
+from abdm_integrator.utils import ABDMCache, ABDMRequestHelper, poll_and_pop_data_from_cache
 
 
 class LinkCareContextRequest(HIPBaseView):
@@ -30,7 +30,7 @@ class LinkCareContextRequest(HIPBaseView):
         self.ensure_not_already_linked(serializer.data)
         gateway_request_id = self.gateway_add_care_contexts(serializer.data)
         self.save_link_request(request.user, gateway_request_id, serializer.data)
-        response_data = poll_for_data_in_cache(gateway_request_id)
+        response_data = poll_and_pop_data_from_cache(gateway_request_id)
         return self.generate_response_from_callback(response_data)
 
     def ensure_not_already_linked(self, request_data):

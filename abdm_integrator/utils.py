@@ -144,7 +144,7 @@ class ABDMCache:
         return f'{cls.prefix}{key}'
 
 
-def poll_for_data_in_cache(cache_key, total_attempts=30, interval=2):
+def poll_and_pop_data_from_cache(cache_key, total_attempts=30, interval=2):
     attempt = 1
     while attempt <= total_attempts:
         time.sleep(interval)

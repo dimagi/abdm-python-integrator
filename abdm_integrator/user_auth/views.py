@@ -40,9 +40,16 @@ class UserAuthBaseView(APIView):
 
 
 class UserAuthGatewayBaseView(APIView):
+    serializer_class = None
 
     def get_exception_handler(self):
         return user_auth_gateway_error_response_handler.get_exception_handler()
+
+    def _post(self, request, format=None):
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        ABDMCache.set(serializer.data['resp']['requestId'], serializer.data, CALLBACK_RESPONSE_CACHE_TIMEOUT)
+        return Response(status=HTTP_202_ACCEPTED)
 
 
 class AuthFetchModes(UserAuthBaseView):
@@ -74,12 +81,10 @@ class AuthFetchModes(UserAuthBaseView):
 
 
 class GatewayAuthOnFetchModes(UserAuthGatewayBaseView):
+    serializer_class = GatewayAuthOnFetchModesSerializer
 
     def post(self, request, format=None):
-        serializer = GatewayAuthOnFetchModesSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        ABDMCache.set(serializer.data['resp']['requestId'], serializer.data, CALLBACK_RESPONSE_CACHE_TIMEOUT)
-        return Response(status=HTTP_202_ACCEPTED)
+        return self._post(request, format)
 
 
 class AuthInit(UserAuthBaseView):
@@ -99,12 +104,10 @@ class AuthInit(UserAuthBaseView):
 
 
 class GatewayAuthOnInit(UserAuthGatewayBaseView):
+    serializer_class = GatewayAuthOnInitSerializer
 
     def post(self, request, format=None):
-        serializer = GatewayAuthOnInitSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        ABDMCache.set(serializer.data['resp']['requestId'], serializer.data, CALLBACK_RESPONSE_CACHE_TIMEOUT)
-        return Response(status=HTTP_202_ACCEPTED)
+        return self._post(request, format)
 
 
 class AuthConfirm(UserAuthBaseView):
@@ -125,9 +128,7 @@ class AuthConfirm(UserAuthBaseView):
 
 
 class GatewayAuthOnConfirm(UserAuthGatewayBaseView):
+    serializer_class = GatewayAuthOnConfirmSerializer
 
     def post(self, request, format=None):
-        serializer = GatewayAuthOnConfirmSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        ABDMCache.set(serializer.data['resp']['requestId'], serializer.data, CALLBACK_RESPONSE_CACHE_TIMEOUT)
-        return Response(status=HTTP_202_ACCEPTED)
+        return self._post(request, format)

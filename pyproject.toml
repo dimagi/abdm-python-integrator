@@ -22,7 +22,8 @@ dependencies = [
     "djangorestframework >= 3.12",
     "requests",
     "drf-standardized-errors",
-    "celery"
+    "celery",
+    "pyjwt[crypto]"
 ]
 dynamic = ["version"]
 

@@ -19,7 +19,12 @@ from abdm_integrator.user_auth.serializers import (
     GatewayAuthOnFetchModesSerializer,
     GatewayAuthOnInitSerializer,
 )
-from abdm_integrator.utils import ABDMCache, ABDMRequestHelper, poll_and_pop_data_from_cache
+from abdm_integrator.utils import (
+    ABDMCache,
+    ABDMGatewayAuthentication,
+    ABDMRequestHelper,
+    poll_and_pop_data_from_cache,
+)
 
 
 class UserAuthBaseView(APIView):
@@ -40,6 +45,7 @@ class UserAuthBaseView(APIView):
 
 
 class UserAuthGatewayBaseView(APIView):
+    authentication_classes = [ABDMGatewayAuthentication]
     serializer_class = None
 
     def get_exception_handler(self):

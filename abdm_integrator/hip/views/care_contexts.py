@@ -36,13 +36,14 @@ class LinkCareContextRequest(HIPBaseView):
     def ensure_not_already_linked(self, request_data):
         care_contexts_references = [care_context['referenceNumber']
                                     for care_context in request_data['patient']['careContexts']]
-        linked_care_contexts = list(LinkCareContext.objects.filter(
-            reference__in=care_contexts_references,
-            link_request_details__hip_id=request_data['hip_id'],
-            link_request_details__patient_reference=request_data['patient']['referenceNumber'],
-            link_request_details__status=LinkRequestStatus.SUCCESS
-        ).values_list('reference', flat=True))
-
+        linked_care_contexts = list(
+            LinkCareContext.objects.filter(
+                reference__in=care_contexts_references,
+                link_request_details__hip_id=request_data['hip_id'],
+                link_request_details__patient_reference=request_data['patient']['referenceNumber'],
+                link_request_details__status=LinkRequestStatus.SUCCESS
+            ).values_list('reference', flat=True)
+        )
         if linked_care_contexts:
             code = HIPError.CODE_CARE_CONTEXT_ALREADY_LINKED
             message = HIPError.CUSTOM_ERRORS[code].format(linked_care_contexts)
@@ -67,12 +68,16 @@ class LinkCareContextRequest(HIPBaseView):
         )
         HIPLinkRequest.objects.create(user=user, gateway_request_id=gateway_request_id,
                                       link_request_details=link_request_details)
-        link_care_contexts = [LinkCareContext(reference=care_context['referenceNumber'],
-                                              display=care_context['display'],
-                                              health_info_types=care_context['hiTypes'],
-                                              additional_info=care_context['additionalInfo'],
-                                              link_request_details=link_request_details)
-                              for care_context in request_data['patient']['careContexts']]
+        link_care_contexts = [
+            LinkCareContext(
+                reference=care_context['referenceNumber'],
+                display=care_context['display'],
+                health_info_types=care_context['hiTypes'],
+                additional_info=care_context['additionalInfo'],
+                link_request_details=link_request_details
+            )
+            for care_context in request_data['patient']['careContexts']
+        ]
         LinkCareContext.objects.bulk_create(link_care_contexts)
         return link_request_details
 

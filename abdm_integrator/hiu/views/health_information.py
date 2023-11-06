@@ -23,7 +23,7 @@ from abdm_integrator.hiu.serializers.health_information import (
 from abdm_integrator.hiu.tasks import process_hiu_health_information_receiver
 from abdm_integrator.hiu.views.base import HIUBaseView, HIUGatewayBaseView
 from abdm_integrator.settings import app_settings
-from abdm_integrator.utils import ABDMCache, ABDMRequestHelper, abdm_iso_to_datetime, poll_for_data_in_cache
+from abdm_integrator.utils import ABDMCache, ABDMRequestHelper, abdm_iso_to_datetime, poll_and_pop_data_from_cache
 
 
 class RequestHealthInformation(HIUBaseView):
@@ -59,7 +59,7 @@ class RequestHealthInformation(HIUBaseView):
                                           hiu_crypto.key_material.as_dict())
 
         cache_key = f'{gateway_request_id}_{page_number}'
-        health_response_data = poll_for_data_in_cache(cache_key, interval=4)
+        health_response_data = poll_and_pop_data_from_cache(cache_key, interval=4)
 
         self.handle_for_error(health_response_data)
         if app_settings.HIU_PARSE_FHIR_BUNDLE:

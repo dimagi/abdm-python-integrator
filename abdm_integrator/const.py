@@ -2,11 +2,15 @@ import celery
 
 from abdm_integrator.settings import app_settings
 
-SESSIONS_PATH = '/v0.5/sessions'
 GATEWAY_CALLBACK_URL_PREFIX = 'api/gateway/v0.5'
 HEALTH_INFORMATION_MEDIA_TYPE = 'application/fhir+json'
 
 CELERY_TASK = app_settings.CELERY_APP.task if app_settings.CELERY_APP else celery.shared_task
+
+
+class GatewayAPIPath:
+    SESSIONS_PATH = '/v0.5/sessions'
+    CERTS_PATH = '/v0.5/certs'
 
 
 class ConsentStatus:

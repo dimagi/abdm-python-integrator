@@ -24,7 +24,8 @@ dependencies = [
     "drf-standardized-errors",
     "celery",
     "fidelius @ git+https://github.com/dimagi/pyfidelius.git@master",
-    "jsonpath-ng @ https://github.com/kaapstorm/python-jsonpath-rw/raw/wherenot+find_or_create/wheel/jsonpath_ng-1.5.2.2-py3-none-any.whl"
+    "jsonpath-ng @ https://github.com/kaapstorm/python-jsonpath-rw/raw/wherenot+find_or_create/wheel/jsonpath_ng-1.5.2.2-py3-none-any.whl",
+    "pyjwt[crypto]"
 ]
 dynamic = ["version"]
 

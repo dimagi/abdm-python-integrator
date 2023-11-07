@@ -19,7 +19,12 @@ from abdm_integrator.user_auth.serializers import (
     GatewayAuthOnFetchModesSerializer,
     GatewayAuthOnInitSerializer,
 )
-from abdm_integrator.utils import ABDMCache, ABDMRequestHelper, poll_and_pop_data_from_cache
+from abdm_integrator.utils import (
+    ABDMCache,
+    ABDMGatewayAuthentication,
+    ABDMRequestHelper,
+    poll_and_pop_data_from_cache,
+)
 
 
 class UserAuthBaseView(APIView):
@@ -40,12 +45,13 @@ class UserAuthBaseView(APIView):
 
 
 class UserAuthGatewayBaseView(APIView):
+    authentication_classes = [ABDMGatewayAuthentication]
     serializer_class = None
 
     def get_exception_handler(self):
         return user_auth_gateway_error_response_handler.get_exception_handler()
 
-    def _post(self, request, format=None):
+    def post(self, request, format=None):
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
         ABDMCache.set(serializer.data['resp']['requestId'], serializer.data, CALLBACK_RESPONSE_CACHE_TIMEOUT)
@@ -83,9 +89,6 @@ class AuthFetchModes(UserAuthBaseView):
 class GatewayAuthOnFetchModes(UserAuthGatewayBaseView):
     serializer_class = GatewayAuthOnFetchModesSerializer
 
-    def post(self, request, format=None):
-        return self._post(request, format)
-
 
 class AuthInit(UserAuthBaseView):
 
@@ -105,9 +108,6 @@ class AuthInit(UserAuthBaseView):
 
 class GatewayAuthOnInit(UserAuthGatewayBaseView):
     serializer_class = GatewayAuthOnInitSerializer
-
-    def post(self, request, format=None):
-        return self._post(request, format)
 
 
 class AuthConfirm(UserAuthBaseView):
@@ -129,6 +129,3 @@ class AuthConfirm(UserAuthBaseView):
 
 class GatewayAuthOnConfirm(UserAuthGatewayBaseView):
     serializer_class = GatewayAuthOnConfirmSerializer
-
-    def post(self, request, format=None):
-        return self._post(request, format)

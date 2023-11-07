@@ -125,7 +125,7 @@ class GatewayConsentRequestNotifyProcessor:
 
         for consent_artefact in consent_artefacts:
             if consent_artefact.fetch_status == ArtefactFetchStatus.PENDING:
-                self.artefact_fetch(consent_artefact)
+                self.fetch_artefact_and_update_status(consent_artefact)
 
     @transaction.atomic
     def handle_expired(self, consent_request):
@@ -143,7 +143,7 @@ class GatewayConsentRequestNotifyProcessor:
             consent_request.update_status(ConsentStatus.REVOKED)
         self.gateway_consents_on_notify(artefact_ids)
 
-    def artefact_fetch(self, consent_artefact):
+    def fetch_artefact_and_update_status(self, consent_artefact):
         payload = ABDMRequestHelper.common_request_data()
         consent_artefact.gateway_request_id = payload['requestId']
         try:

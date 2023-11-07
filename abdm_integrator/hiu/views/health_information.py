@@ -203,8 +203,9 @@ class ReceiveHealthInformationProcessor:
         self.set_response_in_cache(error)
         # Notifies Gateway once all pages are received
         if self.request_data['pageNumber'] == self.request_data['pageCount']:
-            transfer_status, all_care_context_status = self.get_overall_status(care_contexts_status)
-            self.gateway_health_information_on_transfer(transfer_status, all_care_context_status)
+            session_status, all_care_context_status = self.get_overall_status(care_contexts_status)
+            self.update_health_information_request_status(session_status)
+            self.gateway_health_information_on_transfer(session_status, all_care_context_status)
 
     def validate_request(self):
         artefact = self.health_information_request.consent_artefact
@@ -284,11 +285,15 @@ class ReceiveHealthInformationProcessor:
             all_care_context_status = list(itertools.chain.from_iterable(all_care_context_status_lists))
         transfer_status = not any(status['hiStatus'] == HealthInformationStatus.ERRORED
                                   for status in all_care_context_status)
-        return transfer_status, all_care_context_status
-
-    def gateway_health_information_on_transfer(self, transfer_status, care_contexts_status):
-        artefact = self.health_information_request.consent_artefact
         session_status = HealthInformationStatus.TRANSFERRED if transfer_status else HealthInformationStatus.FAILED
+        return session_status, all_care_context_status
+
+    def update_health_information_request_status(self, session_status):
+        self.health_information_request.status = session_status
+        self.health_information_request.save()
+
+    def gateway_health_information_on_transfer(self, session_status, care_contexts_status):
+        artefact = self.health_information_request.consent_artefact
         payload = ABDMRequestHelper.common_request_data()
         payload['notification'] = {
             'consent_id': str(artefact.artefact_id),

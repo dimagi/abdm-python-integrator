@@ -257,13 +257,16 @@ class HealthDataTransferProcessor:
 
     def validate_health_info_date_range(self, linked_care_context):
         health_record_date = linked_care_context.additional_info.get('record_date')
-        if health_record_date:
-            requested_from_date = abdm_iso_to_datetime(self.hi_request['dateRange']['from'])
-            requested_to_date = abdm_iso_to_datetime(self.hi_request['dateRange']['to'])
-            if not (requested_from_date <= abdm_iso_to_datetime(health_record_date) <= requested_to_date):
-                raise HealthDataTransferException(
-                    f'Health record date is not in requested date range for {linked_care_context.reference}'
-                )
+        if not health_record_date:
+            raise HealthDataTransferException(
+                f'Health record date not available for {linked_care_context.reference}'
+            )
+        requested_from_date = abdm_iso_to_datetime(self.hi_request['dateRange']['from'])
+        requested_to_date = abdm_iso_to_datetime(self.hi_request['dateRange']['to'])
+        if not (requested_from_date <= abdm_iso_to_datetime(health_record_date) <= requested_to_date):
+            raise HealthDataTransferException(
+                f'Health record date is not in requested date range for {linked_care_context.reference}'
+            )
 
     def fetch_fhir_data_from_hrp(self, linked_care_context, health_info_types):
         linked_care_context_serialized = LinkCareContextFetchSerializer(linked_care_context).data

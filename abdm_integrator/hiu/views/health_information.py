@@ -102,35 +102,30 @@ class RequestHealthInformation(HIUBaseView):
         params = QueryDict('', mutable=True)
         params.update({
             'artefact_id': artefact_id,
-            'transaction_id': response_data['transactionId'],
-            'page': response_data['pageNumber'] + 1
+            'transaction_id': response_data['transaction_id'],
+            'page': response_data['page'] + 1
         })
         return params
 
     def generate_response_data(self, health_response_data, current_url, artefact_id):
-        data = {
-            'transaction_id': health_response_data['transactionId'],
-            'page': health_response_data['pageNumber'],
-            'page_count': health_response_data['pageCount'],
-            'next': None,
-            'results': health_response_data['entries']
-        }
-        if health_response_data['pageNumber'] < health_response_data['pageCount']:
-            data['next'] = (
+        health_response_data['next'] = None
+        health_response_data['results'] = health_response_data.pop('entries')
+        if health_response_data['page'] < health_response_data['page_count']:
+            health_response_data['next'] = (
                 f'{current_url}?{self._get_next_query_params(health_response_data, artefact_id).urlencode()}'
             )
-        return data
+        return health_response_data
 
     def parse_fhir_bundle_for_ui(self, fhir_entries):
         parsed_entries = []
         for entry in fhir_entries:
             try:
                 parsed_entry = parse_fhir_bundle(entry['content'])
-                parsed_entry['care_context_reference'] = entry['careContextReference']
+                parsed_entry['care_context_reference'] = entry['care_context_reference']
                 parsed_entries.append(parsed_entry)
             except Exception as err:
                 # TODO Use logging instead of print
-                print(f"Parsing error occurred for Care Context {entry['careContextReference']}: {err}")
+                print(f"Parsing error occurred for Care Context {entry['care_context_reference']}: {err}")
         return parsed_entries
 
     def handle_for_error(self, health_response_data):
@@ -189,12 +184,18 @@ class ReceiveHealthInformationProcessor:
         self.health_information_request = HealthInformationRequest.objects.get(
             transaction_id=self.request_data['transactionId']
         )
+        self.response_data = {
+            'transaction_id': self.request_data['transactionId'],
+            'page': self.request_data['pageNumber'],
+            'page_count': self.request_data['pageCount'],
+            'entries': []
+        }
 
     def process_request(self):
         error = None
         try:
             self.validate_request()
-            self.request_data['entries'] = self.process_entries()
+            self.response_data['entries'] = self.process_entries()
         except HealthDataReceiverException as err:
             error = str(err)
         care_contexts_status = self.generate_care_contexts_status(self._care_contexts_from_request(), error)
@@ -245,7 +246,7 @@ class ReceiveHealthInformationProcessor:
         return decrypted_entries
 
     def _process_entry(self, entry, encrypted_data, hiu_crypto):
-        data = {'careContextReference': entry['careContextReference']}
+        data = {'care_context_reference': entry['careContextReference']}
         decrypted_data_str = hiu_crypto.decrypt(encrypted_data, self.request_data['keyMaterial'])
         if not hiu_crypto.generate_checksum(decrypted_data_str) == entry['checksum']:
             raise HealthDataReceiverException('Error occurred while decryption process: Checksum failed')
@@ -267,12 +268,12 @@ class ReceiveHealthInformationProcessor:
 
     def set_response_in_cache(self, error=None):
         if error:
-            self.request_data['error'] = {
+            self.response_data['error'] = {
                 'code': HIUError.CODE_HEALTH_DATA_RECEIVER,
                 'message': HIUError.CUSTOM_ERRORS[HIUError.CODE_HEALTH_DATA_RECEIVER]
             }
-        cache_key = f"{self.health_information_request.gateway_request_id}_{self.request_data['pageNumber']}"
-        ABDMCache.set(cache_key, self.request_data, HEALTH_DATA_CACHE_TIMEOUT)
+        cache_key = f"{self.health_information_request.gateway_request_id}_{self.response_data['page']}"
+        ABDMCache.set(cache_key, self.response_data, HEALTH_DATA_CACHE_TIMEOUT)
 
     def get_overall_status(self, current_care_context_status):
         all_care_context_status = current_care_context_status

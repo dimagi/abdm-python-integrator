@@ -38,25 +38,30 @@ class RequestHealthInformation(HIUBaseView):
         request_data = request.query_params
         RequestHealthInformationSerializer(data=request_data).is_valid(raise_exception=True)
 
-        artefact = get_object_or_404(ConsentArtefact, artefact_id=request_data['artefact_id'],
-                                     consent_request__user=request.user)
+        artefact = get_object_or_404(
+            ConsentArtefact, artefact_id=request_data['artefact_id'], consent_request__user=request.user
+        )
         self.validate_artefact_expiry(artefact)
 
         current_url = request.build_absolute_uri(reverse('request_health_information'))
         health_info_url = request.build_absolute_uri(reverse('receive_health_information'))
-        # For multiple pages, client is expected make a new request for subsequent pages with parameters
+        # For multiple pages, client is expected make a new request for subsequent pages with additional parameters
         # 'transaction_id' and 'page' as returned from the previous request
         if request_data.get('transaction_id') and request_data.get('page'):
             page_number = request_data['page']
             gateway_request_id = get_object_or_404(
-                HealthInformationRequest, transaction_id=request_data['transaction_id']).gateway_request_id
+                HealthInformationRequest,
+                transaction_id=request_data['transaction_id']
+            ).gateway_request_id
         else:
             page_number = 1
             hiu_crypto = ABDMCrypto()
-            gateway_request_id = self.gateway_health_information_cm_request(artefact, health_info_url,
-                                                                            hiu_crypto.transfer_material)
-            self.save_health_info_request(request.user, artefact, gateway_request_id,
-                                          hiu_crypto.key_material.as_dict())
+            gateway_request_id = self.gateway_health_information_cm_request(
+                artefact, health_info_url, hiu_crypto.transfer_material
+            )
+            self.save_health_info_request(
+                request.user, artefact, gateway_request_id, hiu_crypto.key_material.as_dict()
+            )
 
         cache_key = f'{gateway_request_id}_{page_number}'
         health_response_data = poll_and_pop_data_from_cache(cache_key, interval=4)
@@ -64,8 +69,7 @@ class RequestHealthInformation(HIUBaseView):
         self.handle_for_error(health_response_data)
         if app_settings.HIU_PARSE_FHIR_BUNDLE:
             health_response_data['entries'] = self.parse_fhir_bundle_for_ui(health_response_data['entries'])
-        response_data = self.generate_response_data(health_response_data, current_url,
-                                                    artefact.artefact_id)
+        response_data = self.generate_response_data(health_response_data, current_url, artefact.artefact_id)
         return Response(status=HTTP_200_OK, data=response_data)
 
     def validate_artefact_expiry(self, artefact):
@@ -77,23 +81,30 @@ class RequestHealthInformation(HIUBaseView):
 
     def gateway_health_information_cm_request(self, artefact, health_info_url, hiu_transfer_material):
         payload = ABDMRequestHelper.common_request_data()
-        payload['hiRequest'] = {'consent': {'id': str(artefact.artefact_id)}}
-        payload['hiRequest']['dateRange'] = artefact.details['permission']['dateRange']
-        payload['hiRequest']['dataPushUrl'] = health_info_url
-        payload['hiRequest']['keyMaterial'] = hiu_transfer_material
+        payload['hiRequest'] = {
+            'consent': {'id': str(artefact.artefact_id)},
+            'dateRange': artefact.details['permission']['dateRange'],
+            'dataPushUrl': health_info_url,
+            'keyMaterial': hiu_transfer_material,
+        }
         ABDMRequestHelper().gateway_post(HIUGatewayAPIPath.HEALTH_INFO_REQUEST, payload)
         return payload['requestId']
 
     def save_health_info_request(self, user, artefact, gateway_request_id, key_material_dict):
-        HealthInformationRequest.objects.create(user=user, consent_artefact=artefact,
-                                                gateway_request_id=gateway_request_id,
-                                                key_material=key_material_dict)
+        HealthInformationRequest.objects.create(
+            user=user,
+            consent_artefact=artefact,
+            gateway_request_id=gateway_request_id,
+            key_material=key_material_dict
+        )
 
     def _get_next_query_params(self, response_data, artefact_id):
         params = QueryDict('', mutable=True)
-        params['artefact_id'] = artefact_id
-        params['transaction_id'] = response_data['transactionId']
-        params['page'] = response_data['pageNumber'] + 1
+        params.update({
+            'artefact_id': artefact_id,
+            'transaction_id': response_data['transactionId'],
+            'page': response_data['pageNumber'] + 1
+        })
         return params
 
     def generate_response_data(self, health_response_data, current_url, artefact_id):
@@ -105,13 +116,14 @@ class RequestHealthInformation(HIUBaseView):
             'results': health_response_data['entries']
         }
         if health_response_data['pageNumber'] < health_response_data['pageCount']:
-            data['next'] = (f'{current_url}?'
-                            f'{self._get_next_query_params(health_response_data, artefact_id).urlencode()}')
+            data['next'] = (
+                f'{current_url}?{self._get_next_query_params(health_response_data, artefact_id).urlencode()}'
+            )
         return data
 
-    def parse_fhir_bundle_for_ui(self, entries):
+    def parse_fhir_bundle_for_ui(self, fhir_entries):
         parsed_entries = []
-        for entry in entries:
+        for entry in fhir_entries:
             try:
                 parsed_entry = parse_fhir_bundle(entry['content'])
                 parsed_entry['care_context_reference'] = entry['careContextReference']
@@ -123,9 +135,11 @@ class RequestHealthInformation(HIUBaseView):
 
     def handle_for_error(self, health_response_data):
         if not health_response_data:
-            raise CustomError(error_code=HIUError.CODE_HEALTH_INFO_TIMEOUT,
-                              error_message=HIUError.CUSTOM_ERRORS[HIUError.CODE_HEALTH_INFO_TIMEOUT],
-                              status_code=555)
+            raise CustomError(
+                error_code=HIUError.CODE_HEALTH_INFO_TIMEOUT,
+                error_message=HIUError.CUSTOM_ERRORS[HIUError.CODE_HEALTH_INFO_TIMEOUT],
+                status_code=555
+            )
         if health_response_data.get('error'):
             error = health_response_data['error']
             if error.get('code') == HIUError.CODE_HEALTH_DATA_RECEIVER:
@@ -142,7 +156,8 @@ class GatewayHealthInformationOnRequest(HIUGatewayBaseView):
 
     def process_request(self, request_data):
         health_information_request = HealthInformationRequest.objects.get(
-            gateway_request_id=request_data['resp']['requestId'])
+            gateway_request_id=request_data['resp']['requestId']
+        )
         if request_data.get('hiRequest'):
             health_information_request.transaction_id = request_data['hiRequest']['transactionId']
             health_information_request.status = request_data['hiRequest']['sessionStatus']
@@ -172,7 +187,8 @@ class ReceiveHealthInformationProcessor:
     def __init__(self, request_data):
         self.request_data = request_data
         self.health_information_request = HealthInformationRequest.objects.get(
-            transaction_id=self.request_data['transactionId'])
+            transaction_id=self.request_data['transactionId']
+        )
 
     def process_request(self):
         error = None
@@ -237,9 +253,11 @@ class ReceiveHealthInformationProcessor:
         return data
 
     def save_health_data_receipt(self, care_contexts_status):
-        HealthDataReceiver.objects.create(health_information_request=self.health_information_request,
-                                          page_number=self.request_data['pageNumber'],
-                                          care_contexts_status=care_contexts_status)
+        HealthDataReceiver.objects.create(
+            health_information_request=self.health_information_request,
+            page_number=self.request_data['pageNumber'],
+            care_contexts_status=care_contexts_status
+        )
 
     def generate_care_contexts_status(self, care_contexts, error=None):
         hi_status = HealthInformationStatus.ERRORED if error else HealthInformationStatus.OK
@@ -249,8 +267,10 @@ class ReceiveHealthInformationProcessor:
 
     def set_response_in_cache(self, error=None):
         if error:
-            self.request_data['error'] = {'code': HIUError.CODE_HEALTH_DATA_RECEIVER,
-                                          'message': HIUError.CUSTOM_ERRORS[HIUError.CODE_HEALTH_DATA_RECEIVER]}
+            self.request_data['error'] = {
+                'code': HIUError.CODE_HEALTH_DATA_RECEIVER,
+                'message': HIUError.CUSTOM_ERRORS[HIUError.CODE_HEALTH_DATA_RECEIVER]
+            }
         cache_key = f"{self.health_information_request.gateway_request_id}_{self.request_data['pageNumber']}"
         ABDMCache.set(cache_key, self.request_data, HEALTH_DATA_CACHE_TIMEOUT)
 
@@ -258,7 +278,8 @@ class ReceiveHealthInformationProcessor:
         all_care_context_status = current_care_context_status
         if self.request_data['pageNumber'] > 1:
             all_care_context_status_lists = self.health_information_request.health_data_receipts.all().values_list(
-                'care_contexts_status', flat=True)
+                'care_contexts_status', flat=True
+            )
             all_care_context_status = list(itertools.chain.from_iterable(all_care_context_status_lists))
         transfer_status = not any(status['hiStatus'] == HealthInformationStatus.ERRORED
                                   for status in all_care_context_status)
@@ -266,14 +287,21 @@ class ReceiveHealthInformationProcessor:
 
     def gateway_health_information_on_transfer(self, transfer_status, care_contexts_status):
         artefact = self.health_information_request.consent_artefact
-        payload = ABDMRequestHelper.common_request_data()
-        payload['notification'] = {'consent_id': str(artefact.artefact_id),
-                                   'transaction_id': self.request_data['transactionId'],
-                                   'doneAt': datetime.utcnow().isoformat()}
-        payload['notification']['notifier'] = {'type': RequesterType.HIU, 'id': self.get_hiu_id()}
         session_status = HealthInformationStatus.TRANSFERRED if transfer_status else HealthInformationStatus.FAILED
-        payload['notification']['statusNotification'] = {'sessionStatus': session_status,
-                                                         'hipId': artefact.details['hip']['id']}
+        payload = ABDMRequestHelper.common_request_data()
+        payload['notification'] = {
+            'consent_id': str(artefact.artefact_id),
+            'transaction_id': self.request_data['transactionId'],
+            'doneAt': datetime.utcnow().isoformat(),
+            'notifier': {
+                    'type': RequesterType.HIU,
+                    'id': self.get_hiu_id_from_consent()
+            },
+            'statusNotification': {
+                'sessionStatus': session_status,
+                'hipId': artefact.details['hip']['id']
+            }
+        }
         # Avoids sending description for care context as optional and could possibly contain
         # internal error details. Could be included in case a need/use case arises later on.
         for care_context_status in care_contexts_status:
@@ -282,6 +310,6 @@ class ReceiveHealthInformationProcessor:
         ABDMRequestHelper().gateway_post(HIUGatewayAPIPath.HEALTH_INFO_NOTIFY, payload)
         return payload['requestId']
 
-    def get_hiu_id(self):
+    def get_hiu_id_from_consent(self):
         consent_request = self.health_information_request.consent_artefact.consent_request
         return consent_request.details['hiu']['id']

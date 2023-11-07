@@ -3,13 +3,16 @@ import time
 import uuid
 from datetime import datetime
 
+import jwt
 import requests
 from django.core.cache import cache
 from django.utils.dateparse import parse_datetime
 from rest_framework import serializers
+from rest_framework.authentication import TokenAuthentication
+from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.pagination import PageNumberPagination
 
-from abdm_integrator.const import SESSIONS_PATH
+from abdm_integrator.const import GatewayAPIPath
 from abdm_integrator.exceptions import (
     ERROR_FUTURE_DATE_MESSAGE,
     ERROR_PAST_DATE_MESSAGE,
@@ -31,7 +34,8 @@ class ABDMRequestHelper:
     def get_access_token(self):
         headers = {"Content-Type": "application/json; charset=UTF-8"}
         try:
-            resp = requests.post(url=self.gateway_base_url + SESSIONS_PATH, data=json.dumps(self.token_payload),
+            resp = requests.post(url=self.gateway_base_url + GatewayAPIPath.SESSIONS_PATH,
+                                 data=json.dumps(self.token_payload),
                                  headers=headers, timeout=self.default_timeout)
             resp.raise_for_status()
         except requests.Timeout:
@@ -154,3 +158,39 @@ def poll_and_pop_data_from_cache(cache_key, total_attempts=30, interval=2):
             return data
         attempt += 1
     return None
+
+
+def fetch_gateway_jwks_cert():
+    resp = requests.get(app_settings.GATEWAY_URL + GatewayAPIPath.CERTS_PATH)
+    resp.raise_for_status()
+    return resp.json()
+
+
+def gateway_jwks_cert():
+    jwks_cert = ABDMCache.get('JWKS_CERT')
+    if not jwks_cert:
+        jwks_cert = fetch_gateway_jwks_cert()
+        ABDMCache.set('JWKS_CERT', jwks_cert, timeout=60 * 180)
+    return jwks_cert
+
+
+def validate_jwt_access_token(authorisation_token):
+    jwks_cert = gateway_jwks_cert()
+    jwks_keys = jwt.api_jwk.PyJWKSet(jwks_cert['keys'])
+    kid = jwt.get_unverified_header(authorisation_token)['kid']
+    algorithms = [key['alg'] for key in jwks_cert['keys'] if key['kid'] == kid]
+    return jwt.decode(authorisation_token, key=jwks_keys[kid].key, algorithms=algorithms,
+                      options={'verify_aud': False})
+
+
+class ABDMGatewayAuthentication(TokenAuthentication):
+    keyword = 'Bearer'
+
+    def authenticate_credentials(self, token):
+        try:
+            validate_jwt_access_token(authorisation_token=token)
+        except jwt.exceptions.InvalidTokenError:
+            raise AuthenticationFailed('Token validation failed')
+        except Exception:
+            raise AuthenticationFailed('Error occurred while validating token')
+        return None, token

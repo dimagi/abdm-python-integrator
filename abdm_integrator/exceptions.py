@@ -11,6 +11,9 @@ ERROR_PAST_DATE_MESSAGE = 'This field must be in past'
 ERROR_CODE_INVALID = 'invalid'
 ERROR_CODE_REQUIRED = 'required'
 ERROR_CODE_REQUIRED_MESSAGE = 'This field is required.'
+ERROR_CODE_INVALID_CHOICE = 'invalid_choice'
+ERROR_CODE_INVALID_CHOICE_MESSAGE = '"{}" is not a valid choice.'
+
 
 STANDARD_ERRORS = {
     400: 'Required attributes not provided or Request information is not as expected',
@@ -19,6 +22,7 @@ STANDARD_ERRORS = {
     405: 'Method not allowed',
     500: 'Unknown error occurred',
     503: 'ABDM Gateway Service down',
+    555: 'Gateway callback response timeout',
 }
 
 
@@ -34,6 +38,12 @@ class ABDMServiceUnavailable(APIException):
     @property
     def error(self):
         return {'code': self.default_code, 'message': self.default_detail}
+
+
+class ABDMGatewayCallbackTimeout(APIException):
+    status_code = 555
+    default_detail = 'Callback Response not received from ABDM Gateway within time. Please try again.'
+    default_code = 'gateway_error'
 
 
 @dataclass

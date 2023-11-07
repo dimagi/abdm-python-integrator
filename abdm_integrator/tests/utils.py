@@ -1,13 +1,14 @@
+import json
 from unittest.mock import Mock
 
 import requests
 from rest_framework.exceptions import NotAuthenticated
-from rest_framework.status import HTTP_200_OK
+from rest_framework.status import HTTP_200_OK, HTTP_400_BAD_REQUEST
 
-from abdm_integrator.exceptions import STANDARD_ERRORS, ABDMServiceUnavailable
+from abdm_integrator.exceptions import STANDARD_ERRORS, ABDMGatewayError, ABDMServiceUnavailable
 
 
-class ErrorResponseAssertMixin:
+class APITestHelperMixin:
     """Helper mixin for APITestCase to assert error response from API """
 
     def assert_error(self, actual_error, expected_code, expected_message):
@@ -34,6 +35,17 @@ class ErrorResponseAssertMixin:
                           STANDARD_ERRORS.get(ABDMServiceUnavailable.status_code))
         self.assert_error_details(json_res['error']['details'][0], ABDMServiceUnavailable.default_code,
                                   ABDMServiceUnavailable.default_detail, None)
+
+    def gateway_error_test(self, mocked_post, url, request_data):
+        gateway_error = {'error': {'code': 2500, 'message': 'Invalid request'}}
+        mocked_post.return_value = generate_mock_response(HTTP_400_BAD_REQUEST, gateway_error)
+        res = self.client.post(url, data=json.dumps(request_data),
+                               content_type='application/json')
+        json_res = res.json()
+        self.assertEqual(res.status_code, ABDMGatewayError.status_code)
+        self.assert_error(json_res['error'], gateway_error['error']['code'], ABDMGatewayError.error_message)
+        self.assert_error_details(json_res['error']['details'][0], ABDMGatewayError.detail_code,
+                                  gateway_error['error']['message'], None)
 
 
 def generate_mock_response(status_code=HTTP_200_OK, json_response=None):

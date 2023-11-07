@@ -1,8 +1,10 @@
 import json
+import time
 import uuid
 from datetime import datetime
 
 import requests
+from django.core.cache import cache
 from django.utils.dateparse import parse_datetime
 from rest_framework import serializers
 from rest_framework.pagination import PageNumberPagination
@@ -115,3 +117,40 @@ class APIResultsSetPagination(PageNumberPagination):
     page_size = 10
     page_size_query_param = 'page_size'
     max_page_size = 1000
+
+
+class ABDMCache:
+    """Wrapper class around Django's default cache for ABDM related cache operations"""
+    _cache = cache
+    prefix = 'abdm_'
+
+    @classmethod
+    def set(cls, key, value, timeout):
+        key = cls._key_with_prefix(key)
+        return cls._cache.set(key, value, timeout)
+
+    @classmethod
+    def get(cls, key):
+        key = cls._key_with_prefix(key)
+        return cls._cache.get(key)
+
+    @classmethod
+    def delete(cls, key):
+        key = cls._key_with_prefix(key)
+        return cls._cache.delete(key)
+
+    @classmethod
+    def _key_with_prefix(cls, key):
+        return f'{cls.prefix}{key}'
+
+
+def poll_and_pop_data_from_cache(cache_key, total_attempts=30, interval=2):
+    attempt = 1
+    while attempt <= total_attempts:
+        time.sleep(interval)
+        data = ABDMCache.get(cache_key)
+        if data:
+            ABDMCache.delete(cache_key)
+            return data
+        attempt += 1
+    return None

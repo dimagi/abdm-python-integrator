@@ -1,5 +1,6 @@
 import itertools
 import json
+from dataclasses import asdict
 from datetime import datetime
 
 from django.http import QueryDict
@@ -60,7 +61,7 @@ class RequestHealthInformation(HIUBaseView):
                 artefact, health_info_url, hiu_crypto.transfer_material
             )
             self.save_health_info_request(
-                request.user, artefact, gateway_request_id, hiu_crypto.key_material.as_dict()
+                request.user, artefact, gateway_request_id, asdict(hiu_crypto.key_material)
             )
 
         cache_key = f'{gateway_request_id}_{page_number}'

@@ -1,6 +1,5 @@
 import hashlib
 from base64 import b64encode
-from dataclasses import asdict, dataclass
 from datetime import datetime, timedelta
 
 from fidelius import CryptoController, DecryptionRequest, EncryptionRequest, KeyMaterial
@@ -16,18 +15,17 @@ class ABDMCrypto:
     """
 
     def __init__(self, key_material_dict=None, use_x509_for_transfer=False):
-        self.key_material = (ABDMKeyMaterial.from_dict(key_material_dict) if key_material_dict
-                             else self._generate_key_material())
+        self.key_material = (self._key_material_from_dict(key_material_dict) if key_material_dict
+                             else KeyMaterial.generate())
         self.transfer_material = self._get_transfer_material(use_x509_for_transfer)
 
     @staticmethod
-    def _generate_key_material():
-        key_material = KeyMaterial.generate()
-        return ABDMKeyMaterial(
-            public_key=key_material.public_key,
-            private_key=key_material.private_key,
-            nonce=key_material.nonce,
-            x509_public_key=key_material.x509_public_key,
+    def _key_material_from_dict(data):
+        return KeyMaterial(
+            private_key=data['private_key'],
+            public_key=data['public_key'],
+            x509_public_key=data['x509_public_key'],
+            nonce=data['nonce'],
         )
 
     def _get_transfer_material(self, use_x509_for_transfer=False):
@@ -69,23 +67,3 @@ class ABDMCrypto:
     @staticmethod
     def generate_checksum(data):
         return b64encode(hashlib.md5(data.encode('utf-8')).digest()).decode()
-
-
-@dataclass(frozen=True)
-class ABDMKeyMaterial:
-    public_key: str
-    private_key: str
-    nonce: str
-    x509_public_key: str
-
-    @staticmethod
-    def from_dict(data):
-        return KeyMaterial(
-            public_key=data['public_key'],
-            private_key=data['private_key'],
-            nonce=data['nonce'],
-            x509_public_key=data['x509_public_key'],
-        )
-
-    def as_dict(self):
-        return asdict(self)

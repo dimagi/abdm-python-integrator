@@ -194,3 +194,11 @@ class ABDMGatewayAuthentication(TokenAuthentication):
         except Exception:
             raise AuthenticationFailed('Error occurred while validating token')
         return None, token
+
+
+def removes_prefix_for_abdm_mobile(value):
+    if value.startswith('+91-'):
+        return value[4:]
+    elif value.startswith('+91'):
+        return value[3:]
+    return value

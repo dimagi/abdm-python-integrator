@@ -64,3 +64,18 @@ class GatewayCareContextsDiscoverSerializer(serializers.Serializer):
     requestId = serializers.UUIDField()
     transactionId = serializers.UUIDField()
     patient = PatientSerializer()
+
+
+class GatewayCareContextsLinkInitSerializer(serializers.Serializer):
+
+    class PatientSerializer(serializers.Serializer):
+        class CareContextSerializer(serializers.Serializer):
+            referenceNumber = serializers.CharField()
+
+        id = serializers.CharField()
+        referenceNumber = serializers.CharField()
+        careContexts = serializers.ListField(child=CareContextSerializer(), min_length=1)
+
+    requestId = serializers.UUIDField()
+    transactionId = serializers.UUIDField()
+    patient = PatientSerializer()

@@ -8,3 +8,6 @@ class HIPGatewayAPIPath:
     CARE_CONTEXTS_ON_DISCOVER = '/v0.5/care-contexts/on-discover'
     CARE_CONTEXTS_LINK_ON_INIT = '/v0.5/links/link/on-init'
     CARE_CONTEXTS_LINK_ON_CONFIRM = '/v0.5/links/link/on-confirm'
+
+
+HEADER_NAME_HIP_ID = 'HTTP_X_HIP_ID'

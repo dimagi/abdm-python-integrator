@@ -5,23 +5,41 @@ from django.db import transaction
 from rest_framework.response import Response
 from rest_framework.status import HTTP_200_OK, HTTP_202_ACCEPTED
 
-from abdm_integrator.const import IdentifierType, LinkRequestInitiator, LinkRequestStatus
+from abdm_integrator.const import (
+    AuthenticationMode,
+    AuthFetchModesPurpose,
+    IdentifierType,
+    LinkRequestInitiator,
+    LinkRequestStatus,
+    RequesterType,
+)
 from abdm_integrator.exceptions import ABDMGatewayCallbackTimeout, ABDMGatewayError, CustomError
-from abdm_integrator.hip.const import HIPGatewayAPIPath
+from abdm_integrator.hip.const import HEADER_NAME_HIP_ID, HIPGatewayAPIPath
 from abdm_integrator.hip.exceptions import (
     DiscoveryMultiplePatientsFoundError,
     DiscoveryNoPatientFoundError,
     HIPError,
 )
-from abdm_integrator.hip.models import HIPLinkRequest, LinkCareContext, LinkRequestDetails, PatientDiscoveryRequest
+from abdm_integrator.hip.models import (
+    HIPLinkRequest,
+    LinkCareContext,
+    LinkRequestDetails,
+    PatientDiscoveryRequest,
+    PatientLinkRequest,
+)
 from abdm_integrator.hip.serializers.care_contexts import (
     GatewayCareContextsDiscoverSerializer,
+    GatewayCareContextsLinkInitSerializer,
     GatewayOnAddContextsSerializer,
     LinkCareContextRequestSerializer,
 )
-from abdm_integrator.hip.tasks import process_patient_care_context_discover_request
+from abdm_integrator.hip.tasks import (
+    process_patient_care_context_discover_request,
+    process_patient_care_context_link_init_request,
+)
 from abdm_integrator.hip.views.base import HIPBaseView, HIPGatewayBaseView
 from abdm_integrator.settings import app_settings
+from abdm_integrator.user_auth.views import AuthInit
 from abdm_integrator.utils import (
     ABDMCache,
     ABDMRequestHelper,
@@ -156,7 +174,7 @@ class GatewayCareContextsDiscover(HIPGatewayBaseView):
 
     def post(self, request, format=None):
         GatewayCareContextsDiscoverSerializer(data=request.data).is_valid(raise_exception=True)
-        request.data['hip_id'] = request.META.get('HTTP_X_HIP_ID')
+        request.data['hip_id'] = request.META.get(HEADER_NAME_HIP_ID)
         process_patient_care_context_discover_request.delay(request.data)
         return Response(status=HTTP_202_ACCEPTED)
 
@@ -243,3 +261,154 @@ class GatewayCareContextsDiscoverProcessor:
         payload['resp'] = {'requestId': self.request_data['requestId']}
         ABDMRequestHelper().gateway_post(HIPGatewayAPIPath.CARE_CONTEXTS_ON_DISCOVER, payload)
         return payload['requestId']
+
+
+class GatewayCareContextsLinkInit(HIPGatewayBaseView):
+
+    def post(self, request, format=None):
+        GatewayCareContextsLinkInitSerializer(data=request.data).is_valid(raise_exception=True)
+        request.data['hip_id'] = request.META.get(HEADER_NAME_HIP_ID)
+        process_patient_care_context_link_init_request.delay(request.data)
+        return Response(status=HTTP_202_ACCEPTED)
+
+
+class GatewayCareContextsLinkInitProcessor:
+
+    def __init__(self, request_data):
+        self.request_data = request_data
+
+    def process_request(self):
+        discovery_request = self.get_discovery_request()
+        error = self.validate_request(discovery_request)
+        if error:
+            self.gateway_care_contexts_link_on_init(None, None, error)
+            return error
+
+        otp_response = self.send_otp_to_patient()
+        if not otp_response or otp_response.get('error'):
+            error = self._generate_error_from_otp_response(otp_response)
+        link_reference = self.save_link_request(discovery_request, otp_response, error).link_reference
+        self.gateway_care_contexts_link_on_init(otp_response, link_reference, error)
+
+    def get_discovery_request(self):
+        try:
+            return PatientDiscoveryRequest.objects.get(transaction_id=self.request_data['transactionId'])
+        except PatientDiscoveryRequest.DoesNotExist:
+            return None
+
+    def validate_request(self, discovery_request):
+        error_code = None
+        if not discovery_request:
+            error_code = HIPError.CODE_DISCOVERY_REQUEST_NOT_FOUND
+        elif not self._validate_patient_reference_number(discovery_request):
+            error_code = HIPError.CODE_LINK_INIT_REQUEST_PATIENT_MISMATCH
+        elif not self._validate_requested_care_contexts(discovery_request):
+            error_code = HIPError.CODE_LINK_INIT_REQUEST_CARE_CONTEXTS_MISMATCH
+        return {'code': error_code, 'message': HIPError.CUSTOM_ERRORS.get(error_code)} if error_code else None
+
+    def _validate_patient_reference_number(self, discovery_request):
+        return self.request_data['patient']['referenceNumber'] == discovery_request.patient_reference_number
+
+    def _validate_requested_care_contexts(self, discovery_request):
+        requested_care_contexts_references = {
+            care_context['referenceNumber'] for care_context in self.request_data['patient']['careContexts']
+        }
+        discovered_care_context_references = {
+            care_context['referenceNumber'] for care_context in discovery_request.care_contexts
+        }
+        return requested_care_contexts_references.issubset(discovered_care_context_references)
+
+    def send_otp_to_patient(self):
+        request_data = {
+            'id': self.request_data['patient']['id'],
+            'purpose': AuthFetchModesPurpose.LINK,
+            'authMode': AuthenticationMode.MOBILE_OTP,
+            'requester': {
+                'type': RequesterType.HIP,
+                'id': self.request_data['hip_id']
+            }
+        }
+        gateway_request_id = AuthInit().gateway_auth_init(request_data)
+        response_data = poll_and_pop_data_from_cache(gateway_request_id)
+        return response_data
+
+    @staticmethod
+    def _generate_error_from_otp_response(otp_response):
+        error = {
+            'code': HIPError.CODE_LINK_INIT_REQUEST_OTP_GENERATION_FAILED,
+            'message': HIPError.CUSTOM_ERRORS.get(HIPError.CODE_LINK_INIT_REQUEST_OTP_GENERATION_FAILED)
+        }
+        if not otp_response:
+            error['message'] += ': Callback response not received in time.'
+        elif otp_response.get('error'):
+            error['message'] += f": {otp_response['error'].get('message')}"
+        return error
+
+    @transaction.atomic()
+    def save_link_request(self, discovery_request, otp_response, error=None):
+        link_request_details = LinkRequestDetails.objects.create(
+            patient_reference=self.request_data['patient']['referenceNumber'],
+            patient_display=discovery_request.patient_display,
+            hip_id=self.request_data['hip_id'],
+            initiated_by=LinkRequestInitiator.PATIENT,
+            status=LinkRequestStatus.ERROR if error else LinkRequestStatus.PENDING,
+            error=error
+        )
+        otp_transaction_id = otp_response['auth']['transactionId'] if not error else None
+        PatientLinkRequest.objects.create(
+            discovery_request=discovery_request,
+            otp_transaction_id=otp_transaction_id,
+            link_request_details=link_request_details
+        )
+        LinkCareContext.objects.bulk_create(
+            self._get_link_care_contexts_to_insert(discovery_request, link_request_details)
+        )
+        return link_request_details
+
+    def _get_link_care_contexts_to_insert(self, discovery_request, link_request_details):
+        link_care_contexts = []
+        for care_context in self.request_data['patient']['careContexts']:
+            care_contexts_details = self._get_care_context_details(
+                discovery_request.care_contexts,
+                care_context['referenceNumber']
+            )
+            link_care_contexts.append(
+                LinkCareContext(
+                    reference=care_contexts_details['referenceNumber'],
+                    display=care_contexts_details['display'],
+                    health_info_types=care_contexts_details['hiTypes'],
+                    additional_info=care_contexts_details['additionalInfo'],
+                    link_request_details=link_request_details
+                )
+            )
+        return link_care_contexts
+
+    @staticmethod
+    def _get_care_context_details(discovered_care_contexts, care_context_reference):
+        return next(
+            care_context for care_context in discovered_care_contexts
+            if care_context['referenceNumber'] == care_context_reference
+        )
+
+    def gateway_care_contexts_link_on_init(self, otp_response, link_reference, error=None):
+        payload = ABDMRequestHelper.common_request_data()
+        payload['transactionId'] = self.request_data['transactionId']
+        if error:
+            payload['error'] = error
+        else:
+            payload['link'] = self._generate_link_payload_from_otp_response(otp_response, link_reference)
+        payload['resp'] = {'requestId': self.request_data['requestId']}
+        ABDMRequestHelper().gateway_post(HIPGatewayAPIPath.CARE_CONTEXTS_LINK_ON_INIT, payload)
+        return payload['requestId']
+
+    @staticmethod
+    def _generate_link_payload_from_otp_response(otp_response, link_reference):
+        return {
+            'referenceNumber': str(link_reference),
+            'authenticationType': AuthenticationMode.MOBILE_OTP,
+            'meta': {
+                'communicationMedium': 'MOBILE',
+                'communicationHint': otp_response['auth']['meta']['hint'],
+                'communicationExpiry': otp_response['auth']['meta']['expiry']
+            }
+        }

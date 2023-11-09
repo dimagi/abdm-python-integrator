@@ -232,11 +232,15 @@ class HealthDataTransferProcessor:
 
     def fetch_linked_care_context(self, care_context):
         hip_id = self.health_information_request.consent_artefact.details['hip']['id']
+        # ABDM does not support multiple patient reference for a HIP . It does accept a different patient
+        # reference during linking while keeping the first reference earlier linked.
+        # Care context reference is assumed to be unique across HRP for a given HIP and hence filter
+        # for patient reference is omitted here to allow support for a rare case of multiple patient reference for
+        # a given HIP.
         try:
             return LinkCareContext.objects.get(
                 reference=care_context['careContextReference'],
                 link_request_details__hip_id=hip_id,
-                link_request_details__patient_reference=care_context['patientReference'],
                 link_request_details__status=LinkRequestStatus.SUCCESS
             )
         except LinkCareContext.DoesNotExist:

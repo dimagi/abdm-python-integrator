@@ -13,7 +13,12 @@ from abdm_integrator.const import (
     LinkRequestStatus,
     RequesterType,
 )
-from abdm_integrator.exceptions import ABDMGatewayCallbackTimeout, ABDMGatewayError, CustomError
+from abdm_integrator.exceptions import (
+    ABDMGatewayCallbackTimeout,
+    ABDMGatewayError,
+    ABDMServiceUnavailable,
+    CustomError,
+)
 from abdm_integrator.hip.const import HEADER_NAME_HIP_ID, HIPGatewayAPIPath
 from abdm_integrator.hip.exceptions import (
     DiscoveryMultiplePatientsFoundError,
@@ -29,17 +34,19 @@ from abdm_integrator.hip.models import (
 )
 from abdm_integrator.hip.serializers.care_contexts import (
     GatewayCareContextsDiscoverSerializer,
+    GatewayCareContextsLinkConfirmSerializer,
     GatewayCareContextsLinkInitSerializer,
     GatewayOnAddContextsSerializer,
     LinkCareContextRequestSerializer,
 )
 from abdm_integrator.hip.tasks import (
     process_patient_care_context_discover_request,
+    process_patient_care_context_link_confirm_request,
     process_patient_care_context_link_init_request,
 )
 from abdm_integrator.hip.views.base import HIPBaseView, HIPGatewayBaseView
 from abdm_integrator.settings import app_settings
-from abdm_integrator.user_auth.views import AuthInit
+from abdm_integrator.user_auth.views import AuthConfirm, AuthInit
 from abdm_integrator.utils import (
     ABDMCache,
     ABDMRequestHelper,
@@ -412,3 +419,106 @@ class GatewayCareContextsLinkInitProcessor:
                 'communicationExpiry': otp_response['auth']['meta']['expiry']
             }
         }
+
+
+class GatewayCareContextsLinkConfirm(HIPGatewayBaseView):
+
+    def post(self, request, format=None):
+        GatewayCareContextsLinkConfirmSerializer(data=request.data).is_valid(raise_exception=True)
+        request.data['hip_id'] = request.META.get(HEADER_NAME_HIP_ID)
+        process_patient_care_context_link_confirm_request.delay(request.data)
+        return Response(status=HTTP_202_ACCEPTED)
+
+
+class GatewayCareContextsLinkConfirmProcessor:
+
+    def __init__(self, request_data):
+        self.request_data = request_data
+
+    def process_request(self):
+        link_request_details = self.get_link_request_details()
+        error = self.validate_request(link_request_details)
+        if error:
+            self.gateway_care_contexts_link_on_confirm(link_request_details, error)
+            return error
+
+        otp_transaction_id = link_request_details.patient_link_request.otp_transaction_id
+        verify_otp_response = self.verify_otp_from_patient(otp_transaction_id)
+        if not verify_otp_response or not verify_otp_response.get('auth'):
+            error = self._generate_error_from_verify_otp_response(verify_otp_response)
+
+        try:
+            self.gateway_care_contexts_link_on_confirm(link_request_details, error)
+        except (ABDMServiceUnavailable, ABDMGatewayError) as err:
+            error = err.error
+        self.update_linking_status(link_request_details, error)
+
+    def get_link_request_details(self):
+        try:
+            return LinkRequestDetails.objects.get(
+                link_reference=self.request_data['confirmation']['linkRefNumber']
+            )
+        except LinkRequestDetails.DoesNotExist:
+            return None
+
+    def validate_request(self, link_request_details):
+        if not link_request_details:
+            error_code = HIPError.CODE_LINK_REQUEST_NOT_FOUND
+            return {'code': error_code, 'message': HIPError.CUSTOM_ERRORS.get(error_code)}
+
+    def verify_otp_from_patient(self, otp_transaction_id):
+        request_data = {
+            'transactionId': str(otp_transaction_id),
+            'credential': {
+                'authCode': self.request_data['confirmation']['token']
+            }
+        }
+        gateway_request_id = AuthConfirm().gateway_auth_confirm(request_data)
+        response_data = poll_and_pop_data_from_cache(gateway_request_id)
+        return response_data
+
+    @staticmethod
+    def _generate_error_from_verify_otp_response(verify_otp_response):
+        error = {
+            'code': HIPError.CODE_LINK_CONFIRM_OTP_VERIFICATION_FAILED,
+            'message': HIPError.CUSTOM_ERRORS.get(HIPError.CODE_LINK_CONFIRM_OTP_VERIFICATION_FAILED)
+        }
+        if not verify_otp_response:
+            error['message'] += ': Callback response not received in time.'
+        elif verify_otp_response.get('error'):
+            error['message'] += f": {verify_otp_response['error'].get('message')}"
+        return error
+
+    def gateway_care_contexts_link_on_confirm(self, link_request_details, error=None):
+        payload = ABDMRequestHelper.common_request_data()
+        if error:
+            payload['error'] = error
+        else:
+            payload['patient'] = self.get_patient_linking_details(link_request_details)
+        payload['resp'] = {'requestId': self.request_data['requestId']}
+        ABDMRequestHelper().gateway_post(HIPGatewayAPIPath.CARE_CONTEXTS_LINK_ON_CONFIRM, payload)
+        return payload['requestId']
+
+    def get_patient_linking_details(self, link_request_details):
+        return {
+            'referenceNumber': link_request_details.patient_reference,
+            'display': link_request_details.patient_display,
+            'careContexts': self._get_care_context_details(link_request_details)
+        }
+
+    def _get_care_context_details(self, link_request_details):
+        return [
+            {
+                'referenceNumber': care_context.reference,
+                'display': care_context.display
+            }
+            for care_context in link_request_details.care_contexts.all()
+        ]
+
+    def update_linking_status(self, link_request_details, error=None):
+        if error:
+            link_request_details.status = LinkRequestStatus.ERROR
+            link_request_details.error = error
+        else:
+            link_request_details.status = LinkRequestStatus.SUCCESS
+        link_request_details.save()

@@ -78,6 +78,7 @@ class RequestHealthInformation(HIUBaseView):
             raise CustomError(
                 error_code=HIUError.CODE_CONSENT_EXPIRED,
                 error_message=HIUError.CUSTOM_ERRORS[HIUError.CODE_CONSENT_EXPIRED],
+                detail_attr='artefact_id'
             )
 
     def gateway_health_information_cm_request(self, artefact, health_info_url, hiu_transfer_material):

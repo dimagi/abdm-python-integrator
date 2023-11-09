@@ -7,6 +7,8 @@ HEALTH_INFORMATION_MEDIA_TYPE = 'application/fhir+json'
 
 CELERY_TASK = app_settings.CELERY_APP.task if app_settings.CELERY_APP else celery.shared_task
 
+GENDER_CHOICES = ['M', 'F', 'O', 'U']
+
 
 class GatewayAPIPath:
     SESSIONS_PATH = '/v0.5/sessions'
@@ -179,3 +181,19 @@ class HealthInformationStatus:
         (PENDING, 'Pending request from Gateway'),
         (REQUESTED, 'Requested'),
     ] + HIP_CHOICES
+
+
+class IdentifierType:
+    MR = 'MR'
+    MOBILE = 'MOBILE'
+    NDHM_HEALTH_NUMBER = 'NDHM_HEALTH_NUMBER'
+    HEALTH_ID = 'HEALTH_ID'
+    EMAIL = 'EMAIL'
+
+    CHOICES = [
+        (MR, 'Medical Registration Number'),
+        (MOBILE, 'Mobile'),
+        (NDHM_HEALTH_NUMBER, 'NDHM Health Number'),
+        (HEALTH_ID, 'Health Id'),
+        (EMAIL, 'Email')
+    ]

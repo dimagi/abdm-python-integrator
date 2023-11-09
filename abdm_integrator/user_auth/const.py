@@ -5,7 +5,4 @@ class UserAuthGatewayAPIPath:
     AUTH_CONFIRM = "/v0.5/users/auth/confirm"
 
 
-IDENTIFIER_TYPE_CHOICES = ["MR", "MOBILE", "NDHM_HEALTH_NUMBER", "HEALTH_ID", "EMAIL"]
-GENDER_CHOICES = ['M', 'F', 'O', 'U']
-
 CALLBACK_RESPONSE_CACHE_TIMEOUT = 10

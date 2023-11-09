@@ -1,8 +1,13 @@
 from rest_framework import serializers
 
-from abdm_integrator.const import AuthenticationMode, AuthFetchModesPurpose, RequesterType
+from abdm_integrator.const import (
+    GENDER_CHOICES,
+    AuthenticationMode,
+    AuthFetchModesPurpose,
+    IdentifierType,
+    RequesterType,
+)
 from abdm_integrator.serializers import GatewayCallbackResponseBaseSerializer
-from abdm_integrator.user_auth.const import GENDER_CHOICES, IDENTIFIER_TYPE_CHOICES
 
 
 class AuthFetchModesSerializer(serializers.Serializer):
@@ -92,7 +97,7 @@ class GatewayAuthOnConfirmSerializer(GatewayCallbackResponseBaseSerializer):
         class PatientDemographicSerializer(serializers.Serializer):
 
             class IdentifierSerializer(serializers.Serializer):
-                type = serializers.ChoiceField(choices=IDENTIFIER_TYPE_CHOICES)
+                type = serializers.ChoiceField(choices=IdentifierType.CHOICES)
                 value = serializers.CharField()
 
             class AddressSerializer(serializers.Serializer):

@@ -79,3 +79,13 @@ class GatewayCareContextsLinkInitSerializer(serializers.Serializer):
     requestId = serializers.UUIDField()
     transactionId = serializers.UUIDField()
     patient = PatientSerializer()
+
+
+class GatewayCareContextsLinkConfirmSerializer(serializers.Serializer):
+
+    class ConfirmationSerializer(serializers.Serializer):
+        linkRefNumber = serializers.CharField()
+        token = serializers.CharField()
+
+    requestId = serializers.UUIDField()
+    confirmation = ConfirmationSerializer()

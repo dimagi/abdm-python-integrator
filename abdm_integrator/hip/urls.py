@@ -1,7 +1,11 @@
 from django.urls import path
 
 from abdm_integrator.const import GATEWAY_CALLBACK_URL_PREFIX
-from abdm_integrator.hip.views.care_contexts import GatewayOnAddContexts, LinkCareContextRequest
+from abdm_integrator.hip.views.care_contexts import (
+    GatewayCareContextsDiscover,
+    GatewayOnAddContexts,
+    LinkCareContextRequest,
+)
 from abdm_integrator.hip.views.consents import GatewayConsentRequestNotify
 from abdm_integrator.hip.views.health_information import GatewayHealthInformationRequest
 
@@ -14,4 +18,6 @@ hip_urls = [
          name='gateway_on_add_contexts'),
     path(f'{GATEWAY_CALLBACK_URL_PREFIX}/health-information/hip/request',
          GatewayHealthInformationRequest.as_view(), name='gateway_health_information_request_hip'),
+    path(f'{GATEWAY_CALLBACK_URL_PREFIX}/care-contexts/discover', GatewayCareContextsDiscover.as_view(),
+         name='gateway_care_contexts_discover'),
 ]

@@ -14,3 +14,9 @@ def process_hip_consent_notification_request(self, request_data):
 def process_hip_health_information_request(self, request_data):
     from abdm_integrator.hip.views.health_information import GatewayHealthInformationRequestProcessor
     GatewayHealthInformationRequestProcessor(request_data).process_request()
+
+
+@CELERY_TASK(queue=app_settings.CELERY_QUEUE, bind=True, ignore_result=False)
+def process_patient_care_context_discover_request(self, request_data):
+    from abdm_integrator.hip.views.care_contexts import GatewayCareContextsDiscoverProcessor
+    GatewayCareContextsDiscoverProcessor(request_data).process_request()

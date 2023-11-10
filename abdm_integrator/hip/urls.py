@@ -6,13 +6,16 @@ from abdm_integrator.hip.views.care_contexts import (
     GatewayCareContextsLinkConfirm,
     GatewayCareContextsLinkInit,
     GatewayOnAddContexts,
+    GatewayPatientSMSOnNotify,
     LinkCareContextRequest,
+    PatientSMSNotify,
 )
 from abdm_integrator.hip.views.consents import GatewayConsentRequestNotify
 from abdm_integrator.hip.views.health_information import GatewayHealthInformationRequest
 
 hip_urls = [
     path('api/hip/link_care_context', LinkCareContextRequest.as_view(), name='link_care_context'),
+    path('api/hip/patients/sms/notify2', PatientSMSNotify.as_view(), name='patient_sms_notify'),
     # APIS that will be triggered by ABDM Gateway
     path(f'{GATEWAY_CALLBACK_URL_PREFIX}/consents/hip/notify', GatewayConsentRequestNotify.as_view(),
          name='gateway_consent_request_notify_hip'),
@@ -26,4 +29,6 @@ hip_urls = [
          name='gateway_care_contexts_link_init'),
     path(f'{GATEWAY_CALLBACK_URL_PREFIX}/links/link/confirm', GatewayCareContextsLinkConfirm.as_view(),
          name='gateway_care_contexts_link_confirm'),
+    path(f'{GATEWAY_CALLBACK_URL_PREFIX}/patients/sms/on-notify', GatewayPatientSMSOnNotify.as_view(),
+         name='gateway_patient_sms_on_notify'),
 ]

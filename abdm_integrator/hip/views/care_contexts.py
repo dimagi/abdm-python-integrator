@@ -6,6 +6,7 @@ from rest_framework.response import Response
 from rest_framework.status import HTTP_200_OK, HTTP_202_ACCEPTED
 
 from abdm_integrator.const import (
+    CALLBACK_RESPONSE_CACHE_TIMEOUT,
     AuthenticationMode,
     AuthFetchModesPurpose,
     IdentifierType,
@@ -19,7 +20,7 @@ from abdm_integrator.exceptions import (
     ABDMServiceUnavailable,
     CustomError,
 )
-from abdm_integrator.hip.const import HEADER_NAME_HIP_ID, HIPGatewayAPIPath
+from abdm_integrator.hip.const import HEADER_NAME_HIP_ID, HIPGatewayAPIPath, SMSOnNotifyStatus
 from abdm_integrator.hip.exceptions import (
     DiscoveryMultiplePatientsFoundError,
     DiscoveryNoPatientFoundError,
@@ -37,7 +38,9 @@ from abdm_integrator.hip.serializers.care_contexts import (
     GatewayCareContextsLinkConfirmSerializer,
     GatewayCareContextsLinkInitSerializer,
     GatewayOnAddContextsSerializer,
+    GatewayPatientSMSOnNotifySerializer,
     LinkCareContextRequestSerializer,
+    PatientSMSNotifySerializer,
 )
 from abdm_integrator.hip.tasks import (
     process_patient_care_context_discover_request,
@@ -522,3 +525,41 @@ class GatewayCareContextsLinkConfirmProcessor:
         else:
             link_request_details.status = LinkRequestStatus.SUCCESS
         link_request_details.save()
+
+
+class PatientSMSNotify(HIPBaseView):
+
+    def post(self, request, format=None):
+        serializer = PatientSMSNotifySerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        gateway_request_id = self.gateway_patient_sms_notify(serializer.data)
+        response_data = poll_and_pop_data_from_cache(gateway_request_id)
+        return self.generate_response_from_callback(response_data)
+
+    def gateway_patient_sms_notify(self, request_data):
+        payload = ABDMRequestHelper.common_request_data()
+        payload['notification'] = request_data
+        ABDMRequestHelper().gateway_post(HIPGatewayAPIPath.PATIENT_SMS_NOTIFY_PATH, payload)
+        return payload['requestId']
+
+    @staticmethod
+    def generate_response_from_callback(response_data):
+        if not response_data:
+            raise ABDMGatewayCallbackTimeout()
+        if response_data.get('error'):
+            error = response_data['error']
+            raise ABDMGatewayError(error.get('code'), error.get('message'))
+        if response_data.get('status') and response_data['status'] == SMSOnNotifyStatus.ACKNOWLEDGED:
+            status = True
+        else:
+            status = False
+        return Response(status=HTTP_200_OK, data={'status': status})
+
+
+class GatewayPatientSMSOnNotify(HIPGatewayBaseView):
+
+    def post(self, request, format=None):
+        serializer = GatewayPatientSMSOnNotifySerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        ABDMCache.set(serializer.data['resp']['requestId'], serializer.data, CALLBACK_RESPONSE_CACHE_TIMEOUT)
+        return Response(status=HTTP_202_ACCEPTED)

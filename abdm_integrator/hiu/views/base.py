@@ -16,6 +16,7 @@ class HIUBaseView(APIView):
 
 class HIUGatewayBaseView(APIView):
     authentication_classes = [ABDMGatewayAuthentication]
+    permission_classes = [IsAuthenticated]
 
     def get_exception_handler(self):
         return hiu_gateway_error_response_handler.get_exception_handler()

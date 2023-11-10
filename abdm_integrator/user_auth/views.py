@@ -46,6 +46,7 @@ class UserAuthBaseView(APIView):
 
 class UserAuthGatewayBaseView(APIView):
     authentication_classes = [ABDMGatewayAuthentication]
+    permission_classes = [IsAuthenticated]
     serializer_class = None
 
     def get_exception_handler(self):

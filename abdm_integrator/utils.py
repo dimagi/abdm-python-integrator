@@ -5,6 +5,7 @@ from datetime import datetime
 
 import jwt
 import requests
+from django.contrib.auth.models import AnonymousUser
 from django.core.cache import cache
 from django.utils.dateparse import parse_datetime
 from rest_framework import serializers
@@ -183,6 +184,11 @@ def validate_jwt_access_token(authorisation_token):
                       options={'verify_aud': False})
 
 
+class ABDMGatewayUser(AnonymousUser):
+    """Dummy user used for ABDM Gateway JWKS authentication"""
+    username = 'gateway_user'
+
+
 class ABDMGatewayAuthentication(TokenAuthentication):
     keyword = 'Bearer'
 
@@ -193,7 +199,8 @@ class ABDMGatewayAuthentication(TokenAuthentication):
             raise AuthenticationFailed('Token validation failed')
         except Exception:
             raise AuthenticationFailed('Error occurred while validating token')
-        return None, token
+        # Returns Django ABDMGatewayUser after successful token validation as authentication expects a user
+        return ABDMGatewayUser, token
 
 
 def removes_prefix_for_abdm_mobile(value):

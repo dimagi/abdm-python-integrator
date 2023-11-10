@@ -1,8 +1,9 @@
 from rest_framework import serializers
 
 from abdm_integrator.const import GENDER_CHOICES, HealthInformationType, IdentifierType
+from abdm_integrator.hip.const import SMSOnNotifyStatus
 from abdm_integrator.hip.models import LinkCareContext
-from abdm_integrator.serializers import GatewayCallbackResponseBaseSerializer
+from abdm_integrator.serializers import GatewayCallbackResponseBaseSerializer, GatewayIdSerializer
 from abdm_integrator.utils import past_date_validator
 
 
@@ -89,3 +90,12 @@ class GatewayCareContextsLinkConfirmSerializer(serializers.Serializer):
 
     requestId = serializers.UUIDField()
     confirmation = ConfirmationSerializer()
+
+
+class PatientSMSNotifySerializer(serializers.Serializer):
+    phoneNo = serializers.CharField()
+    hip = GatewayIdSerializer()
+
+
+class GatewayPatientSMSOnNotifySerializer(GatewayCallbackResponseBaseSerializer):
+    status = serializers.ChoiceField(choices=SMSOnNotifyStatus.CHOICES, required=False)

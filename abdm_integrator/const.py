@@ -9,6 +9,8 @@ CELERY_TASK = app_settings.CELERY_APP.task if app_settings.CELERY_APP else celer
 
 GENDER_CHOICES = ['M', 'F', 'O', 'U']
 
+CALLBACK_RESPONSE_CACHE_TIMEOUT = 10
+
 
 class GatewayAPIPath:
     SESSIONS_PATH = '/v0.5/sessions'

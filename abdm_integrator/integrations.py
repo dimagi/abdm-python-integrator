@@ -35,7 +35,8 @@ class HRPIntegration:
         :type health_info_types: list
         :param linked_care_context_details: Additional Information stored while care context linking
         :type linked_care_context_details: dict
-        :returns: List of FHIR records one for each health info type
+        :returns: List of FHIR records one for each health info type. Should return empty list if no health
+        record available.
         :rtype: list
 
         """

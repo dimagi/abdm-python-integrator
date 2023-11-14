@@ -278,6 +278,10 @@ class HealthDataTransferProcessor:
                     linked_care_context_serialized
                 )
             )
+            if not fhir_data:
+                raise HealthDataTransferException(
+                    f'No health record available from HRP for {linked_care_context.reference}'
+                )
         except Exception as err:
             raise HealthDataTransferException(f'Error occurred while fetching health data from HRP: {err}')
         return fhir_data

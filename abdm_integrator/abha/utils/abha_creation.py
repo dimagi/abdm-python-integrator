@@ -7,6 +7,7 @@ from abdm_integrator.abha.const import (
     VERIFY_AADHAAR_OTP_URL,
     VERIFY_MOBILE_OTP_URL,
 )
+from abdm_integrator.settings import app_settings
 from abdm_integrator.utils import ABDMRequestHelper
 
 
@@ -52,3 +53,10 @@ def validate_aadhaar_number(aadhaar_number):
 
 def validate_mobile_number(mobile_number):
     return bool(re.match(r"^(\+91)?\d{10}$", mobile_number))
+
+
+def add_health_id_suffix_if_absent(health_id):
+    suffix = f'@{app_settings.X_CM_ID}'
+    if not health_id.endswith(suffix):
+        health_id = f'{health_id}{suffix}'
+    return health_id

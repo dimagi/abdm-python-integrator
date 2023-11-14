@@ -8,6 +8,6 @@ class HIUGatewayAPIPath:
     HEALTH_INFO_NOTIFY = '/v0.5/health-information/notify'
 
 
-ABHA_EXISTS_BY_HEALTH_ID_PATH = 'v1/search/existsByHealthId'
+ABHA_EXISTS_BY_HEALTH_ID_PATH = '/v1/search/existsByHealthId'
 
 HEALTH_DATA_CACHE_TIMEOUT = 60

@@ -14,6 +14,7 @@ from abdm_integrator.abha.const import (
     VERIFY_MOBILE_OTP_URL,
 )
 from abdm_integrator.abha.exceptions import INVALID_AADHAAR_MESSAGE, INVALID_MOBILE_MESSAGE
+from abdm_integrator.settings import app_settings
 
 
 class TestABHACreation(APITestCase):
@@ -35,7 +36,7 @@ class TestABHACreation(APITestCase):
             VERIFY_MOBILE_OTP_URL: abdm_txn_id_mock,
             VERIFY_AADHAAR_OTP_URL: abdm_txn_id_mock,
             GENERATE_MOBILE_OTP_URL: abdm_txn_id_mock,
-            CREATE_HEALTH_ID_URL: {"token": "1122", "refreshToken": "1133", "health_id": "123-456",
+            CREATE_HEALTH_ID_URL: {"token": "1122", "refreshToken": "1133", "healthId": "123-456",
                                    "txnId": "1234", "new": 'true'},
         }.get(url)
 
@@ -99,7 +100,8 @@ class TestABHACreation(APITestCase):
             response = self.client.post(reverse("verify_mobile_otp"),
                                         {"txn_id": "1234", "otp": "1111", "health_id": "123-456"})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.json(), {"health_id": "123-456", "txnId": "1234", "user_token": "1122",
+        self.assertEqual(response.json(), {"healthId": f"123-456@{app_settings.X_CM_ID}", "txnId": "1234",
+                                           "user_token": "1122",
                                            "exists_on_abdm": False})
 
     def test_mobile_otp_verification_failure(self):

@@ -67,7 +67,7 @@ class GenerateConsent(HIUBaseView):
     def save_consent_request(self, gateway_request_id, consent_data, user):
         consent_request = ConsentRequest(user=user, gateway_request_id=gateway_request_id, details=consent_data)
         consent_request.update_user_amendable_details(consent_data['permission'], consent_data['hiTypes'])
-        return consent_request
+        return ConsentRequest.objects.get(gateway_request_id=gateway_request_id)
 
 
 class GatewayConsentRequestOnInit(HIUGatewayBaseView):

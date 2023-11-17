@@ -1,11 +1,16 @@
 import celery
 
+from abdm_integrator.periodic_task import periodic_task
 from abdm_integrator.settings import app_settings
 
 GATEWAY_CALLBACK_URL_PREFIX = 'api/gateway/v0.5'
 HEALTH_INFORMATION_MEDIA_TYPE = 'application/fhir+json'
 
 CELERY_TASK = app_settings.CELERY_APP.task if app_settings.CELERY_APP else celery.shared_task
+# `CELERY_APP.periodic_task` should support creating periodic task using decorator.
+# See `abdm_integrator.periodic_task.periodic_task`
+CELERY_PERIODIC_TASK = app_settings.CELERY_APP.periodic_task if app_settings.CELERY_APP else periodic_task
+
 
 GENDER_CHOICES = ['M', 'F', 'O', 'U']
 

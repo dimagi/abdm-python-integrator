@@ -34,6 +34,7 @@ class GatewayConsentRequestNotifyProcessor:
                 artefact_id=artefact_id,
                 signature=self.request_data['notification']['signature'],
                 details=self.request_data['notification']['consentDetail'],
+                expiry_date=self.request_data['notification']['consentDetail']['permission']['dataEraseAt'],
                 grant_acknowledgement=self.request_data['notification']['grantAcknowledgement']
             )
             consent_artefact.save()

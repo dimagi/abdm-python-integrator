@@ -1,4 +1,3 @@
-import requests
 from django.db import transaction
 from django.db.models import Q
 from rest_framework import viewsets
@@ -11,7 +10,6 @@ from abdm_integrator.exceptions import (
     ERROR_CODE_REQUIRED,
     ERROR_CODE_REQUIRED_MESSAGE,
     ABDMGatewayError,
-    ABDMServiceUnavailable,
     CustomError,
 )
 from abdm_integrator.hiu.const import ABHA_EXISTS_BY_HEALTH_ID_PATH, HIUGatewayAPIPath
@@ -42,21 +40,14 @@ class GenerateConsent(HIUBaseView):
                         data=ConsentRequestSerializer(consent_request).data)
 
     def check_if_health_id_exists(self, health_id):
-        try:
-            payload = {'healthId': health_id}
-            response = ABDMRequestHelper().abha_post(ABHA_EXISTS_BY_HEALTH_ID_PATH, payload)
-            if not response.get('status'):
-                raise CustomError(
-                    error_code=HIUError.CODE_PATIENT_NOT_FOUND,
-                    error_message=HIUError.CUSTOM_ERRORS[HIUError.CODE_PATIENT_NOT_FOUND],
-                    detail_attr='patient.id'
-                )
-        # TODO Remove below exception handling once addressed on abha side
-        except requests.Timeout:
-            raise ABDMServiceUnavailable()
-        except requests.HTTPError as err:
-            error = ABDMRequestHelper.gateway_json_from_response(err.response)
-            raise ABDMGatewayError(error.get('code'), error.get('message'))
+        payload = {'healthId': health_id}
+        response = ABDMRequestHelper().abha_post(ABHA_EXISTS_BY_HEALTH_ID_PATH, payload)
+        if not response.get('status'):
+            raise CustomError(
+                error_code=HIUError.CODE_PATIENT_NOT_FOUND,
+                error_message=HIUError.CUSTOM_ERRORS[HIUError.CODE_PATIENT_NOT_FOUND],
+                detail_attr='patient.id'
+            )
 
     def gateway_consent_request_init(self, consent_data):
         payload = ABDMRequestHelper.common_request_data()

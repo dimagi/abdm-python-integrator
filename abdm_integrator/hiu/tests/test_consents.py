@@ -114,8 +114,9 @@ class TestGenerateConsentRequestAPI(APITestCase, APITestHelperMixin):
                                   HIUError.CUSTOM_ERRORS[HIUError.CODE_PATIENT_NOT_FOUND], 'patient.id')
         self.assertEqual(ConsentRequest.objects.all().count(), 0)
 
+    @patch('abdm_integrator.hiu.views.consents.GenerateConsent.check_if_health_id_exists')
     @patch('abdm_integrator.utils.requests.post')
-    def test_generate_consent_request_gateway_error(self, mocked_post):
+    def test_generate_consent_request_gateway_error(self, mocked_post, *args):
         self.gateway_error_test(mocked_post, reverse('generate_consent_request'),
                                 self._sample_generate_consent_data())
 

@@ -27,7 +27,6 @@ ABDM_INTEGRATOR = {
     "GATEWAY_URL": '',
     "USER_MODEL": "auth.User",
     "AUTHENTICATION_CLASS": "rest_framework.authentication.TokenAuthentication",
-    "HRP_ABHA_REGISTERED_CHECK_CLASS": None,
 }
 
 CELERY_TASK_ALWAYS_EAGER = True

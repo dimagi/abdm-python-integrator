@@ -15,7 +15,7 @@ class APITestHelperMixin:
         self.assertEqual(actual_error['code'], expected_code)
         self.assertEqual(actual_error['message'], expected_message)
 
-    def assert_error_details(self, actual_error_details, expected_code, expected_detail, expected_attr):
+    def assert_error_details(self, actual_error_details, expected_code, expected_detail, expected_attr=None):
         self.assertEqual(actual_error_details['code'], expected_code)
         self.assertEqual(actual_error_details['detail'], expected_detail)
         self.assertEqual(actual_error_details['attr'], expected_attr)

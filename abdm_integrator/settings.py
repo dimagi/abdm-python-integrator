@@ -11,14 +11,15 @@ DEFAULTS = {
     'GATEWAY_URL': None,
     'USER_MODEL': 'auth.user',
     'AUTHENTICATION_CLASS': None,
-    'HRP_ABHA_REGISTERED_CHECK_CLASS': None,
+    'HRP_INTEGRATION_CLASS': 'abdm_integrator.integrations.HRPIntegration',
     'CELERY_APP': None,
     'CELERY_QUEUE': None,
+    'HIU_PARSE_FHIR_BUNDLE': False,
 }
 
 IMPORT_STRINGS = (
     'AUTHENTICATION_CLASS',
-    'HRP_ABHA_REGISTERED_CHECK_CLASS',
+    'HRP_INTEGRATION_CLASS',
     'CELERY_APP'
 )
 

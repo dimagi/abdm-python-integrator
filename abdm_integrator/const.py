@@ -3,6 +3,7 @@ import celery
 from abdm_integrator.settings import app_settings
 
 GATEWAY_CALLBACK_URL_PREFIX = 'api/gateway/v0.5'
+HEALTH_INFORMATION_MEDIA_TYPE = 'application/fhir+json'
 
 CELERY_TASK = app_settings.CELERY_APP.task if app_settings.CELERY_APP else celery.shared_task
 
@@ -35,11 +36,13 @@ class ConsentStatus:
 
 
 class ArtefactFetchStatus:
+    PENDING = 'PENDING'
     REQUESTED = 'REQUESTED'
     RECEIVED = 'RECEIVED'
     ERROR = 'ERROR'
 
     CHOICES = [
+        (PENDING, 'Pending'),
         (REQUESTED, 'Requested'),
         (RECEIVED, 'Received'),
         (ERROR, 'Error occurred'),
@@ -152,3 +155,27 @@ class LinkRequestInitiator:
     HIP = 'HIP'
 
     CHOICES = [(PATIENT, 'Patient'), (HIP, 'HIP')]
+
+
+class HealthInformationStatus:
+    PENDING = 'PENDING'
+    REQUESTED = 'REQUESTED'
+    ERROR = 'ERROR'
+    ACKNOWLEDGED = 'ACKNOWLEDGED'
+    TRANSFERRED = 'TRANSFERRED'
+    DELIVERED = 'DELIVERED'
+    FAILED = 'FAILED'
+    ERRORED = 'ERRORED'
+    OK = 'OK'
+
+    HIP_CHOICES = [
+        (ACKNOWLEDGED, 'Acknowledged'),
+        (ERROR, 'Error occurred'),
+        (TRANSFERRED, 'Transferred'),
+        (FAILED, 'Failed'),
+    ]
+
+    HIU_CHOICES = [
+        (PENDING, 'Pending request from Gateway'),
+        (REQUESTED, 'Requested'),
+    ] + HIP_CHOICES

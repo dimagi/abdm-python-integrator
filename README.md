@@ -71,20 +71,23 @@ pip install abdm-python-integrator@git+https://github.com/dimagi/abdm-python-int
         # A custom model can be specified as 'app_label.Model'
         'USER_MODEL': 'auth.User',
                 
-        # OPTIONAL setting. Default value is None.
-        # Class responsible for checking if ABHA is already registered onto HRP system while creating new ABHA ID.
-        # Implement interface 'HRPAbhaRegisteredCheck' as defined in 'integrations.py'
-        # If this check is not needed, skip this setting or set the value to None.
-        'HRP_ABHA_REGISTERED_CHECK_CLASS': None,
+        # Required setting. Default value points to `HRPIntegration` interface.
+        # Class responsible for implementing methods that talks with HRP. For e.g. to fetch health data.
+        # Must implement interface 'HRPIntegration' as defined in 'integrations.py'. Refer Interface docstring for details.
+        'HRP_INTEGRATION_CLASS': None,
            
         # OPTIONAL setting. Default value is None.
-        # Configrable setting that points to the Celery App Instance. 
+        # Configurable setting that points to the Celery App Instance. 
         # If None, it uses the default celery app configured in Project.
         'CELERY_APP': None,
     
         # OPTIONAL setting. Default value is None which mean celery default queue would be used.
         # Queue to be used for running async operations for some of Gateway Facing APIs
         'CELERY_QUEUE': None,
+   
+        # OPTIONAL setting. Default value is False.
+        # If set to True, parses FHIR bundle at the HIU end to a format easier to display on the UI.
+        'HIU_PARSE_FHIR_BUNDLE': False
     }
     ```
 

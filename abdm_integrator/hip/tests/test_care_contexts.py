@@ -59,7 +59,11 @@ class TestHIPLinkCareContextAPI(APITestCase, APITestHelperMixin):
                         'display': 'Made a Test Visit',
                         'hiTypes': [
                             'Prescription', 'WellnessRecord'
-                        ]
+                        ],
+                        'additionalInfo': {
+                            'domain': 'test',
+                            'record_date': datetime.utcnow().isoformat()
+                        }
                     }
                 ]
             }
@@ -134,6 +138,8 @@ class TestHIPLinkCareContextAPI(APITestCase, APITestHelperMixin):
         self.assertEqual(linked_care_context.link_request_details, link_request_details)
         self.assertEqual(linked_care_context.health_info_types,
                          request_data['patient']['careContexts'][0]['hiTypes'])
+        self.assertEqual(linked_care_context.additional_info,
+                         request_data['patient']['careContexts'][0]['additionalInfo'])
 
     def test_link_care_context_authentication_error(self, *args):
         client = APIClient()

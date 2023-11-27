@@ -23,11 +23,12 @@ class GatewayRequesterSerializer(serializers.Serializer):
     identifier = IdentifierSerializer(required=False)
 
 
-class GatewayPermissionSerializer(serializers.Serializer):
+class DateRangeSerializer(serializers.Serializer):
+    vars()['from'] = serializers.DateTimeField()
+    to = serializers.DateTimeField()
 
-    class DateRangeSerializer(serializers.Serializer):
-        vars()['from'] = serializers.DateTimeField()
-        to = serializers.DateTimeField()
+
+class GatewayPermissionSerializer(serializers.Serializer):
 
     class FrequencySerializer(serializers.Serializer):
         unit = serializers.ChoiceField(choices=TimeUnit.CHOICES)
@@ -58,3 +59,16 @@ class GatewayPurposeSerializer(serializers.Serializer):
     code = serializers.ChoiceField(choices=ConsentPurpose.CHOICES)
     text = serializers.CharField()
     refUri = serializers.CharField(required=False, allow_null=True)
+
+
+class GatewayKeyMaterialSerializer(serializers.Serializer):
+
+    class DHPublicKeySerializer(serializers.Serializer):
+        expiry = serializers.DateTimeField()
+        parameters = serializers.CharField()
+        keyValue = serializers.CharField()
+
+    cryptoAlg = serializers.CharField()
+    curve = serializers.CharField()
+    dhPublicKey = DHPublicKeySerializer()
+    nonce = serializers.CharField()

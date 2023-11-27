@@ -189,7 +189,8 @@ class TestRequestHealthInformationAPI(APITestCase, APITestHelperMixin):
         }
         mocked_parse_fhir_bundle.return_value = {
             'title': 'Prescription',
-            'content': {'parsed_test': 1}
+            'content': {'parsed_test': 1},
+            'care_context_reference': 'CC-101'
         }
         gateway_request_id = mocked_common_request_data.return_value['requestId']
         mocked_response_cache = self._health_info_success_response()
@@ -203,7 +204,6 @@ class TestRequestHealthInformationAPI(APITestCase, APITestHelperMixin):
         self.assertEqual(json_res['page'], mocked_response_cache['page'])
         self.assertEqual(json_res['page_count'], mocked_response_cache['page_count'])
         self.assertIsNone(json_res['next'])
-        mocked_parse_fhir_bundle.return_value['care_context_reference'] = 'CC-101'
         self.assertEqual(json_res['results'], [mocked_parse_fhir_bundle.return_value])
         self.assertEqual(HealthInformationRequest.objects.count(), 1)
         health_information_request = HealthInformationRequest.objects.get(gateway_request_id=gateway_request_id)
@@ -223,8 +223,11 @@ class TestRequestHealthInformationAPI(APITestCase, APITestHelperMixin):
         json_res = res.json()
         self.assertEqual(res.status_code, ABDMGatewayError.status_code)
         self.assert_error(json_res['error'], gateway_error['error']['code'], ABDMGatewayError.error_message)
-        self.assert_error_details(json_res['error']['details'][0], ABDMGatewayError.detail_code,
-                                  gateway_error['error']['message'], None)
+        self.assert_error_details(
+            json_res['error']['details'][0],
+            ABDMGatewayError.detail_code,
+            gateway_error['error']['message'],
+        )
         self.assertEqual(HealthInformationRequest.objects.all().count(), 0)
 
     @patch('abdm_integrator.utils.requests.post', side_effect=requests.Timeout)
@@ -239,24 +242,32 @@ class TestRequestHealthInformationAPI(APITestCase, APITestHelperMixin):
         res = self.client.get(self.request_health_information_url, data={'artefact_id': str(uuid.uuid4())})
         json_res = res.json()
         self.assertEqual(res.status_code, HTTP_404_NOT_FOUND)
-        self.assert_error(json_res['error'], int(f'{HIUError.CODE_PREFIX}{HTTP_404_NOT_FOUND}'),
-                          STANDARD_ERRORS.get(HTTP_404_NOT_FOUND))
-        self.assert_error_details(json_res['error']['details'][0], NotFound.default_code, NotFound.default_detail,
-                                  None)
+        self.assert_error(
+            json_res['error'],
+            int(f'{HIUError.CODE_PREFIX}{HTTP_404_NOT_FOUND}'),
+            STANDARD_ERRORS.get(HTTP_404_NOT_FOUND)
+        )
+        self.assert_error_details(
+            json_res['error']['details'][0],
+            NotFound.default_code,
+            NotFound.default_detail,
+        )
         self.assertEqual(HealthInformationRequest.objects.all().count(), 0)
 
     def test_request_health_information_artefact_expired(self):
         res = self.client.get(self.request_health_information_url, data={'artefact_id': self.artefact_id_2})
         json_res = res.json()
         self.assertEqual(res.status_code, HTTP_400_BAD_REQUEST)
-        self.assert_error(json_res['error'], HIUError.CODE_CONSENT_EXPIRED,
-                          HIUError.CUSTOM_ERRORS[HIUError.CODE_CONSENT_EXPIRED])
-        self.assert_error_details(json_res['error']['details'][0], ERROR_CODE_INVALID,
-                                  HIUError.CUSTOM_ERRORS[HIUError.CODE_CONSENT_EXPIRED], 'artefact_id')
+        self.assert_error(
+            json_res['error'], HIUError.CODE_CONSENT_EXPIRED,
+            HIUError.CUSTOM_ERRORS[HIUError.CODE_CONSENT_EXPIRED]
+        )
+        self.assert_error_details(
+            json_res['error']['details'][0], ERROR_CODE_INVALID,
+            HIUError.CUSTOM_ERRORS[HIUError.CODE_CONSENT_EXPIRED],
+            'artefact_id'
+        )
         self.assertEqual(HealthInformationRequest.objects.all().count(), 0)
-
-    def test_request_health_information_multi_page_request(self):
-        pass
 
     @patch('abdm_integrator.hiu.views.health_information.ABDMRequestHelper.gateway_post')
     @patch('abdm_integrator.hiu.views.health_information.ABDMRequestHelper.common_request_data')
@@ -272,13 +283,18 @@ class TestRequestHealthInformationAPI(APITestCase, APITestHelperMixin):
         ABDMCache.set(f"{gateway_request_id}_1", mocked_response_cache, 10)
 
         res = self.client.get(self.request_health_information_url, data=self._health_information_request_data())
-        json_res = res.json()
 
+        json_res = res.json()
         self.assertEqual(res.status_code, ABDMGatewayError.status_code)
-        self.assert_error(json_res['error'], mocked_response_cache['error']['code'],
-                          ABDMGatewayError.error_message)
-        self.assert_error_details(json_res['error']['details'][0], ABDMGatewayError.detail_code,
-                                  mocked_response_cache['error']['message'], None)
+        self.assert_error(
+            json_res['error'], mocked_response_cache['error']['code'],
+            ABDMGatewayError.error_message
+        )
+        self.assert_error_details(
+            json_res['error']['details'][0],
+            ABDMGatewayError.detail_code,
+            mocked_response_cache['error']['message'],
+        )
         self.assertEqual(HealthInformationRequest.objects.all().count(), 1)
 
     @patch('abdm_integrator.hiu.views.health_information.ABDMRequestHelper.gateway_post')
@@ -298,11 +314,17 @@ class TestRequestHealthInformationAPI(APITestCase, APITestHelperMixin):
         ABDMCache.set(f"{gateway_request_id}_1", mocked_response_cache, 10)
 
         res = self.client.get(self.request_health_information_url, data=self._health_information_request_data())
-        json_res = res.json()
 
+        json_res = res.json()
         self.assertEqual(res.status_code, 556)
-        self.assert_error(json_res['error'], mocked_response_cache['error']['code'],
-                          mocked_response_cache['error']['message'])
-        self.assert_error_details(json_res['error']['details'][0], ERROR_CODE_INVALID,
-                                  mocked_response_cache['error']['message'], None)
+        self.assert_error(
+            json_res['error'],
+            mocked_response_cache['error']['code'],
+            mocked_response_cache['error']['message']
+        )
+        self.assert_error_details(
+            json_res['error']['details'][0],
+            ERROR_CODE_INVALID,
+            mocked_response_cache['error']['message'], None
+        )
         self.assertEqual(HealthInformationRequest.objects.all().count(), 1)

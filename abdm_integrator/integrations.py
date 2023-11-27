@@ -42,3 +42,40 @@ class HRPIntegration:
         """
         msg = f'{self.__class__.__name__}.fetch_health_data() must be implemented.'
         raise NotImplementedError(msg)
+
+    def discover_patient_and_care_contexts(self, patient_details, hip_id, **kwargs):
+        """
+        Method to discover patient and their care contexts on HRP using the details shared by the patient.
+        Must be implemented.
+        :param patient_details: PatientDetails as defined 'abdm_integrator.hip.views.care_contexts.PatientDetails'
+        :type patient_details: PatientDetails (object)
+        :param hip_id: Health Information Provider ID
+        :type hip_id: str
+        :returns: If patient is discovered , returns matched patient and their care context details if any.
+        :rtype: dict
+        :raises: DiscoveryNoPatientFoundError: No patient was discovered
+        :raises: DiscoveryMultiplePatientsFoundError: Multiple patients were discovered
+
+        Structure of return Value
+        .. code-block:: python
+        {
+            "referenceNumber": "string",    # unique id associated wih patient
+            "display": "string",            # text value for patient
+            "careContexts": [
+              {
+                "referenceNumber": "string",    # unique id associated wih patient health record
+                "display": "string",            # text value for patient visit or health record
+                "hiTypes": "list"               # List of HI Types associated with the care context
+                "additionalInfo": {
+                    "domain": "string",         # project name on HRP. Dummy value can be used if not applicable
+                    "record_date": "datetime in iso format"     # health record date
+                }
+              }
+            ],
+            "matchedBy": [      # Matching identifier
+              "MR"
+            ]
+        }
+        """
+        msg = f'{self.__class__.__name__}.discover_care_context() must be implemented.'
+        raise NotImplementedError(msg)

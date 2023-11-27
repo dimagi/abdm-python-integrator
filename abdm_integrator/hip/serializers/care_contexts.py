@@ -1,8 +1,9 @@
 from rest_framework import serializers
 
-from abdm_integrator.const import HealthInformationType
+from abdm_integrator.const import GENDER_CHOICES, HealthInformationType, IdentifierType
+from abdm_integrator.hip.const import SMSOnNotifyStatus
 from abdm_integrator.hip.models import LinkCareContext
-from abdm_integrator.serializers import GatewayCallbackResponseBaseSerializer
+from abdm_integrator.serializers import GatewayCallbackResponseBaseSerializer, GatewayIdSerializer
 from abdm_integrator.utils import past_date_validator
 
 
@@ -43,3 +44,58 @@ class LinkCareContextFetchSerializer(serializers.ModelSerializer):
         model = LinkCareContext
         fields = '__all__'
         depth = 2
+
+
+class GatewayCareContextsDiscoverSerializer(serializers.Serializer):
+
+    class PatientSerializer(serializers.Serializer):
+
+        class IdentifierSerializer(serializers.Serializer):
+            type = serializers.ChoiceField(choices=IdentifierType.CHOICES)
+            value = serializers.CharField(allow_null=True)
+
+        id = serializers.CharField()
+        name = serializers.CharField()
+        gender = serializers.ChoiceField(choices=GENDER_CHOICES)
+        yearOfBirth = serializers.IntegerField()
+        verifiedIdentifiers = serializers.ListField(child=IdentifierSerializer(), min_length=1)
+        unverifiedIdentifiers = serializers.ListField(child=IdentifierSerializer(), required=False,
+                                                      allow_null=True)
+
+    requestId = serializers.UUIDField()
+    transactionId = serializers.UUIDField()
+    patient = PatientSerializer()
+
+
+class GatewayCareContextsLinkInitSerializer(serializers.Serializer):
+
+    class PatientSerializer(serializers.Serializer):
+        class CareContextSerializer(serializers.Serializer):
+            referenceNumber = serializers.CharField()
+
+        id = serializers.CharField()
+        referenceNumber = serializers.CharField()
+        careContexts = serializers.ListField(child=CareContextSerializer(), min_length=1)
+
+    requestId = serializers.UUIDField()
+    transactionId = serializers.UUIDField()
+    patient = PatientSerializer()
+
+
+class GatewayCareContextsLinkConfirmSerializer(serializers.Serializer):
+
+    class ConfirmationSerializer(serializers.Serializer):
+        linkRefNumber = serializers.CharField()
+        token = serializers.CharField()
+
+    requestId = serializers.UUIDField()
+    confirmation = ConfirmationSerializer()
+
+
+class PatientSMSNotifySerializer(serializers.Serializer):
+    phoneNo = serializers.CharField()
+    hip = GatewayIdSerializer()
+
+
+class GatewayPatientSMSOnNotifySerializer(GatewayCallbackResponseBaseSerializer):
+    status = serializers.ChoiceField(choices=SMSOnNotifyStatus.CHOICES, required=False)

@@ -113,6 +113,8 @@ class GatewayConsentRequestNotifyProcessor:
             self.handle_granted(consent_request)
         elif consent_status == ConsentStatus.EXPIRED:
             self.handle_expired(consent_request)
+        elif consent_status == ConsentStatus.DENIED:
+            consent_request.update_status(ConsentStatus.DENIED)
 
     def handle_granted(self, consent_request):
         consent_artefacts = []

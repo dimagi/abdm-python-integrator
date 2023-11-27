@@ -126,7 +126,6 @@ class TestRequestHealthInformationAPI(APITestCase, APITestHelperMixin):
             }
         }
         ConsentArtefact.objects.create(**artefact_data_1, consent_request=consent_request_1)
-
         consent_data_2 = deepcopy(consent_data_1)
         consent_data_2['consent_request_id'] = str(uuid.uuid4())
         consent_data_2['gateway_request_id'] = str(uuid.uuid4())

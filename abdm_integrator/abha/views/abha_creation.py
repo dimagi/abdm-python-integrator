@@ -2,7 +2,11 @@ from django.utils.decorators import method_decorator
 
 from abdm_integrator.abha.exceptions import INVALID_AADHAAR_MESSAGE, INVALID_MOBILE_MESSAGE
 from abdm_integrator.abha.utils import abha_creation as abdm_util
-from abdm_integrator.abha.utils.abha_creation import validate_aadhaar_number, validate_mobile_number
+from abdm_integrator.abha.utils.abha_creation import (
+    add_health_id_suffix_if_absent,
+    validate_aadhaar_number,
+    validate_mobile_number,
+)
 from abdm_integrator.abha.utils.decorators import required_request_params
 from abdm_integrator.abha.utils.response import get_bad_response, parse_response
 from abdm_integrator.abha.views.base import ABHABaseView
@@ -44,7 +48,7 @@ class VerifyAadhaarOTP(ABHABaseView):
 
 class VerifyMobileOTP(ABHABaseView):
 
-    @method_decorator(required_request_params(["txn_id", "otp", "health_id"]))
+    @method_decorator(required_request_params(["txn_id", "otp"]))
     def post(self, request, format=None):
         txn_id = request.data.get("txn_id")
         otp = request.data.get("otp")
@@ -55,9 +59,11 @@ class VerifyMobileOTP(ABHABaseView):
             resp["user_token"] = resp.pop("token")
             resp.pop("refreshToken")
             resp["exists_on_abdm"] = not resp.pop("new")
+            resp["healthId"] = add_health_id_suffix_if_absent(resp["healthId"])
             try:
-                resp["exists_on_hq"] = (app_settings.HRP_INTEGRATION_CLASS()
-                                        .check_if_abha_registered(health_id, request.user))
+                resp["exists_on_hq"] = (
+                    app_settings.HRP_INTEGRATION_CLASS().check_if_abha_registered(resp["healthId"], request.user)
+                )
             except NotImplementedError:
                 pass
         return parse_response(resp)

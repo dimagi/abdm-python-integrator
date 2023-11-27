@@ -3,10 +3,10 @@ from rest_framework.response import Response
 from rest_framework.status import HTTP_200_OK, HTTP_202_ACCEPTED
 from rest_framework.views import APIView
 
-from abdm_integrator.const import AuthenticationMode
+from abdm_integrator.const import CALLBACK_RESPONSE_CACHE_TIMEOUT, AuthenticationMode
 from abdm_integrator.exceptions import ABDMGatewayCallbackTimeout, ABDMGatewayError
 from abdm_integrator.settings import app_settings
-from abdm_integrator.user_auth.const import CALLBACK_RESPONSE_CACHE_TIMEOUT, UserAuthGatewayAPIPath
+from abdm_integrator.user_auth.const import UserAuthGatewayAPIPath
 from abdm_integrator.user_auth.exceptions import (
     user_auth_error_response_handler,
     user_auth_gateway_error_response_handler,
@@ -46,6 +46,7 @@ class UserAuthBaseView(APIView):
 
 class UserAuthGatewayBaseView(APIView):
     authentication_classes = [ABDMGatewayAuthentication]
+    permission_classes = [IsAuthenticated]
     serializer_class = None
 
     def get_exception_handler(self):

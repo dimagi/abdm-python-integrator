@@ -4,7 +4,12 @@ import requests
 from django.test import SimpleTestCase
 
 from abdm_integrator.exceptions import ABDMGatewayError
-from abdm_integrator.utils import ABDMCache, ABDMRequestHelper, poll_and_pop_data_from_cache
+from abdm_integrator.utils import (
+    ABDMCache,
+    ABDMRequestHelper,
+    poll_and_pop_data_from_cache,
+    removes_prefix_for_abdm_mobile,
+)
 
 
 class TestABDMRequestHelper(SimpleTestCase):
@@ -87,3 +92,8 @@ class TestUtils(SimpleTestCase):
     def test_poll_data_absent_in_cache(self):
         data = poll_and_pop_data_from_cache('test_2', 2, 0.1)
         self.assertIsNone(data)
+
+    def test_removes_prefix_for_abdm_mobile(self):
+        self.assertEqual(removes_prefix_for_abdm_mobile('+91-9988776655'), '9988776655')
+        self.assertEqual(removes_prefix_for_abdm_mobile('+919988776655'), '9988776655')
+        self.assertEqual(removes_prefix_for_abdm_mobile('9988776655'), '9988776655')

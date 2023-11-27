@@ -83,3 +83,27 @@ class HealthDataTransfer(models.Model):
 
     class Meta:
         app_label = 'abdm_hip'
+
+
+class PatientDiscoveryRequest(models.Model):
+    transaction_id = models.UUIDField(unique=True)
+    patient_reference_number = models.CharField(max_length=255, null=True)
+    patient_display = models.TextField(null=True)
+    hip_id = models.CharField(max_length=255)
+    care_contexts = models.JSONField(default=list)
+    error = models.JSONField(null=True)
+    date_created = models.DateTimeField(auto_now_add=True)
+    last_modified = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        app_label = 'abdm_hip'
+
+
+class PatientLinkRequest(models.Model):
+    discovery_request = models.ForeignKey(PatientDiscoveryRequest, on_delete=models.CASCADE,
+                                          related_name='link_requests')
+    otp_transaction_id = models.UUIDField(unique=True, null=True)
+    link_request_details = models.OneToOneField(LinkRequestDetails, on_delete=models.CASCADE,
+                                                related_name='patient_link_request')
+    date_created = models.DateTimeField(auto_now_add=True)
+    last_modified = models.DateTimeField(auto_now=True)

@@ -1,5 +1,4 @@
-# TODO Use logging for print statements
-
+import logging
 import os
 
 # Same package as used in HQ
@@ -10,6 +9,8 @@ from abdm_integrator.utils import json_from_file
 
 parser_config_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'config.json')
 parser_config = json_from_file(parser_config_path)
+
+logger = logging.getLogger('abdm_integrator')
 
 
 class FHIRUnsupportedHIType(Exception):
@@ -76,7 +77,11 @@ def parse_fhir_bundle(fhir_bundle):
     for resource_type in HEALTH_INFO_TYPE_RESOURCES_MAP[health_information_type]:
         config = get_config_for_resource_type(resource_type)
         if not config:
-            print(f'Missing Configuration for {resource_type} obtained in HIType {health_information_type}')
+            logger.error(
+                'ABDM HIU Parsing Error: Missing Configuration for %s obtained in HIType %s',
+                resource_type,
+                health_information_type
+            )
             continue
         for resource in resource_type_to_resources.get(resource_type, []):
             for section in config['sections']:
@@ -96,8 +101,18 @@ def _process_section(section, resource_type, resource):
             if section_entry_data['value']:
                 section_data['entries'].append(section_entry_data)
         except JsonpathError as err:
-            print(f"Invalid path for {resource_type}:{section_data['section']}:{section_entry['label']}"
-                  f" and error: {err}")
+            logger.error(
+                'ABDM HIU Parsing Error: Invalid path for %s:%s:%s and error: %s',
+                resource_type,
+                section_data['section'],
+                section_entry['label'],
+                err
+            )
         except Exception as err:
-            print(f"Error for {resource_type}:{section_entry['label']} and error:{err}")
+            logger.exception(
+                'ABDM HIU Parsing Error: Error for %s:%s and error: %s',
+                resource_type,
+                section_entry['label'],
+                err
+            )
     return section_data

@@ -1,3 +1,4 @@
+import logging
 from copy import deepcopy
 from dataclasses import dataclass
 
@@ -56,6 +57,8 @@ from abdm_integrator.utils import (
     poll_and_pop_data_from_cache,
     removes_prefix_for_abdm_mobile,
 )
+
+logger = logging.getLogger('abdm_integrator')
 
 
 class LinkCareContextRequest(HIPBaseView):
@@ -222,8 +225,7 @@ class GatewayCareContextsDiscoverProcessor:
                 'message': HIPError.CUSTOM_ERRORS[HIPError.CODE_MULTIPLE_PATIENTS_FOUND]
             }
         except Exception as err:
-            # TODO Use logging instead
-            print(f'Error occurred while discovering patient : {err}')
+            logger.exception('ABDM : Error occurred while discovering patient : %s', err)
             error = {
                 'code': HIPError.CODE_INTERNAL_ERROR,
                 'message': HIPError.CUSTOM_ERRORS[HIPError.CODE_INTERNAL_ERROR]

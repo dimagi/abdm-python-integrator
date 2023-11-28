@@ -10,6 +10,7 @@ from abdm_integrator.const import (
     CALLBACK_RESPONSE_CACHE_TIMEOUT,
     AuthenticationMode,
     AuthFetchModesPurpose,
+    Gender,
     IdentifierType,
     LinkRequestInitiator,
     LinkRequestStatus,
@@ -170,7 +171,7 @@ def patient_details_from_request(patient_data):
     patient_details = PatientDetails(
         id=patient_data['id'],
         name=patient_data['name'],
-        gender=patient_data['gender'],
+        gender=Gender.TEXT_MAP.get(patient_data['gender']),
         year_of_birth=patient_data['yearOfBirth'],
     )
     for identifier in patient_data['verifiedIdentifiers']:

@@ -11,4 +11,8 @@ class UserAuthError:
 
 
 user_auth_error_response_handler = APIErrorResponseHandler(UserAuthError.CODE_PREFIX)
-user_auth_gateway_error_response_handler = APIErrorResponseHandler(UserAuthError.CODE_PREFIX, error_details=False)
+user_auth_gateway_error_response_handler = APIErrorResponseHandler(
+    UserAuthError.CODE_PREFIX,
+    error_details=False,
+    log_errors=True
+)

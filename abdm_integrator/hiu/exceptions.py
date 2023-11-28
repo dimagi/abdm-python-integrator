@@ -24,7 +24,11 @@ class HIUError:
 
 
 hiu_error_response_handler = APIErrorResponseHandler(HIUError.CODE_PREFIX)
-hiu_gateway_error_response_handler = APIErrorResponseHandler(HIUError.CODE_PREFIX, error_details=False)
+hiu_gateway_error_response_handler = APIErrorResponseHandler(
+    HIUError.CODE_PREFIX,
+    error_details=False,
+    log_errors=True
+)
 
 
 class HealthDataReceiverException(Exception):

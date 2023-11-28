@@ -1,9 +1,12 @@
+import logging
 from dataclasses import dataclass
 
 from drf_standardized_errors.handler import exception_handler as drf_standardized_exception_handler
 from rest_framework.exceptions import APIException
 from rest_framework.response import Response
 from rest_framework.status import HTTP_500_INTERNAL_SERVER_ERROR
+
+logger = logging.getLogger('abdm_integrator')
 
 ERROR_FUTURE_DATE_MESSAGE = 'This field must be in future'
 ERROR_PAST_DATE_MESSAGE = 'This field must be in past'
@@ -97,17 +100,44 @@ class CustomError(CustomAPIException):
 class APIErrorResponseHandler:
     standard_errors = STANDARD_ERRORS
 
-    def __init__(self, error_code_prefix, error_details=True):
+    def __init__(self, error_code_prefix, error_details=True, log_errors=False):
         self.error_code_prefix = error_code_prefix
         self.error_details = error_details
+        self.log_errors = log_errors
 
     def get_exception_handler(self):
         def _handler(exc, context):
             if isinstance(exc, CustomAPIException):
-                return self.generate_response_from_custom_exception(exc.status_code, exc.error)
-            response = drf_standardized_exception_handler(exc, context)
-            return self.format_standard_error_response(response)
+                response = self.generate_response_from_custom_exception(exc.status_code, exc.error)
+            else:
+                response = drf_standardized_exception_handler(exc, context)
+                response = self.format_standard_error_response(response)
+            if self.log_errors:
+                self._log_error(context['request'], response)
+            return self._handle_error_details(response)
         return _handler
+
+    def _handle_error_details(self, response):
+        if response is not None:
+            if not self.error_details or response.status_code == HTTP_500_INTERNAL_SERVER_ERROR:
+                del response.data['error']['details']
+        return response
+
+    @staticmethod
+    def _log_error(request, response):
+        # request_id and callback_request_id are applicable for gateway facing APIs.
+        try:
+            callback_request_id = request.data['resp']['requestId']
+        except KeyError:
+            callback_request_id = None
+        logger.error(
+            'ABDM Request Error: path=%s, status=%s, request_id=%s, callback_request_id=%s, error=%s',
+            request.path,
+            response.status_code,
+            request.data.get('requestId'),
+            callback_request_id,
+            response.data.get('error')
+        )
 
     def _error_from_status(self, status):
         return {
@@ -151,15 +181,14 @@ class APIErrorResponseHandler:
         """
         if response is not None:
             data = {
-                'error': self._error_from_status(response.status_code)
+                'error': {
+                    'code': int(f'{self.error_code_prefix}{response.status_code}'),
+                    'message': self.standard_errors.get(response.status_code),
+                    'details': response.data.get('errors', [])
+                }
             }
-            if self.error_details and response.status_code != HTTP_500_INTERNAL_SERVER_ERROR:
-                data['error']['details'] = response.data.get('errors', [])
             response.data = data
         return response
 
     def generate_response_from_custom_exception(self, status_code, error):
-        data = {'error': error}
-        if not self.error_details:
-            del data['error']['details']
-        return Response(status=status_code, data=data)
+        return Response(status=status_code, data={'error': error})

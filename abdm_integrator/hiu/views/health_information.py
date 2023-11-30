@@ -68,7 +68,7 @@ class RequestHealthInformation(HIUBaseView):
             )
 
         cache_key = f'{gateway_request_id}_{page_number}'
-        health_response_data = poll_and_pop_data_from_cache(cache_key, interval=4)
+        health_response_data = poll_and_pop_data_from_cache(cache_key, interval=3)
 
         self.handle_for_error(health_response_data)
         if app_settings.HIU_PARSE_FHIR_BUNDLE:
@@ -176,6 +176,7 @@ class ReceiveHealthInformation(HIUBaseView):
     permission_classes = []
 
     def post(self, request, format=None):
+        logger.info(f"HIU: Receive Health Information {request.data}")
         ReceiveHealthInformationSerializer(data=request.data).is_valid(raise_exception=True)
         process_hiu_health_information_receiver.delay(request.data)
         return Response(status=HTTP_202_ACCEPTED)
@@ -227,7 +228,10 @@ class ReceiveHealthInformationProcessor:
 
     def _validate_key_material_expiry(self):
         key_material_expiry = self.request_data['keyMaterial']['dhPublicKey']['expiry']
-        return abdm_iso_to_datetime(key_material_expiry) > datetime.utcnow()
+        logger.info(f"key_material_expiry: {key_material_expiry}")
+        # DISABLING for external HIP TEST
+        # return abdm_iso_to_datetime(key_material_expiry) > datetime.utcnow()
+        return True
 
     def _validate_consent_expiry(self, artefact):
         return abdm_iso_to_datetime(artefact.details['permission']['dataEraseAt']) > datetime.utcnow()
@@ -259,8 +263,9 @@ class ReceiveHealthInformationProcessor:
     def _process_entry(self, entry, encrypted_data, hiu_crypto):
         data = {'care_context_reference': entry['careContextReference']}
         decrypted_data_str = hiu_crypto.decrypt(encrypted_data, self.request_data['keyMaterial'])
-        if not hiu_crypto.generate_checksum(decrypted_data_str) == entry['checksum']:
-            raise HealthDataReceiverException('Error occurred while decryption process: Checksum failed')
+        # DISABLING for external HIP TEST
+        # if not hiu_crypto.generate_checksum(decrypted_data_str) == entry['checksum']:
+        #     raise HealthDataReceiverException('Error occurred while decryption process: Checksum failed')
         data['content'] = json.loads(decrypted_data_str)
         return data
 

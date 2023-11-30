@@ -131,8 +131,9 @@ class APIErrorResponseHandler:
         except KeyError:
             callback_request_id = None
         logger.error(
-            'ABDM Request Error: path=%s, status=%s, request_id=%s, callback_request_id=%s, error=%s',
+            'ABDM Request Error: path=%s, headers=%s, status=%s, request_id=%s, callback_request_id=%s, error=%s',
             request.path,
+            request.headers,
             response.status_code,
             request.data.get('requestId'),
             callback_request_id,

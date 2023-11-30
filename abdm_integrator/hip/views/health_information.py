@@ -29,6 +29,9 @@ from abdm_integrator.hip.views.base import HIPGatewayBaseView
 from abdm_integrator.settings import app_settings
 from abdm_integrator.utils import ABDMRequestHelper, abdm_iso_to_datetime
 
+import logging
+logger = logging.getLogger('abdm_integrator')
+
 
 class GatewayHealthInformationRequest(HIPGatewayBaseView):
 
@@ -309,6 +312,8 @@ class HealthDataTransferProcessor:
                 timeout=60
             )
             resp.raise_for_status()
+            logger.info('HIP: Send data to HIU: api_path=%s, payload=%s, status=%s, response=%s',
+                        self.hi_request['dataPushUrl'], payload, resp.status_code, resp.content)
         except Exception as err:
             raise HealthDataTransferException(f'Error occurred while sending health data to HIU: {err}')
 

@@ -28,7 +28,7 @@ class ReceiveHealthInformationSerializer(serializers.Serializer):
 
 class EntrySerializer(serializers.Serializer):
     media = serializers.ChoiceField(choices=[HEALTH_INFORMATION_MEDIA_TYPE])
-    checksum = serializers.CharField()
+    checksum = serializers.CharField(allow_blank=True)
     careContextReference = serializers.CharField()
 
 

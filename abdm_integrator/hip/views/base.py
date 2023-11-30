@@ -1,6 +1,8 @@
+from django.utils.decorators import method_decorator
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 
+from abdm_integrator._api_logger import log_api
 from abdm_integrator.hip.exceptions import hip_error_response_handler, hip_gateway_error_response_handler
 from abdm_integrator.settings import app_settings
 from abdm_integrator.utils import ABDMGatewayAuthentication
@@ -14,6 +16,7 @@ class HIPBaseView(APIView):
         return hip_error_response_handler.get_exception_handler()
 
 
+@method_decorator(log_api, name='dispatch')
 class HIPGatewayBaseView(APIView):
     authentication_classes = [ABDMGatewayAuthentication]
     permission_classes = [IsAuthenticated]

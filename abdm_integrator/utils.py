@@ -59,13 +59,15 @@ class ABDMRequestHelper:
             resp = requests.get(url=self.abha_base_url + api_path, headers=self.headers, params=params,
                                 timeout=timeout or self.default_timeout)
             resp.raise_for_status()
+            logger.info('ABHA GET: path=%s, headers=%s, params=%s, status=%s, response=%s', api_path, self.headers, params,
+                        resp.status_code, _get_json_from_resp(resp))
             # ABHA APIS may not return 'application/json' content type in headers as per swagger doc
             return _get_json_from_resp(resp)
         except requests.Timeout:
             logger.error('ABHA GET Error: request timeout, path=%s', api_path)
             raise ABDMServiceUnavailable()
         except requests.HTTPError as err:
-            self._handle_abha_http_error(api_path, err)
+            self._handle_abha_http_error(api_path, err, self.headers, params)
 
     def _post(self, url, payload, timeout=None):
         self.headers.update({"Authorization": f"Bearer {self.get_access_token()}"})
@@ -77,23 +79,29 @@ class ABDMRequestHelper:
     def abha_post(self, api_path, payload, timeout=None):
         try:
             resp = self._post(self.abha_base_url + api_path, payload, timeout)
+            logger.info('ABHA POST: path=%s, headers=%s, payload=%s, status=%s, response=%s', api_path, self.headers, payload,
+                        resp.status_code, _get_json_from_resp(resp))
             # ABHA APIS may not return 'application/json' content type in headers as per swagger doc
             return _get_json_from_resp(resp)
         except requests.Timeout:
             logger.error('ABHA POST Error: request timeout, path=%s', api_path)
             raise ABDMServiceUnavailable()
         except requests.HTTPError as err:
-            self._handle_abha_http_error(api_path, err, request_type='POST')
+            self._handle_abha_http_error(api_path, err, self.headers, payload, request_type='POST')
+
 
     def gateway_post(self, api_path, payload, timeout=None):
         try:
             resp = self._post(self.gateway_base_url + api_path, payload, timeout)
+            logger.info('Gateway POST: path=%s, headers=%s, payload=%s, status=%s, response=%s', api_path, self.headers, payload,
+                        resp.status_code, self.gateway_json_from_response(resp))
         except requests.Timeout:
             logger.error('Gateway POST Error: request timeout, path=%s', api_path)
             raise ABDMServiceUnavailable()
         except requests.HTTPError as err:
             error = self.gateway_json_from_response(err.response).get('error', {})
-            logger.error('Gateway POST Error: path=%s, status=%s, request_id=%s, error=%s', api_path,
+            logger.error('Gateway POST Error: path=%s, headers=%s, payload=%s, status=%s, request_id=%s, error=%s', api_path,
+                         self.headers, payload,
                          err.response.status_code, payload.get('requestId'), error)
             raise ABDMGatewayError(error.get('code'), error.get('message'))
         return self.gateway_json_from_response(resp)
@@ -112,9 +120,9 @@ class ABDMRequestHelper:
         return {'requestId': str(uuid.uuid4()), 'timestamp': datetime.utcnow().isoformat()}
 
     @staticmethod
-    def _handle_abha_http_error(api_path, http_error, request_type='GET'):
+    def _handle_abha_http_error(api_path, http_error, headers, payload, request_type='GET'):
         error = _get_json_from_resp(http_error.response)
-        logger.error('ABHA %s Error: path=%s, status=%s, error=%s', request_type, api_path,
+        logger.error('ABHA %s Error: path=%s, headers=%s, payload=%s, status=%s, error=%s', request_type, api_path, headers, payload,
                      http_error.response.status_code, error)
         detail_message = error['details'][0]['message'] if error.get('details') else error.get('message')
         raise ABDMGatewayError(error.get('code'), detail_message)

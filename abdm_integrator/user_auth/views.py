@@ -1,8 +1,10 @@
+from django.utils.decorators import method_decorator
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.status import HTTP_200_OK, HTTP_202_ACCEPTED
 from rest_framework.views import APIView
 
+from abdm_integrator._api_logger import log_api
 from abdm_integrator.const import CALLBACK_RESPONSE_CACHE_TIMEOUT, AuthenticationMode
 from abdm_integrator.exceptions import ABDMGatewayCallbackTimeout, ABDMGatewayError
 from abdm_integrator.settings import app_settings
@@ -44,6 +46,7 @@ class UserAuthBaseView(APIView):
         return Response(status=HTTP_200_OK, data=response_data['auth'])
 
 
+@method_decorator(log_api, name='dispatch')
 class UserAuthGatewayBaseView(APIView):
     authentication_classes = [ABDMGatewayAuthentication]
     permission_classes = [IsAuthenticated]

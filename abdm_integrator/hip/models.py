@@ -51,7 +51,7 @@ class LinkCareContext(models.Model):
 
 
 class HIPLinkRequest(models.Model):
-    user = models.ForeignKey(app_settings.USER_MODEL, on_delete=models.PROTECT, related_name='link_requests')
+    user = models.ForeignKey(app_settings.USER_MODEL, on_delete=models.CASCADE, related_name='link_requests')
     gateway_request_id = models.UUIDField(unique=True)
     link_request_details = models.OneToOneField(LinkRequestDetails, on_delete=models.CASCADE,
                                                 related_name='hip_link_request')

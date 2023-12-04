@@ -5,7 +5,7 @@ from abdm_integrator.settings import app_settings
 
 
 class ConsentRequest(models.Model):
-    user = models.ForeignKey(app_settings.USER_MODEL, on_delete=models.PROTECT,
+    user = models.ForeignKey(app_settings.USER_MODEL, on_delete=models.CASCADE,
                              related_name='consent_requests')
     gateway_request_id = models.UUIDField(unique=True)
     consent_request_id = models.UUIDField(null=True, unique=True)
@@ -37,7 +37,7 @@ class ConsentRequest(models.Model):
 
 
 class ConsentArtefact(models.Model):
-    consent_request = models.ForeignKey(ConsentRequest, to_field='consent_request_id', on_delete=models.PROTECT,
+    consent_request = models.ForeignKey(ConsentRequest, to_field='consent_request_id', on_delete=models.CASCADE,
                                         related_name='artefacts')
     gateway_request_id = models.UUIDField(unique=True, null=True)
     artefact_id = models.UUIDField(unique=True)
@@ -53,7 +53,7 @@ class ConsentArtefact(models.Model):
 
 
 class HealthInformationRequest(models.Model):
-    user = models.ForeignKey(app_settings.USER_MODEL, on_delete=models.PROTECT,
+    user = models.ForeignKey(app_settings.USER_MODEL, on_delete=models.CASCADE,
                              related_name='health_information_requests')
     consent_artefact = models.ForeignKey(ConsentArtefact, to_field='artefact_id', on_delete=models.CASCADE,
                                          related_name='health_information_request')

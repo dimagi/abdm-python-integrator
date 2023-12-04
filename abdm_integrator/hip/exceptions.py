@@ -41,7 +41,11 @@ class HIPError:
 
 
 hip_error_response_handler = APIErrorResponseHandler(HIPError.CODE_PREFIX)
-hip_gateway_error_response_handler = APIErrorResponseHandler(HIPError.CODE_PREFIX, error_details=False)
+hip_gateway_error_response_handler = APIErrorResponseHandler(
+    HIPError.CODE_PREFIX,
+    error_details=False,
+    log_errors=True
+)
 
 
 class HealthDataTransferException(Exception):

@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from abdm_integrator.const import GENDER_CHOICES, HealthInformationType, IdentifierType
+from abdm_integrator.const import Gender, HealthInformationType, IdentifierType
 from abdm_integrator.hip.const import SMSOnNotifyStatus
 from abdm_integrator.hip.models import LinkCareContext
 from abdm_integrator.serializers import GatewayCallbackResponseBaseSerializer, GatewayIdSerializer
@@ -56,7 +56,7 @@ class GatewayCareContextsDiscoverSerializer(serializers.Serializer):
 
         id = serializers.CharField()
         name = serializers.CharField()
-        gender = serializers.ChoiceField(choices=GENDER_CHOICES)
+        gender = serializers.ChoiceField(choices=Gender.CHOICES)
         yearOfBirth = serializers.IntegerField()
         verifiedIdentifiers = serializers.ListField(child=IdentifierSerializer(), min_length=1)
         unverifiedIdentifiers = serializers.ListField(child=IdentifierSerializer(), required=False,

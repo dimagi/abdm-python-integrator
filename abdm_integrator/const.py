@@ -12,9 +12,22 @@ CELERY_TASK = app_settings.CELERY_APP.task if app_settings.CELERY_APP else celer
 CELERY_PERIODIC_TASK = app_settings.CELERY_APP.periodic_task if app_settings.CELERY_APP else periodic_task
 
 
-GENDER_CHOICES = ['M', 'F', 'O', 'U']
-
 CALLBACK_RESPONSE_CACHE_TIMEOUT = 10
+
+
+class Gender:
+    MALE = 'M'
+    FEMALE = 'F'
+    OTHER = 'O'
+    UNKNOWN = 'U'
+
+    TEXT_MAP = {
+        MALE: 'male',
+        FEMALE: 'female',
+        OTHER: 'other',
+        UNKNOWN: 'unknown'
+    }
+    CHOICES = list(TEXT_MAP.items())
 
 
 class GatewayAPIPath:

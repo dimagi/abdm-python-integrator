@@ -1,5 +1,6 @@
 import itertools
 import json
+import logging
 from dataclasses import asdict
 from datetime import datetime
 
@@ -25,6 +26,8 @@ from abdm_integrator.hiu.tasks import process_hiu_health_information_receiver
 from abdm_integrator.hiu.views.base import HIUBaseView, HIUGatewayBaseView
 from abdm_integrator.settings import app_settings
 from abdm_integrator.utils import ABDMCache, ABDMRequestHelper, abdm_iso_to_datetime, poll_and_pop_data_from_cache
+
+logger = logging.getLogger('abdm_integrator')
 
 
 class RequestHealthInformation(HIUBaseView):
@@ -126,8 +129,11 @@ class RequestHealthInformation(HIUBaseView):
                 parsed_entry['care_context_reference'] = entry['care_context_reference']
                 parsed_entries.append(parsed_entry)
             except Exception as err:
-                # TODO Use logging instead of print
-                print(f"Parsing error occurred for Care Context {entry['care_context_reference']}: {err}")
+                logger.exception(
+                    'ABDM HIU: Parsing error occurred for Care Context %s: %s',
+                    entry['care_context_reference'],
+                    err
+                )
         return parsed_entries
 
     def handle_for_error(self, health_response_data):
@@ -238,10 +244,12 @@ class ReceiveHealthInformationProcessor:
                 if entry.get('content'):
                     encrypted_data = entry['content']
                     processed_entry = self._process_entry(entry, encrypted_data, hiu_crypto)
-                else:  # TODO Use Logging here
-                    print(f"Entry type link received is not supported yet. "
-                          f"Transaction: {self.request_data['transactionId']}, "
-                          f"Care Context: {entry['careContextReference']}")
+                else:
+                    logger.info(
+                        'ABDM HIU: Entry type link received is not supported. Transaction: %s Care Context: %s',
+                        self.request_data['transactionId'],
+                        entry['careContextReference']
+                    )
                     continue
                 decrypted_entries.append(processed_entry)
         except Exception as err:
@@ -302,8 +310,8 @@ class ReceiveHealthInformationProcessor:
             'transaction_id': self.request_data['transactionId'],
             'doneAt': datetime.utcnow().isoformat(),
             'notifier': {
-                    'type': RequesterType.HIU,
-                    'id': self.get_hiu_id_from_consent()
+                'type': RequesterType.HIU,
+                'id': self.get_hiu_id_from_consent()
             },
             'statusNotification': {
                 'sessionStatus': session_status,

@@ -7,6 +7,7 @@ from unittest.mock import patch
 
 import requests
 from django.contrib.auth.models import User
+from django.test import TestCase
 from django.utils.dateparse import parse_date
 from rest_framework.authtoken.models import Token
 from rest_framework.reverse import reverse
@@ -23,6 +24,7 @@ from abdm_integrator.exceptions import (
 )
 from abdm_integrator.hiu.exceptions import HIUError
 from abdm_integrator.hiu.models import ConsentArtefact, ConsentRequest
+from abdm_integrator.hiu.tasks import _process_hiu_expired_consents
 from abdm_integrator.tests.utils import APITestHelperMixin
 from abdm_integrator.utils import abdm_iso_to_datetime, json_from_file
 
@@ -164,6 +166,7 @@ class TestListConsentsAndArtefactsAPI(APITestCase, APITestHelperMixin):
         artefact_data_1 = {
             'artefact_id': str(uuid.uuid4()),
             'gateway_request_id': str(uuid.uuid4()),
+            # sample data for details. Actual data will contain more fields
             'details': {
                 'hip': {
                     'id': '6004',
@@ -172,8 +175,8 @@ class TestListConsentsAndArtefactsAPI(APITestCase, APITestHelperMixin):
             }
         }
         artefact_data_2 = {
-            'artefact_id': str(str(uuid.uuid4())),
-            'gateway_request_id': str(str(uuid.uuid4())),
+            'artefact_id': str(uuid.uuid4()),
+            'gateway_request_id': str(uuid.uuid4()),
             'details': {
                 'hip': {
                     'id': '6005',
@@ -185,7 +188,7 @@ class TestListConsentsAndArtefactsAPI(APITestCase, APITestHelperMixin):
         ConsentArtefact.objects.create(**artefact_data_2, consent_request=consent_request_1)
         consent_data_2 = {
             'consent_request_id': cls.consent_request_id_2,
-            'gateway_request_id': str(str(uuid.uuid4())),
+            'gateway_request_id': str(uuid.uuid4()),
             'status': ConsentStatus.EXPIRED,
             'health_info_from_date': '2021-05-17T15:12:43.960000',
             'health_info_to_date': '2023-08-07T15:12:43.961000',
@@ -316,3 +319,83 @@ class TestListConsentsAndArtefactsAPI(APITestCase, APITestHelperMixin):
     def test_retrieve_consent_artefact_authentication_error(self):
         res = APIClient().get(f"{reverse('artefacts_retrieve', args=['1'])}")
         self.assert_for_authentication_error(res, HIUError.CODE_PREFIX)
+
+
+class TestConsentExpiryProcessor(TestCase):
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.user = User.objects.create_superuser(username='test_user', password='test')
+        cls.consent_request_id_1 = str(uuid.uuid4())
+        cls.consent_request_id_2 = str(uuid.uuid4())
+        cls.patient_1 = 'test1@sbx'
+        cls._add_consents_data()
+
+    @classmethod
+    def tearDownClass(cls):
+        ConsentArtefact.objects.all().delete()
+        ConsentRequest.objects.all().delete()
+        User.objects.all().delete()
+        super().tearDownClass()
+
+    @staticmethod
+    def _copy_artefact_data(artefact_data):
+        artefact_data_copy = deepcopy(artefact_data)
+        artefact_data_copy['artefact_id'] = str(uuid.uuid4())
+        artefact_data_copy['gateway_request_id'] = str(uuid.uuid4())
+        return artefact_data_copy
+
+    @classmethod
+    def _add_consents_data(cls):
+        consent_data_1 = {
+            'consent_request_id': cls.consent_request_id_1,
+            'gateway_request_id': str(uuid.uuid4()),
+            'status': ConsentStatus.GRANTED,
+            'health_info_from_date': (datetime.utcnow() - timedelta(days=100)).isoformat(),
+            'health_info_to_date': (datetime.utcnow() - timedelta(days=1)).isoformat(),
+            'health_info_types': [
+                HealthInformationType.PRESCRIPTION,
+            ],
+            'expiry_date': (datetime.utcnow() - timedelta(hours=1)).isoformat(),
+            'details': {
+                'patient': {
+                    'id': cls.patient_1
+                }
+            }
+        }
+        consent_request_1 = ConsentRequest.objects.create(**consent_data_1, user=cls.user)
+        artefact_data_1 = {
+            'artefact_id': str(uuid.uuid4()),
+            'gateway_request_id': str(uuid.uuid4()),
+            # sample data for details. Actual data will contain more fields
+            'details': {
+                'hip': {
+                    'id': '6004',
+                    'name': 'Test Eye Care Center '
+                },
+            }
+        }
+        artefact_data_2 = cls._copy_artefact_data(artefact_data_1)
+        ConsentArtefact.objects.create(**artefact_data_1, consent_request=consent_request_1)
+        ConsentArtefact.objects.create(**artefact_data_2, consent_request=consent_request_1)
+
+        consent_data_2 = deepcopy(consent_data_1)
+        consent_data_2['consent_request_id'] = cls.consent_request_id_2
+        consent_data_2['gateway_request_id'] = str(uuid.uuid4())
+        consent_data_2['expiry_date'] = (datetime.utcnow() + timedelta(hours=2)).isoformat()
+
+        consent_request_2 = ConsentRequest.objects.create(**consent_data_2, user=cls.user)
+        artefact_data_3 = cls._copy_artefact_data(artefact_data_1)
+        ConsentArtefact.objects.create(**artefact_data_3, consent_request=consent_request_2)
+
+    def test_process_consent_expiry(self):
+        _process_hiu_expired_consents()
+        self.assertEqual(ConsentRequest.objects.count(), 2)
+        self.assertEqual(ConsentArtefact.objects.count(), 1)
+        consent_request_1 = ConsentRequest.objects.get(consent_request_id=self.consent_request_id_1)
+        self.assertEqual(consent_request_1.status, ConsentStatus.EXPIRED)
+        self.assertEqual(consent_request_1.artefacts.count(), 0)
+        consent_request_2 = ConsentRequest.objects.get(consent_request_id=self.consent_request_id_2)
+        self.assertEqual(consent_request_2.status, ConsentStatus.GRANTED)
+        self.assertEqual(consent_request_2.artefacts.count(), 1)

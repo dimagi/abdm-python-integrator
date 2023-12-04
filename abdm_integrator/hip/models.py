@@ -9,6 +9,7 @@ from abdm_integrator.settings import app_settings
 class ConsentArtefact(models.Model):
     artefact_id = models.UUIDField(unique=True)
     details = models.JSONField()
+    expiry_date = models.DateTimeField()
     signature = models.TextField()
     grant_acknowledgement = models.BooleanField()
     date_created = models.DateTimeField(auto_now_add=True)

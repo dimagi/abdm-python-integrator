@@ -65,11 +65,7 @@ class ABDMRequestHelper:
             logger.error('ABHA GET Error: request timeout, path=%s', api_path)
             raise ABDMServiceUnavailable()
         except requests.HTTPError as err:
-            error = _get_json_from_resp(err.response)
-            logger.error('ABHA GET Error: path=%s, status=%s, error=%s', api_path,
-                         err.response.status_code, error)
-            detail_message = error['details'][0]['message'] if error.get('details') else error.get('message')
-            raise ABDMGatewayError(error.get('code'), detail_message)
+            self._handle_abha_http_error(api_path, err)
 
     def _post(self, url, payload, timeout=None):
         self.headers.update({"Authorization": f"Bearer {self.get_access_token()}"})
@@ -87,11 +83,7 @@ class ABDMRequestHelper:
             logger.error('ABHA POST Error: request timeout, path=%s', api_path)
             raise ABDMServiceUnavailable()
         except requests.HTTPError as err:
-            error = _get_json_from_resp(err.response)
-            logger.error('ABHA POST Error: path=%s, status=%s, error=%s', api_path,
-                         err.response.status_code, error)
-            detail_message = error['details'][0]['message'] if error.get('details') else error.get('message')
-            raise ABDMGatewayError(error.get('code'), detail_message)
+            self._handle_abha_http_error(api_path, err, request_type='POST')
 
     def gateway_post(self, api_path, payload, timeout=None):
         try:
@@ -118,6 +110,14 @@ class ABDMRequestHelper:
     @staticmethod
     def common_request_data():
         return {'requestId': str(uuid.uuid4()), 'timestamp': datetime.utcnow().isoformat()}
+
+    @staticmethod
+    def _handle_abha_http_error(api_path, http_error, request_type='GET'):
+        error = _get_json_from_resp(http_error.response)
+        logger.error('ABHA %s Error: path=%s, status=%s, error=%s', request_type, api_path,
+                     http_error.response.status_code, error)
+        detail_message = error['details'][0]['message'] if error.get('details') else error.get('message')
+        raise ABDMGatewayError(error.get('code'), detail_message)
 
 
 def _get_json_from_resp(resp):

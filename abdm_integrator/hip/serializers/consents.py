@@ -28,8 +28,8 @@ class GatewayConsentRequestNotifySerializer(serializers.Serializer):
 
         consentId = serializers.CharField()
         status = serializers.ChoiceField(choices=ConsentStatus.HIP_GATEWAY_CHOICES)
-        consentDetail = ConsentDetailSerializer(required=False)
-        signature = serializers.CharField()
+        consentDetail = ConsentDetailSerializer(required=False, allow_null=True)
+        signature = serializers.CharField(required=False, allow_null=True)
         grantAcknowledgement = serializers.BooleanField()
 
     requestId = serializers.UUIDField()

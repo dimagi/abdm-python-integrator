@@ -58,6 +58,9 @@ class HIPLinkRequest(models.Model):
     date_created = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
 
+    class Meta:
+        app_label = 'abdm_hip'
+
 
 class HealthInformationRequest(models.Model):
     consent_artefact = models.ForeignKey(ConsentArtefact, to_field='artefact_id', on_delete=models.CASCADE,
@@ -108,3 +111,6 @@ class PatientLinkRequest(models.Model):
                                                 related_name='patient_link_request')
     date_created = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        app_label = 'abdm_hip'

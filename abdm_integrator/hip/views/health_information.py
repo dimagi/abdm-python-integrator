@@ -221,6 +221,7 @@ class HealthDataTransferProcessor:
         valid_health_info_types = self.validate_health_information_types(linked_care_context)
         self.validate_health_info_date_range(linked_care_context)
         fhir_data = self.fetch_fhir_data_from_hrp(linked_care_context, valid_health_info_types)
+        logger.info("HIP: {} FHIR data being sent: {}".format(self.health_information_request.transaction_id, fhir_data))
         for bundle in fhir_data:
             encrypted_entry = self.get_encrypted_entry(care_context['careContextReference'], bundle)
             entries.append(encrypted_entry)

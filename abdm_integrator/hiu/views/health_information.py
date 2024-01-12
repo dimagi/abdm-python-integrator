@@ -71,9 +71,11 @@ class RequestHealthInformation(HIUBaseView):
         health_response_data = poll_and_pop_data_from_cache(cache_key, interval=3)
 
         self.handle_for_error(health_response_data)
+        logger.info("HIU: Health data received %s", health_response_data['entries'])
         if app_settings.HIU_PARSE_FHIR_BUNDLE:
             health_response_data['entries'] = self.parse_fhir_bundle_for_ui(health_response_data['entries'])
         response_data = self.generate_response_data(health_response_data, current_url, artefact.artefact_id)
+        logger.info("HIU: Formatted Health data received %s", response_data)
         return Response(status=HTTP_200_OK, data=response_data)
 
     def validate_artefact_expiry(self, artefact):

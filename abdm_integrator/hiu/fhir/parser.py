@@ -21,12 +21,9 @@ class JsonpathError(Exception):
     pass
 
 
-def simplify_list(seq):
-    if len(seq) == 1:
-        return seq[0]
-    if not seq:
-        return None
-    return seq
+def simplify_list_as_string(seq):
+    result = ",".join(str(element) for element in seq)
+    return result
 
 
 def resource_value_using_json_path(json_path, resource):
@@ -36,7 +33,7 @@ def resource_value_using_json_path(json_path, resource):
         raise JsonpathError from err
     matches = jsonpath_expr.find(resource)
     values = [m.value for m in matches]
-    return simplify_list(values)
+    return simplify_list_as_string(values)
 
 
 def resource_type_to_resources_from_bundle(fhir_bundle):

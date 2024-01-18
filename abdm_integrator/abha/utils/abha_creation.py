@@ -55,6 +55,10 @@ def validate_mobile_number(mobile_number):
     return bool(re.match(r"^(\+91)?\d{10}$", mobile_number))
 
 
+def validate_abha_address_without_suffix(abha_address):
+    return bool(re.match(r"^[a-zA-Z0-9]([a-zA-Z0-9_.]){6,16}[a-zA-Z0-9]$", abha_address))
+
+
 def add_health_id_suffix_if_absent(health_id):
     suffix = f'@{app_settings.X_CM_ID}'
     if not health_id.endswith(suffix):

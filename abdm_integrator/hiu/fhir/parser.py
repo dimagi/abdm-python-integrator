@@ -22,10 +22,6 @@ class JsonpathError(Exception):
 
 
 def simplify_list_as_string(seq):
-    # if len(seq) == 1:
-    #     return seq[0]
-    # if not seq:
-    #     return None
     result = ",".join(str(element) for element in seq)
     return result
 

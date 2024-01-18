@@ -13,6 +13,8 @@ from abdm_integrator.abha.const import (
     EXISTS_BY_HEALTH_ID,
     SEARCH_BY_HEALTH_ID_URL,
 )
+from abdm_integrator.abha.exceptions import INVALID_ABHA_ADDRESS_MESSAGE
+from abdm_integrator.settings import app_settings
 
 
 class TestABHAVerification(APITestCase):
@@ -124,9 +126,17 @@ class TestABHAVerification(APITestCase):
     def test_get_health_id_existence_check_success(self):
         with patch('abdm_integrator.utils.ABDMRequestHelper.abha_post',
                    side_effect=TestABHAVerification._mock_abdm_http_post):
-            response = self.client.post(reverse("exists_by_health_id"), {"health_id": "user@abdm"})
+            response = self.client.post(reverse("exists_by_health_id"), {"health_id": "user_1234"})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.json(), {'health_id': 'user@abdm', 'exists': True})
+        self.assertEqual(response.json(), {'health_id': f'user_1234@{app_settings.X_CM_ID}', 'exists': True})
+
+    def test_get_health_id_existence_check_validation_failure(self):
+        with patch('abdm_integrator.utils.ABDMRequestHelper.abha_post',
+                   side_effect=TestABHAVerification._mock_abdm_http_post):
+            response = self.client.post(reverse("exists_by_health_id"), {"health_id": "_user1234"})
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.json().get("message"), self.invalid_req_msg)
+        self.assertEqual(response.json().get("details")[0]['message'], INVALID_ABHA_ADDRESS_MESSAGE)
 
     def test_get_health_id_existence_check_failure(self):
         response = self.client.post(reverse("exists_by_health_id"))

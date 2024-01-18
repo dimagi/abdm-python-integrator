@@ -20,6 +20,7 @@ abha_verification_urls = [
     path('api/search_health_id', abha_verification.SearchHealthId.as_view(), name='search_health_id'),
     path('api/get_health_card_png', abha_verification.GetHealthCardPng.as_view(),
          name='get_health_card_png'),
+    # below API is used to check health id availability while creation
     path('api/exists_by_health_id', abha_verification.GetExistenceByHealthId.as_view(),
          name='exists_by_health_id'),
 ]

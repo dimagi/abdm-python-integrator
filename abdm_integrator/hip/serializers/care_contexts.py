@@ -29,6 +29,7 @@ class LinkCareContextRequestSerializer(serializers.Serializer):
     accessToken = serializers.CharField()
     hip_id = serializers.CharField()
     patient = PatientSerializer()
+    healthId = serializers.CharField()
 
 
 class GatewayOnAddContextsSerializer(GatewayCallbackResponseBaseSerializer):

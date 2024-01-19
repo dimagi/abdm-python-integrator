@@ -1,7 +1,15 @@
 from django.utils.decorators import method_decorator
 
-from abdm_integrator.abha.exceptions import ABHA_ERROR_MESSAGES, ABHA_IN_USE_ERROR_CODE
+from abdm_integrator.abha.exceptions import (
+    ABHA_ERROR_MESSAGES,
+    ABHA_IN_USE_ERROR_CODE,
+    INVALID_ABHA_ADDRESS_MESSAGE,
+)
 from abdm_integrator.abha.utils import abha_verification as abdm_util
+from abdm_integrator.abha.utils.abha_creation import (
+    add_health_id_suffix_if_absent,
+    validate_abha_address_without_suffix,
+)
 from abdm_integrator.abha.utils.abha_verification import get_account_information
 from abdm_integrator.abha.utils.decorators import required_request_params
 from abdm_integrator.abha.utils.response import get_bad_response, parse_response
@@ -62,8 +70,7 @@ class SearchHealthId(ABHABaseView):
     def post(self, request, format=None):
         health_id = request.data.get("health_id")
         try:
-            if (app_settings.HRP_INTEGRATION_CLASS().
-                    check_if_abha_registered(health_id, request.user)):
+            if app_settings.HRP_INTEGRATION_CLASS().check_if_abha_registered(health_id, request.user):
                 return get_bad_response(ABHA_ERROR_MESSAGES[ABHA_IN_USE_ERROR_CODE],
                                         error_code=ABHA_IN_USE_ERROR_CODE)
         except NotImplementedError:
@@ -85,10 +92,15 @@ class GetExistenceByHealthId(ABHABaseView):
     @method_decorator(required_request_params(["health_id"]))
     def post(self, request, format=None):
         health_id = request.data.get("health_id")
+        if not validate_abha_address_without_suffix(health_id):
+            return get_bad_response(INVALID_ABHA_ADDRESS_MESSAGE)
+        health_id = add_health_id_suffix_if_absent(health_id)
         try:
             if app_settings.HRP_INTEGRATION_CLASS().check_if_abha_registered(health_id, request.user):
-                return get_bad_response(ABHA_ERROR_MESSAGES[ABHA_IN_USE_ERROR_CODE],
-                                        error_code=ABHA_IN_USE_ERROR_CODE)
+                return get_bad_response(
+                    ABHA_ERROR_MESSAGES[ABHA_IN_USE_ERROR_CODE],
+                    error_code=ABHA_IN_USE_ERROR_CODE
+                )
         except NotImplementedError:
             pass
         resp = abdm_util.exists_by_health_id(health_id)

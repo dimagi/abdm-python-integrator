@@ -38,7 +38,7 @@
                 "section": "Practitioner Details",
                 "entries": [
                     {
-                        "path": "$.name[0].prefix",
+                        "path": "$.name[0].prefix[0]",
                         "label": "Prefix"
                     },
                     {
@@ -119,15 +119,15 @@
                         "label": "Instructions"
                     },
                     {
-                        "path": "$.dosageInstruction[0].additionalInstruction[0].coding[k].display",
+                        "path": "$.dosageInstruction[0].additionalInstruction[0].coding[0].display",
                         "label": "Additional Instruction"
                     },
                     {
-                        "path": "$.dosageInstruction[0].route[0].coding[k].display",
+                        "path": "$.dosageInstruction[0].route[0].coding[0].display",
                         "label": "Route"
                     },
                     {
-                        "path": "$.dosageInstruction[0].method[0].coding[k].display",
+                        "path": "$.dosageInstruction[0].method[0].coding[0].display",
                         "label": "Method"
                     }
                 ]
@@ -413,7 +413,7 @@
                 "section": "ImmunizationRecommendation ",
                 "entries": [
                     {
-                        "path": "$.recommendation[0].vaccineCode[0].coding[k].display",
+                        "path": "$.recommendation[0].vaccineCode[0].coding[0].display",
                         "label": "Vaccine Name"
                     },
                     {
@@ -550,15 +550,15 @@
                                 "label": "Instructions"
                             },
                             {
-                                "path": "$.dosageInstruction[0].additionalInstruction[0].coding[k].display",
+                                "path": "$.dosageInstruction[0].additionalInstruction[0].coding[0].display",
                                 "label": "Additional Instruction"
                             },
                             {
-                                "path": "$.dosageInstruction[0].route[0].coding[k].display",
+                                "path": "$.dosageInstruction[0].route[0].coding[0].display",
                                 "label": "Route"
                             },
                             {
-                                "path": "$.dosageInstruction[0].method[0].coding[k].display",
+                                "path": "$.dosageInstruction[0].method[0].coding[0].display",
                                 "label": "Method"
                             }
                         ]

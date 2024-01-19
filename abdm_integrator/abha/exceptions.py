@@ -7,6 +7,7 @@ ABHA_ERROR_MESSAGES = {
 
 INVALID_AADHAAR_MESSAGE = "Aadhaar number is not valid"
 INVALID_MOBILE_MESSAGE = "Mobile number is not valid"
+INVALID_ABHA_ADDRESS_MESSAGE = "Abha address is not valid"
 
 
 class AbhaError:

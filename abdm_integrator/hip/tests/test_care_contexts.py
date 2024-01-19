@@ -68,6 +68,7 @@ class TestHIPLinkCareContextAPI(APITestCase, APITestHelperMixin):
         return {
             'accessToken': 'abcdefghi',
             'hip_id': '1001',
+            'healthId': 'test@sbx',
             'patient': {
                 'referenceNumber': 'Test_001',
                 'display': 'Test User',
@@ -123,6 +124,7 @@ class TestHIPLinkCareContextAPI(APITestCase, APITestHelperMixin):
         self.assertEqual(LinkCareContext.objects.all().count(), count)
         self.assertEqual(HIPLinkRequest.objects.all().count(), count)
 
+    @patch('abdm_integrator.hip.views.care_contexts.process_care_context_link_notify')
     @patch('abdm_integrator.hip.views.care_contexts.ABDMRequestHelper.gateway_post', return_value={})
     @patch('abdm_integrator.hip.views.care_contexts.ABDMRequestHelper.common_request_data')
     def test_link_care_context_success(self, mocked_common_request_data, *args):

@@ -39,6 +39,12 @@ def process_patient_care_context_link_confirm_request(self, request_data):
     GatewayCareContextsLinkConfirmProcessor(request_data).process_request()
 
 
+@CELERY_TASK(queue=app_settings.CELERY_QUEUE, bind=True, ignore_result=False)
+def process_care_context_link_notify(self, link_request_data):
+    from abdm_integrator.hip.views.care_contexts import gateway_care_contexts_link_notify
+    gateway_care_contexts_link_notify(link_request_data)
+
+
 @CELERY_PERIODIC_TASK(run_every=crontab(hour='*/2', minute='0'), queue=app_settings.CELERY_QUEUE)
 def process_hip_expired_consents():
     _process_hip_expired_consents()

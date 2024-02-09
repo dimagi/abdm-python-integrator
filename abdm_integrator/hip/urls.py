@@ -5,6 +5,7 @@ from abdm_integrator.hip.views.care_contexts import (
     GatewayCareContextsDiscover,
     GatewayCareContextsLinkConfirm,
     GatewayCareContextsLinkInit,
+    GatewayCareContextsLinkOnNotify,
     GatewayOnAddContexts,
     GatewayPatientSMSOnNotify,
     LinkCareContextRequest,
@@ -31,4 +32,6 @@ hip_urls = [
          name='gateway_care_contexts_link_confirm'),
     path(f'{GATEWAY_CALLBACK_URL_PREFIX}/patients/sms/on-notify', GatewayPatientSMSOnNotify.as_view(),
          name='gateway_patient_sms_on_notify'),
+    path(f'{GATEWAY_CALLBACK_URL_PREFIX}/links/context/on-notify', GatewayCareContextsLinkOnNotify.as_view(),
+         name='gateway_care_contexts_link_on_notify'),
 ]

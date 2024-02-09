@@ -45,6 +45,7 @@ from abdm_integrator.hip.serializers.care_contexts import (
     PatientSMSNotifySerializer,
 )
 from abdm_integrator.hip.tasks import (
+    process_care_context_link_notify,
     process_patient_care_context_discover_request,
     process_patient_care_context_link_confirm_request,
     process_patient_care_context_link_init_request,
@@ -76,7 +77,9 @@ class LinkCareContextRequest(HIPBaseView):
         gateway_request_id = self.gateway_add_care_contexts(serializer.data)
         self.save_link_request(request.user, gateway_request_id, serializer.data)
         response_data = poll_and_pop_data_from_cache(gateway_request_id)
-        return self.generate_response_from_callback(response_data)
+        response = self.generate_response_from_callback(response_data)
+        process_care_context_link_notify.delay(serializer.data)
+        return response
 
     def ensure_not_already_linked(self, request_data):
         care_contexts_references = [care_context['referenceNumber']
@@ -154,6 +157,45 @@ class GatewayOnAddContexts(HIPGatewayBaseView):
         else:
             link_request_details.status = LinkRequestStatus.SUCCESS
         link_request_details.save()
+
+
+def gateway_care_contexts_link_notify(link_request_data):
+    for care_context in link_request_data['patient']['careContexts']:
+        payload = ABDMRequestHelper.common_request_data()
+        payload['notification'] = {
+            'patient': {
+                'id': link_request_data['healthId']
+            },
+            'careContext': {
+                'patientReference': link_request_data['patient']['referenceNumber'],
+                'careContextReference': care_context['referenceNumber']
+            },
+            'hiTypes': care_context['hiTypes'],
+            'date': care_context['additionalInfo']['record_date'],
+            'hip': {
+                'id': link_request_data['hip_id']
+            }
+        }
+        try:
+            ABDMRequestHelper().gateway_post(HIPGatewayAPIPath.CARE_CONTEXTS_LINK_NOTIFY, payload)
+        except (ABDMServiceUnavailable, ABDMGatewayError):
+            pass
+
+
+class GatewayCareContextsLinkOnNotify(HIPGatewayBaseView):
+
+    def post(self, request, format=None):
+        # Request body schema is same as GatewayOnAddContextsSerializer
+        serializer = GatewayOnAddContextsSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        # Just logs error since as no specific action is required.
+        if request.data.get('error'):
+            logger.error(
+                'Care Context Link On Notify. callback_request_id=%s, error=%s',
+                request.data['resp']['requestId'],
+                request.data['error']
+            )
+        return Response(status=HTTP_202_ACCEPTED)
 
 
 @dataclass

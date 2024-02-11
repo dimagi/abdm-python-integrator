@@ -56,8 +56,15 @@ def snomed_code_title_from_bundle(resource_type_to_resources):
 
 def parse_fhir_bundle(fhir_bundle):
     """
-    Parses the fhir bundle into a format easier to be displayed on UI.
-    Parsing is done on the basis of configuration defined at 'config.json'.
+    Parses the fhir bundle into a format easier to be displayed on UI.Parsing is done on the basis of configuration
+    defined at 'config.json'.
+    limitations: Current config json and parsing logic does not support parsing multiple entries for a property.
+    (Usually fhir bundle contains only one entry however can contain multiple)
+    For e.g - the below config supports only 1st entry obtained in the name at index 0.
+    {
+        "path": "$.name[0].text",
+        "label": "Patient Registered As"
+    }
     """
     resource_type_to_resources = resource_type_to_resources_from_bundle(fhir_bundle)
 

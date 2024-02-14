@@ -1,0 +1,60 @@
+{
+    "title": "Immunization record",
+    "health_information_type": "ImmunizationRecord",
+    "content": [
+        {
+            "section": "Patient Details",
+            "resource": "Patient",
+            "entries": [
+                {
+                    "label": "Patient Registered As",
+                    "value": "ABC"
+                }
+            ]
+        },
+        {
+            "section": "Practitioner Details",
+            "resource": "Practitioner",
+            "entries": [
+                {
+                    "label": "Name",
+                    "value": "Dr. DEF"
+                }
+            ]
+        },
+        {
+            "section": "Document Reference",
+            "resource": "DocumentReference",
+            "entries": [
+                {
+                    "label": "Content Type",
+                    "value": "application/pdf"
+                },
+                {
+                    "label": "Attachment",
+                    "value": "DUMMY"
+                }
+            ]
+        },
+        {
+            "section": "Immunization ",
+            "resource": "Immunization",
+            "entries": [
+                {
+                    "label": "Immunization Name",
+                    "value": "COVID-19 antigen vaccine"
+                }
+            ]
+        },
+        {
+            "section": "ImmunizationRecommendation ",
+            "resource": "ImmunizationRecommendation",
+            "entries": [
+                {
+                    "label": "Vaccine Name",
+                    "value": "COVID-19 antigen vaccine"
+                }
+            ]
+        }
+    ]
+}

@@ -1,0 +1,74 @@
+{
+    "title": "Diagnostic studies report",
+    "health_information_type": "DiagnosticReport",
+    "content": [
+        {
+            "section": "Patient Details",
+            "resource": "Patient",
+            "entries": [
+                {
+                    "label": "Patient Registered As",
+                    "value": "ABC"
+                }
+            ]
+        },
+        {
+            "section": "Practitioner Details",
+            "resource": "Practitioner",
+            "entries": [
+                {
+                    "label": "Name",
+                    "value": "Dr. DEF"
+                }
+            ]
+        },
+        {
+            "section": "Practitioner Details",
+            "resource": "Practitioner",
+            "entries": [
+                {
+                    "label": "Name",
+                    "value": "Dr. PQR"
+                }
+            ]
+        },
+        {
+            "section": "Diagnostic Report",
+            "resource": "DiagnosticReport",
+            "entries": [
+                {
+                    "label": "Report Category",
+                    "value": "Computerized tomography service"
+                },
+                {
+                    "label": "Report Name",
+                    "value": "CT Head and Neck WO contrast"
+                },
+                {
+                    "label": "Report Name Details",
+                    "value": "CT Head and Neck WO contrast"
+                },
+                {
+                    "label": "Link",
+                    "value": "{'reference': 'Media/1'}"
+                },
+                {
+                    "label": "Conclusion",
+                    "value": "CT brains: large tumor sphenoid/clivus."
+                },
+                {
+                    "label": "Conclusion Category",
+                    "value": "Malignant tumor of craniopharyngeal duct"
+                },
+                {
+                    "label": "Content Type",
+                    "value": "application/pdf"
+                },
+                {
+                    "label": "Attachment",
+                    "value": "DUMMY"
+                }
+            ]
+        }
+    ]
+}

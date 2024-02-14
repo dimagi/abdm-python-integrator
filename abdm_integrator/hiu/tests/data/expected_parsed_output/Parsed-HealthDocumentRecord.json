@@ -1,0 +1,40 @@
+{
+    "title": "Record artifact",
+    "health_information_type": "HealthDocumentRecord",
+    "content": [
+        {
+            "section": "Patient Details",
+            "resource": "Patient",
+            "entries": [
+                {
+                    "label": "Patient Registered As",
+                    "value": "ABC"
+                }
+            ]
+        },
+        {
+            "section": "Practitioner Details",
+            "resource": "Practitioner",
+            "entries": [
+                {
+                    "label": "Name",
+                    "value": "Dr. DEF"
+                }
+            ]
+        },
+        {
+            "section": "Document Reference",
+            "resource": "DocumentReference",
+            "entries": [
+                {
+                    "label": "Content Type",
+                    "value": "application/pdf"
+                },
+                {
+                    "label": "Attachment",
+                    "value": "DUMMY"
+                }
+            ]
+        }
+    ]
+}

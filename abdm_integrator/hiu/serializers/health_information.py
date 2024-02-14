@@ -9,8 +9,8 @@ class RequestHealthInformationSerializer(serializers.Serializer):
 
 
 class ReceiveHealthInformationSerializer(serializers.Serializer):
-    pageNumber = serializers.IntegerField()
-    pageCount = serializers.IntegerField()
+    pageNumber = serializers.IntegerField(required=False)
+    pageCount = serializers.IntegerField(required=False)
     transactionId = serializers.UUIDField()
     entries = serializers.ListField()
     keyMaterial = GatewayKeyMaterialSerializer()

@@ -40,5 +40,5 @@ SNOMED_CODE_HEALTH_INFO_TYPE_MAP = {
     '373942005': HealthInformationType.DISCHARGE_SUMMARY,
     '41000179103': HealthInformationType.IMMUNIZATION_RECORD,
     '419891008': HealthInformationType.HEALTH_DOCUMENT_RECORD,
-    'WellnessRecord': HealthInformationType.WELLNESS_RECORD,
+    '1156871006': HealthInformationType.WELLNESS_RECORD,
 }

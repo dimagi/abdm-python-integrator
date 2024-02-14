@@ -197,8 +197,8 @@ class ReceiveHealthInformationProcessor:
         )
         self.response_data = {
             'transaction_id': self.request_data['transactionId'],
-            'page': self.request_data['pageNumber'],
-            'page_count': self.request_data['pageCount'],
+            'page': self.request_data.get('pageNumber', 1),
+            'page_count': self.request_data.get('pageCount', 1),
             'entries': []
         }
 
@@ -213,7 +213,7 @@ class ReceiveHealthInformationProcessor:
         self.save_health_data_receipt(care_contexts_status)
         self.set_response_in_cache(error)
         # Notifies Gateway once all pages are received
-        if self.request_data['pageNumber'] == self.request_data['pageCount']:
+        if self.request_data.get('pageNumber', 1) == self.request_data.get('pageCount', 1):
             session_status, all_care_context_status = self.get_overall_status(care_contexts_status)
             self.update_health_information_request_status(session_status)
             self.gateway_health_information_on_transfer(session_status, all_care_context_status)
@@ -274,7 +274,7 @@ class ReceiveHealthInformationProcessor:
     def save_health_data_receipt(self, care_contexts_status):
         HealthDataReceiver.objects.create(
             health_information_request=self.health_information_request,
-            page_number=self.request_data['pageNumber'],
+            page_number=self.request_data.get('pageNumber', 1),
             care_contexts_status=care_contexts_status
         )
 
@@ -295,7 +295,7 @@ class ReceiveHealthInformationProcessor:
 
     def get_overall_status(self, current_care_context_status):
         all_care_context_status = current_care_context_status
-        if self.request_data['pageNumber'] > 1:
+        if self.request_data.get('pageNumber', 1) > 1:
             all_care_context_status_lists = self.health_information_request.health_data_receipts.all().values_list(
                 'care_contexts_status', flat=True
             )

@@ -37,8 +37,8 @@ class GatewayRequesterSerializer(serializers.Serializer):
 
 
 class DateRangeSerializer(serializers.Serializer):
-    vars()['from'] = serializers.DateTimeField()
-    to = serializers.DateTimeField()
+    vars()['from'] = ABDMDateTimeField()
+    to = ABDMDateTimeField()
 
 
 class GatewayPermissionSerializer(serializers.Serializer):
@@ -50,7 +50,7 @@ class GatewayPermissionSerializer(serializers.Serializer):
 
     accessMode = serializers.ChoiceField(choices=DataAccessMode.CHOICES)
     dateRange = DateRangeSerializer()
-    dataEraseAt = serializers.DateTimeField()
+    dataEraseAt = ABDMDateTimeField()
     frequency = FrequencySerializer()
 
 
@@ -77,7 +77,7 @@ class GatewayPurposeSerializer(serializers.Serializer):
 class GatewayKeyMaterialSerializer(serializers.Serializer):
 
     class DHPublicKeySerializer(serializers.Serializer):
-        expiry = serializers.DateTimeField()
+        expiry = ABDMDateTimeField()
         parameters = serializers.CharField()
         keyValue = serializers.CharField()
 

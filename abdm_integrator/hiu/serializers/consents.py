@@ -5,6 +5,7 @@ from rest_framework import serializers
 from abdm_integrator.const import ConsentPurpose, ConsentStatus, HealthInformationType
 from abdm_integrator.hiu.models import ConsentArtefact, ConsentRequest
 from abdm_integrator.serializers import (
+    ABDMDateTimeField,
     GatewayCallbackResponseBaseSerializer,
     GatewayCareContextSerializer,
     GatewayIdSerializer,
@@ -27,11 +28,11 @@ class GenerateConsentSerializer(serializers.Serializer):
 
     class PermissionSerializer(GatewayPermissionSerializer):
         class DateRangeSerializer(serializers.Serializer):
-            vars()['from'] = serializers.DateTimeField(validators=[past_date_validator])
-            to = serializers.DateTimeField(validators=[past_date_validator])
+            vars()['from'] = ABDMDateTimeField(validators=[past_date_validator])
+            to = ABDMDateTimeField(validators=[past_date_validator])
 
         dateRange = DateRangeSerializer()
-        dataEraseAt = serializers.DateTimeField(validators=[future_date_validator])
+        dataEraseAt = ABDMDateTimeField(validators=[future_date_validator])
 
     purpose = PurposeSerializer()
     patient = GatewayIdSerializer()
@@ -86,7 +87,7 @@ class GatewayConsentRequestOnFetchSerializer(GatewayCallbackResponseBaseSerializ
         class ConsentDetailSerializer(serializers.Serializer):
             schemaVersion = serializers.CharField(required=False)
             consentId = serializers.UUIDField()
-            createdAt = serializers.DateTimeField()
+            createdAt = ABDMDateTimeField()
             patient = GatewayIdSerializer()
             careContexts = serializers.ListField(child=GatewayCareContextSerializer(), min_length=1)
             purpose = GatewayPurposeSerializer()

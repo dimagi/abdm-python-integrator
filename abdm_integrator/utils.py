@@ -141,6 +141,10 @@ def abdm_iso_to_datetime(value):
     return parse_datetime(value).replace(tzinfo=None)
 
 
+def datetime_to_abdm_iso(value):
+    return value.isoformat(timespec='milliseconds') + 'Z'
+
+
 def json_from_file(file_path):
     with open(file_path) as file:
         return json.load(file)

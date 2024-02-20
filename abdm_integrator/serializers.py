@@ -1,6 +1,19 @@
 from rest_framework import serializers
 
 from abdm_integrator.const import ConsentPurpose, DataAccessMode, TimeUnit
+from abdm_integrator.utils import datetime_to_abdm_iso
+
+
+class ABDMDateTimeField(serializers.DateTimeField):
+    """Serializer Date time field with serialized value as iso 8601 in milliseconds and Z appended at the end"""
+
+    def to_representation(self, value):
+        if not value:
+            return None
+        if isinstance(value, str):
+            return value
+        value = self.enforce_timezone(value)
+        return datetime_to_abdm_iso(value)
 
 
 class GatewayIdSerializer(serializers.Serializer):

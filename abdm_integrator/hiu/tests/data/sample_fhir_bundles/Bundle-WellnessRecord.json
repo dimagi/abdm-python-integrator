@@ -1,0 +1,1244 @@
+{
+    "resourceType": "Bundle",
+    "id": "WellnessRecord-example-01",
+    "meta": {
+        "versionId": "1",
+        "lastUpdated": "2020-07-09T15:32:26.605+05:30",
+        "profile": [
+            "https://nrces.in/ndhm/fhir/r4/StructureDefinition/DocumentBundle"
+        ],
+        "security": [
+            {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-Confidentiality",
+                "code": "V",
+                "display": "very restricted"
+            }
+        ]
+    },
+    "identifier": {
+        "system": "http://hip.in",
+        "value": "305fecc2-4ba2-46cc-9ccd-efa755aff51d"
+    },
+    "type": "document",
+    "timestamp": "2020-07-09T15:32:26.605+05:30",
+    "entry": [
+        {
+            "fullUrl": "Composition/1",
+            "resource": {
+                "resourceType": "Composition",
+                "id": "1",
+                "meta": {
+                    "versionId": "1",
+                    "lastUpdated": "2020-07-09T15:32:26.605+05:30",
+                    "profile": [
+                        "https://nrces.in/ndhm/fhir/r4/StructureDefinition/WellnessRecord"
+                    ]
+                },
+                "language": "en-IN",
+                "text": {
+                    "status": "generated",
+                    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en-IN\" lang=\"en-IN\"><p><b>Generated Narrative with Details</b></p><p><b>id</b>: oxygen-saturation</p><p><b>meta</b>: </p><p><b>identifier</b>: o1223435-10</p><p><b>status</b>: final</p><p><b>category</b>: Vital Signs <span>(Details : {http://terminology.hl7.org/CodeSystem/observation-category code 'vital-signs' = 'Vital Signs', given as 'Vital Signs'})</span></p><p><b>code</b>: Oxygen saturation in Arterial blood <span>(Details : {LOINC code '2708-6' = 'Oxygen saturation in Arterial blood', given as 'Oxygen saturation in Arterial blood'}; )</span></p><p><b>subject</b>: <a>Patient/1</a></p><p><b>effective</b>: 29/09/2020 9:30:10 AM</p><p><b>value</b>: 95 %<span> (Details: UCUM code % = '%')</span></p><p><b>interpretation</b>: Normal (applies to non-numeric results) <span>(Details : {http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation code 'N' = 'Normal', given as 'Normal'})</span></p><p><b>device</b>: <a>DeviceMetric/example</a></p><h3>ReferenceRanges</h3><p><b>Low:</b> 90 %<span> (Details: UCUM code % = '%')</span></p><p><b>High:</b>99 %<span> (Details: UCUM code % = '%')</span></p></div>"
+                },
+                "identifier": {
+                    "system": "https://ndhm.in/phr",
+                    "value": "645bb0c3-ff7e-4123-bef5-3852a4784813"
+                },
+                "status": "final",
+                "type": {
+                    "coding": [
+                        {
+                            "system": "http://snomed.info/sct",
+                            "code": "WellnessRecord",
+                            "display": "Wellness Record"
+                        }
+                    ],
+                    "text": "Wellness Record"
+                },
+                "subject": {
+                    "reference": "Patient/1",
+                    "display": "ABC"
+                },
+                "date": "2020-07-09T15:32:26.605+05:30",
+                "author": [
+                    {
+                        "reference": "Practitioner/1",
+                        "display": "Dr. DEF"
+                    }
+                ],
+                "title": "Wellness Record",
+                "section": [
+                    {
+                        "title": "Vital Signs",
+                        "entry": [
+                            {
+                                "reference": "Observation/respiratory-rate"
+                            },
+                            {
+                                "reference": "Observation/heart-rate"
+                            },
+                            {
+                                "reference": "Observation/oxygen-saturation"
+                            },
+                            {
+                                "reference": "Observation/body-temperature"
+                            },
+                            {
+                                "reference": "Observation/blood-pressure"
+                            }
+                        ]
+                    },
+                    {
+                        "title": "Body Measurement",
+                        "entry": [
+                            {
+                                "reference": "Observation/body-height"
+                            },
+                            {
+                                "reference": "Observation/body-weight"
+                            },
+                            {
+                                "reference": "Observation/bmi"
+                            }
+                        ]
+                    },
+                    {
+                        "title": "Physical Activity",
+                        "entry": [
+                            {
+                                "reference": "Observation/StepCount"
+                            },
+                            {
+                                "reference": "Observation/CaloriesBurned"
+                            },
+                            {
+                                "reference": "Observation/SleepDuration"
+                            }
+                        ]
+                    },
+                    {
+                        "title": "General Assessment",
+                        "entry": [
+                            {
+                                "reference": "Observation/BodyFatMass"
+                            },
+                            {
+                                "reference": "Observation/BloodGlucose"
+                            },
+                            {
+                                "reference": "Observation/FluidIntake"
+                            },
+                            {
+                                "reference": "Observation/CalorieIntake"
+                            }
+                        ]
+                    },
+                    {
+                        "title": "Women Health",
+                        "entry": [
+                            {
+                                "reference": "Observation/AgeOfMenarche"
+                            },
+                            {
+                                "reference": "Observation/LastMenstrualPeriod"
+                            }
+                        ]
+                    },
+                    {
+                        "title": "Lifestyle",
+                        "entry": [
+                            {
+                                "reference": "Observation/DietType"
+                            },
+                            {
+                                "reference": "Observation/TobaccoSmokingStatus"
+                            }
+                        ]
+                    },
+                    {
+                        "title": "Document Reference",
+                        "entry": [
+                            {
+                                "reference": "DocumentReference/1"
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "fullUrl": "Practitioner/1",
+            "resource": {
+                "resourceType": "Practitioner",
+                "id": "1",
+                "meta": {
+                    "versionId": "1",
+                    "lastUpdated": "2020-07-09T15:32:26.605+05:30",
+                    "profile": [
+                        "https://nrces.in/ndhm/fhir/r4/StructureDefinition/Practitioner"
+                    ]
+                },
+                "text": {
+                    "status": "generated",
+                    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en-IN\" lang=\"en-IN\">Dr. DEF, MD (Medicine)</div>"
+                },
+                "identifier": [
+                    {
+                        "type": {
+                            "coding": [
+                                {
+                                    "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+                                    "code": "MD",
+                                    "display": "Medical License number"
+                                }
+                            ]
+                        },
+                        "system": "https://doctor.ndhm.gov.in",
+                        "value": "21-1521-3828-3227"
+                    }
+                ],
+                "name": [
+                    {
+                        "text": "Dr. DEF"
+                    }
+                ]
+            }
+        },
+        {
+            "fullUrl": "Patient/1",
+            "resource": {
+                "resourceType": "Patient",
+                "id": "1",
+                "meta": {
+                    "versionId": "1",
+                    "lastUpdated": "2020-07-09T14:58:58.181+05:30",
+                    "profile": [
+                        "https://nrces.in/ndhm/fhir/r4/StructureDefinition/Patient"
+                    ]
+                },
+                "text": {
+                    "status": "generated",
+                    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en-IN\" lang=\"en-IN\">ABC, 41 year, Female</div>"
+                },
+                "identifier": [
+                    {
+                        "type": {
+                            "coding": [
+                                {
+                                    "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+                                    "code": "MR",
+                                    "display": "Medical record number"
+                                }
+                            ]
+                        },
+                        "system": "https://healthid.ndhm.gov.in",
+                        "value": "22-7225-4829-5255"
+                    }
+                ],
+                "name": [
+                    {
+                        "text": "ABC"
+                    }
+                ],
+                "telecom": [
+                    {
+                        "system": "phone",
+                        "value": "+919818512600",
+                        "use": "home"
+                    }
+                ],
+                "gender": "female",
+                "birthDate": "1981-01-12"
+            }
+        },
+        {
+            "fullUrl": "Organization/1",
+            "resource": {
+                "resourceType": "Organization",
+                "id": "1",
+                "meta": {
+                    "profile": [
+                        "https://nrces.in/ndhm/fhir/r4/StructureDefinition/Organization"
+                    ]
+                },
+                "text": {
+                    "status": "generated",
+                    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en-IN\" lang=\"en-IN\">UVW Hospital. ph: +91 273 2139 3632, email:<a href=\"mailto:contact@facility.uvw.org\">contact@facility.uvw.org</a></div>"
+                },
+                "identifier": [
+                    {
+                        "type": {
+                            "coding": [
+                                {
+                                    "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+                                    "code": "PRN",
+                                    "display": "Provider number"
+                                }
+                            ]
+                        },
+                        "system": "https://facility.ndhm.gov.in",
+                        "value": "4567823"
+                    }
+                ],
+                "name": "UVW Hospital",
+                "telecom": [
+                    {
+                        "system": "phone",
+                        "value": "+91 273 2139 3632",
+                        "use": "work"
+                    },
+                    {
+                        "system": "email",
+                        "value": "contact@facility.uvw.org",
+                        "use": "work"
+                    }
+                ]
+            }
+        },
+        {
+            "fullUrl": "Observation/respiratory-rate",
+            "resource": {
+                "resourceType": "Observation",
+                "id": "respiratory-rate",
+                "meta": {
+                    "profile": [
+                        "https://nrces.in/ndhm/fhir/r4/StructureDefinition/ObservationVitalSigns"
+                    ]
+                },
+                "text": {
+                    "status": "generated",
+                    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en-IN\" lang=\"en-IN\"><p><b>Generated Narrative with Details</b></p><p><b>id</b>: respiratory-rate</p><p><b>meta</b>: </p><p><b>status</b>: final</p><p><b>category</b>: Vital Signs <span>(Details : {http://terminology.hl7.org/CodeSystem/observation-category code 'vital-signs' = 'Vital Signs', given as 'Vital Signs'})</span></p><p><b>code</b>: Respiratory rate <span>(Details : {LOINC code '9279-1' = 'Respiratory rate', given as 'Respiratory rate'})</span></p><p><b>subject</b>: <a>Patient/1</a></p><p><b>effective</b>: 29/09/2020</p><p><b>value</b>: 26 breaths/minute<span> (Details: UCUM code /min = '/min')</span></p></div>"
+                },
+                "status": "final",
+                "category": [
+                    {
+                        "coding": [
+                            {
+                                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                                "code": "vital-signs",
+                                "display": "Vital Signs"
+                            }
+                        ],
+                        "text": "Vital Signs"
+                    }
+                ],
+                "code": {
+                    "coding": [
+                        {
+                            "system": "http://loinc.org",
+                            "code": "9279-1",
+                            "display": "Respiratory rate"
+                        }
+                    ],
+                    "text": "Respiratory rate"
+                },
+                "subject": {
+                    "reference": "Patient/1"
+                },
+                "effectiveDateTime": "2020-09-29",
+                "valueQuantity": {
+                    "value": 26,
+                    "unit": "breaths/minute",
+                    "system": "http://unitsofmeasure.org",
+                    "code": "/min"
+                }
+            }
+        },
+        {
+            "fullUrl": "Observation/heart-rate",
+            "resource": {
+                "resourceType": "Observation",
+                "id": "heart-rate",
+                "meta": {
+                    "profile": [
+                        "https://nrces.in/ndhm/fhir/r4/StructureDefinition/ObservationVitalSigns"
+                    ]
+                },
+                "text": {
+                    "status": "generated",
+                    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en-IN\" lang=\"en-IN\"><p><b>Generated Narrative with Details</b></p><p><b>id</b>: heart-rate</p><p><b>meta</b>: </p><p><b>status</b>: final</p><p><b>category</b>: Vital Signs <span>(Details : {http://terminology.hl7.org/CodeSystem/observation-category code 'vital-signs' = 'Vital Signs', given as 'Vital Signs'})</span></p><p><b>code</b>: Heart rate <span>(Details : {LOINC code '8867-4' = 'Heart rate', given as 'Heart rate'})</span></p><p><b>subject</b>: <a>Patient/1</a></p><p><b>effective</b>: 29/09/2020</p><p><b>value</b>: 44 beats/minute<span> (Details: UCUM code /min = '/min')</span></p></div>"
+                },
+                "status": "final",
+                "category": [
+                    {
+                        "coding": [
+                            {
+                                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                                "code": "vital-signs",
+                                "display": "Vital Signs"
+                            }
+                        ],
+                        "text": "Vital Signs"
+                    }
+                ],
+                "code": {
+                    "coding": [
+                        {
+                            "system": "http://loinc.org",
+                            "code": "8867-4",
+                            "display": "Heart rate"
+                        }
+                    ],
+                    "text": "Heart rate"
+                },
+                "subject": {
+                    "reference": "Patient/1"
+                },
+                "effectiveDateTime": "2020-09-29",
+                "valueQuantity": {
+                    "value": 44,
+                    "unit": "beats/minute",
+                    "system": "http://unitsofmeasure.org",
+                    "code": "/min"
+                }
+            }
+        },
+        {
+            "fullUrl": "Observation/oxygen-saturation",
+            "resource": {
+                "resourceType": "Observation",
+                "id": "oxygen-saturation",
+                "meta": {
+                    "profile": [
+                        "https://nrces.in/ndhm/fhir/r4/StructureDefinition/ObservationVitalSigns"
+                    ]
+                },
+                "text": {
+                    "status": "generated",
+                    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en-IN\" lang=\"en-IN\"><p><b>Generated Narrative with Details</b></p><p><b>id</b>: oxygen-saturation</p><p><b>meta</b>: </p><p><b>identifier</b>: o1223435-10</p><p><b>status</b>: final</p><p><b>category</b>: Vital Signs <span>(Details : {http://terminology.hl7.org/CodeSystem/observation-category code 'vital-signs' = 'Vital Signs', given as 'Vital Signs'})</span></p><p><b>code</b>: Oxygen saturation in Arterial blood <span>(Details : {LOINC code '2708-6' = 'Oxygen saturation in Arterial blood', given as 'Oxygen saturation in Arterial blood'}; )</span></p><p><b>subject</b>: <a>Patient/1</a></p><p><b>effective</b>: 29/09/2020 9:30:10 AM</p><p><b>value</b>: 95 %<span> (Details: UCUM code % = '%')</span></p><p><b>interpretation</b>: Normal (applies to non-numeric results) <span>(Details : {http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation code 'N' = 'Normal', given as 'Normal'})</span></p><p><b>device</b>: <a>DeviceMetric/example</a></p><h3>ReferenceRanges</h3><table><tr><td>-</td><td><b>Low</b></td><td><b>High</b></td></tr><tr><td>*</td><td>90 %<span> (Details: UCUM code % = '%')</span></td><td>99 %<span> (Details: UCUM code % = '%')</span></td></tr></table></div>"
+                },
+                "identifier": [
+                    {
+                        "system": "http://goodcare.org/observation/id",
+                        "value": "o1223435-10"
+                    }
+                ],
+                "status": "final",
+                "category": [
+                    {
+                        "coding": [
+                            {
+                                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                                "code": "vital-signs",
+                                "display": "Vital Signs"
+                            }
+                        ],
+                        "text": "Vital Signs"
+                    }
+                ],
+                "code": {
+                    "coding": [
+                        {
+                            "system": "http://loinc.org",
+                            "code": "2708-6",
+                            "display": "Oxygen saturation in Arterial blood"
+                        }
+                    ]
+                },
+                "subject": {
+                    "reference": "Patient/1"
+                },
+                "effectiveDateTime": "2020-09-29T09:30:10+01:00",
+                "valueQuantity": {
+                    "value": 95,
+                    "unit": "%",
+                    "system": "http://unitsofmeasure.org",
+                    "code": "%"
+                },
+                "interpretation": [
+                    {
+                        "coding": [
+                            {
+                                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                                "code": "N",
+                                "display": "Normal"
+                            }
+                        ],
+                        "text": "Normal (applies to non-numeric results)"
+                    }
+                ],
+                "referenceRange": [
+                    {
+                        "low": {
+                            "value": 90,
+                            "unit": "%",
+                            "system": "http://unitsofmeasure.org",
+                            "code": "%"
+                        },
+                        "high": {
+                            "value": 99,
+                            "unit": "%",
+                            "system": "http://unitsofmeasure.org",
+                            "code": "%"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "fullUrl": "Observation/body-temperature",
+            "resource": {
+                "resourceType": "Observation",
+                "id": "body-temperature",
+                "meta": {
+                    "profile": [
+                        "https://nrces.in/ndhm/fhir/r4/StructureDefinition/ObservationVitalSigns"
+                    ]
+                },
+                "text": {
+                    "status": "generated",
+                    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en-IN\" lang=\"en-IN\"><p><b>Generated Narrative with Details</b></p><p><b>id</b>: body-temperature</p><p><b>meta</b>: </p><p><b>status</b>: final</p><p><b>code</b>: Body surface temperature <span>(Details : {LOINC code '61008-9' = 'Body surface temperature', given as 'Body surface temperature'})</span></p><p><b>subject</b>: <a>Patient/1</a></p><p><b>effective</b>: 2021-03-09</p><p><b>value</b>: 36.5 Cel</p></div>"
+                },
+                "status": "final",
+                "code": {
+                    "coding": [
+                        {
+                            "system": "http://loinc.org",
+                            "code": "61008-9",
+                            "display": "Body surface temperature"
+                        }
+                    ],
+                    "text": "Body surface temperature"
+                },
+                "subject": {
+                    "reference": "Patient/1"
+                },
+                "effectiveDateTime": "2021-03-09",
+                "valueQuantity": {
+                    "value": 36.5,
+                    "unit": "Cel",
+                    "system": "http://unitsofmeasure.org",
+                    "code": "{Cel or degF}"
+                }
+            }
+        },
+        {
+            "fullUrl": "Observation/body-height",
+            "resource": {
+                "resourceType": "Observation",
+                "id": "body-height",
+                "meta": {
+                    "profile": [
+                        "https://nrces.in/ndhm/fhir/r4/StructureDefinition/ObservationBodyMeasurement"
+                    ]
+                },
+                "text": {
+                    "status": "generated",
+                    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en-IN\" lang=\"en-IN\"><p><b>Generated Narrative with Details</b></p><p><b>id</b>: body-height</p><p><b>meta</b>: </p><p><b>status</b>: final</p><p><b>category</b>: Vital Signs <span>(Details : {http://terminology.hl7.org/CodeSystem/observation-category code 'vital-signs' = 'Vital Signs', given as 'Vital Signs'})</span></p><p><b>code</b>: Body height <span>(Details : {LOINC code '8302-2' = 'Body height', given as 'Body height'})</span></p><p><b>subject</b>: <a>Patient/1</a></p><p><b>effective</b>: 29/09/2020</p><p><b>value</b>: 66.899999999999991 in<span> (Details: UCUM code [in_i] = 'in_i')</span></p></div>"
+                },
+                "status": "final",
+                "category": [
+                    {
+                        "coding": [
+                            {
+                                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                                "code": "vital-signs",
+                                "display": "Vital Signs"
+                            }
+                        ],
+                        "text": "Vital Signs"
+                    }
+                ],
+                "code": {
+                    "coding": [
+                        {
+                            "system": "http://loinc.org",
+                            "code": "8302-2",
+                            "display": "Body height"
+                        }
+                    ],
+                    "text": "Body height"
+                },
+                "subject": {
+                    "reference": "Patient/1"
+                },
+                "effectiveDateTime": "2020-09-29",
+                "valueQuantity": {
+                    "value": 66.89999999999999,
+                    "unit": "in",
+                    "system": "http://unitsofmeasure.org",
+                    "code": "{[in_us],cm,m}"
+                }
+            }
+        },
+        {
+            "fullUrl": "Observation/body-weight",
+            "resource": {
+                "resourceType": "Observation",
+                "id": "body-weight",
+                "meta": {
+                    "profile": [
+                        "https://nrces.in/ndhm/fhir/r4/StructureDefinition/ObservationBodyMeasurement"
+                    ]
+                },
+                "text": {
+                    "status": "generated",
+                    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en-IN\" lang=\"en-IN\"><p><b>Generated Narrative with Details</b></p><p><b>id</b>: body-weight</p><p><b>status</b>: final</p><p><b>category</b>: Vital Signs <span>(Details : {http://terminology.hl7.org/CodeSystem/observation-category code 'vital-signs' = 'Vital Signs', given as 'Vital Signs'})</span></p><p><b>code</b>: Body Weight <span>(Details : {LOINC code '29463-7' = 'Body weight', given as 'Body Weight'};)</span></p><p><b>subject</b>: <a>Patient/1</a></p><p><b>effective</b>: 29/09/2020</p><p><b>value</b>: 185 lbs<span> (Details: UCUM code [lb_av] = 'lb_av')</span></p></div>"
+                },
+                "status": "final",
+                "category": [
+                    {
+                        "coding": [
+                            {
+                                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                                "code": "vital-signs",
+                                "display": "Vital Signs"
+                            }
+                        ]
+                    }
+                ],
+                "code": {
+                    "coding": [
+                        {
+                            "system": "http://loinc.org",
+                            "code": "29463-7",
+                            "display": "Body weight"
+                        }
+                    ]
+                },
+                "subject": {
+                    "reference": "Patient/1"
+                },
+                "effectiveDateTime": "2020-09-29",
+                "valueQuantity": {
+                    "value": 185,
+                    "unit": "lbs",
+                    "system": "http://unitsofmeasure.org",
+                    "code": "{[lb_av],kg,g}"
+                }
+            }
+        },
+        {
+            "fullUrl": "Observation/bmi",
+            "resource": {
+                "resourceType": "Observation",
+                "id": "bmi",
+                "meta": {
+                    "profile": [
+                        "https://nrces.in/ndhm/fhir/r4/StructureDefinition/ObservationBodyMeasurement"
+                    ]
+                },
+                "text": {
+                    "status": "generated",
+                    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en-IN\" lang=\"en-IN\"><p><b>Generated Narrative with Details</b></p><p><b>id</b>: bmi</p><p><b>meta</b>: </p><p><b>status</b>: final</p><p><b>category</b>: Vital Signs <span>(Details : {http://terminology.hl7.org/CodeSystem/observation-category code 'vital-signs' = 'Vital Signs', given as 'Vital Signs'})</span></p><p><b>code</b>: BMI <span>(Details : {LOINC code '39156-5' = 'Body mass index (BMI) [Ratio]', given as 'Body mass index (BMI) [Ratio]'})</span></p><p><b>subject</b>: <a>Patient/1</a></p><p><b>effective</b>: 29/09/2020</p><p><b>value</b>: 16.2 kg/m2<span> (Details: UCUM code kg/m2 = 'kg/m2')</span></p></div>"
+                },
+                "status": "final",
+                "category": [
+                    {
+                        "coding": [
+                            {
+                                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                                "code": "vital-signs",
+                                "display": "Vital Signs"
+                            }
+                        ],
+                        "text": "Vital Signs"
+                    }
+                ],
+                "code": {
+                    "coding": [
+                        {
+                            "system": "http://loinc.org",
+                            "code": "39156-5",
+                            "display": "Body mass index (BMI) [Ratio]"
+                        }
+                    ],
+                    "text": "BMI"
+                },
+                "subject": {
+                    "reference": "Patient/1"
+                },
+                "effectiveDateTime": "2020-09-29",
+                "valueQuantity": {
+                    "value": 16.2,
+                    "unit": "kg/m2",
+                    "system": "http://unitsofmeasure.org",
+                    "code": "kg/m2"
+                }
+            }
+        },
+        {
+            "fullUrl": "Observation/blood-pressure",
+            "resource": {
+                "resourceType": "Observation",
+                "id": "blood-pressure",
+                "meta": {
+                    "profile": [
+                        "https://nrces.in/ndhm/fhir/r4/StructureDefinition/ObservationVitalSigns"
+                    ]
+                },
+                "text": {
+                    "status": "generated",
+                    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en-IN\" lang=\"en-IN\"><p><b>Generated Narrative with Details</b></p><p><b>id</b>: blood-pressure</p><p><b>meta</b>: </p><p><b>identifier</b>: urn:uuid:187e0c12-8dd2-67e2-99b2-bf273c878281</p><p><b>basedOn</b>: </p><p><b>status</b>: final</p><p><b>category</b>: Vital Signs <span>(Details : {http://terminology.hl7.org/CodeSystem/observation-category code 'vital-signs' = 'Vital Signs', given as 'Vital Signs'})</span></p><p><b>code</b>: Blood pressure systolic &amp; diastolic <span>(Details : {LOINC code '85354-9' = 'Blood pressure panel with all children optional', given as 'Blood pressure panel with all children optional'})</span></p><p><b>subject</b>: <a>Patient/1</a></p><p><b>effective</b>: 29/09/2020</p><p><b>performer</b>: <a>Practitioner/1</a></p><p><b>interpretation</b>: Below low normal <span>(Details : {http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation code 'L' = 'Low', given as 'low'})</span></p><p><b>bodySite</b>: Right arm <span>(Details : {SNOMED CT code '368209003' = 'Right upper arm', given as 'Right arm'})</span></p><blockquote><p><b>component</b></p><p><b>code</b>: Systolic blood pressure <span>(Details : {LOINC code '8480-6' = 'Systolic blood pressure', given as 'Systolic blood pressure'};)</span></p><p><b>value</b>: 107 mmHg<span> (Details: UCUM code mm[Hg] = 'mmHg')</span></p><p><b>interpretation</b>: Normal <span>(Details : {http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation code 'N' = 'Normal', given as 'normal'})</span></p></blockquote><blockquote><p><b>component</b></p><p><b>code</b>: Diastolic blood pressure <span>(Details : {LOINC code '8462-4' = 'Diastolic blood pressure', given as 'Diastolic blood pressure'})</span></p><p><b>value</b>: 60 mmHg<span> (Details: UCUM code mm[Hg] = 'mmHg')</span></p><p><b>interpretation</b>: Below low normal <span>(Details : {http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation code 'L' = 'Low', given as 'low'})</span></p></blockquote></div>"
+                },
+                "identifier": [
+                    {
+                        "system": "urn:ietf:rfc:3986",
+                        "value": "urn:uuid:187e0c12-8dd2-67e2-99b2-bf273c878281"
+                    }
+                ],
+                "status": "final",
+                "category": [
+                    {
+                        "coding": [
+                            {
+                                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                                "code": "vital-signs",
+                                "display": "Vital Signs"
+                            }
+                        ]
+                    }
+                ],
+                "code": {
+                    "coding": [
+                        {
+                            "system": "http://loinc.org",
+                            "code": "85354-9",
+                            "display": "Blood pressure panel with all children optional"
+                        }
+                    ],
+                    "text": "Blood pressure panel with all children optional"
+                },
+                "subject": {
+                    "reference": "Patient/1"
+                },
+                "effectiveDateTime": "2020-09-29",
+                "performer": [
+                    {
+                        "reference": "Practitioner/1"
+                    }
+                ],
+                "interpretation": [
+                    {
+                        "coding": [
+                            {
+                                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                                "code": "L",
+                                "display": "low"
+                            }
+                        ],
+                        "text": "Below low normal"
+                    }
+                ],
+                "bodySite": {
+                    "coding": [
+                        {
+                            "system": "http://snomed.info/sct",
+                            "code": "368209003",
+                            "display": "Right arm"
+                        }
+                    ]
+                },
+                "component": [
+                    {
+                        "code": {
+                            "coding": [
+                                {
+                                    "system": "http://loinc.org",
+                                    "code": "8480-6",
+                                    "display": "Systolic blood pressure"
+                                }
+                            ]
+                        },
+                        "valueQuantity": {
+                            "value": 107,
+                            "unit": "mmHg",
+                            "system": "http://unitsofmeasure.org",
+                            "code": "mm[Hg]"
+                        },
+                        "interpretation": [
+                            {
+                                "coding": [
+                                    {
+                                        "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                                        "code": "N",
+                                        "display": "normal"
+                                    }
+                                ],
+                                "text": "Normal"
+                            }
+                        ]
+                    },
+                    {
+                        "code": {
+                            "coding": [
+                                {
+                                    "system": "http://loinc.org",
+                                    "code": "8462-4",
+                                    "display": "Diastolic blood pressure"
+                                }
+                            ]
+                        },
+                        "valueQuantity": {
+                            "value": 60,
+                            "unit": "mmHg",
+                            "system": "http://unitsofmeasure.org",
+                            "code": "mm[Hg]"
+                        },
+                        "interpretation": [
+                            {
+                                "coding": [
+                                    {
+                                        "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                                        "code": "L",
+                                        "display": "low"
+                                    }
+                                ],
+                                "text": "Below low normal"
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "fullUrl": "Observation/StepCount",
+            "resource": {
+                "resourceType": "Observation",
+                "id": "StepCount",
+                "meta": {
+                    "profile": [
+                        "https://nrces.in/ndhm/fhir/r4/StructureDefinition/ObservationPhysicalActivity"
+                    ]
+                },
+                "text": {
+                    "status": "generated",
+                    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en-IN\" lang=\"en-IN\"><p><b>Narrative with Details</b></p><p><b>id</b>: StepCount</p><p><b>status</b>: final</p><p><b>code</b>: Number of steps in unspecified time Pedometer <span>(Details : LOINC code '55423-8' = 'Number of steps in unspecified time Pedometer', given as 'Number of steps in unspecified time Pedometer')</span></p><p><b>subject</b>: ABC</p><p><b>performer</b>: Dr. DEF, MD</p><p><b>value</b>: 10000 steps</p></div>"
+                },
+                "status": "final",
+                "code": {
+                    "coding": [
+                        {
+                            "system": "http://loinc.org",
+                            "code": "55423-8",
+                            "display": "Number of steps in unspecified time Pedometer"
+                        }
+                    ],
+                    "text": "Number of steps in unspecified time Pedometer"
+                },
+                "subject": {
+                    "reference": "Patient/1"
+                },
+                "valueQuantity": {
+                    "value": 10000,
+                    "unit": "steps",
+                    "system": "http://unitsofmeasure.org",
+                    "code": "{steps}"
+                }
+            }
+        },
+        {
+            "fullUrl": "Observation/CaloriesBurned",
+            "resource": {
+                "resourceType": "Observation",
+                "id": "CaloriesBurned",
+                "meta": {
+                    "profile": [
+                        "https://nrces.in/ndhm/fhir/r4/StructureDefinition/ObservationPhysicalActivity"
+                    ]
+                },
+                "text": {
+                    "status": "generated",
+                    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en-IN\" lang=\"en-IN\"><p><b>Narrative with Details</b></p><p><b>id</b>: CaloriesBurned</p><p><b>status</b>: final</p><p><b>code</b>: Calories burned <span>(Details : LOINC code '41981-2' = 'Calories burned', given as 'Calories burned')</span></p><p><b>subject</b>: ABC</p><p><b>performer</b>: Dr. DEF, MD</p><p><b>value</b>: 800 kcal<span> (Details: UCUM code kcal = 'kcal')</span></p></div>"
+                },
+                "status": "final",
+                "code": {
+                    "coding": [
+                        {
+                            "system": "http://loinc.org",
+                            "code": "41981-2",
+                            "display": "Calories burned"
+                        }
+                    ],
+                    "text": "Calories burned"
+                },
+                "subject": {
+                    "reference": "Patient/1"
+                },
+                "performer": [
+                    {
+                        "reference": "Organization/1"
+                    }
+                ],
+                "valueQuantity": {
+                    "value": 800,
+                    "unit": "kcal",
+                    "system": "http://unitsofmeasure.org",
+                    "code": "kcal"
+                }
+            }
+        },
+        {
+            "fullUrl": "Observation/SleepDuration",
+            "resource": {
+                "resourceType": "Observation",
+                "id": "SleepDuration",
+                "meta": {
+                    "profile": [
+                        "https://nrces.in/ndhm/fhir/r4/StructureDefinition/ObservationPhysicalActivity"
+                    ]
+                },
+                "text": {
+                    "status": "generated",
+                    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en-IN\" lang=\"en-IN\"><p><b>Narrative with Details</b></p><p><b>id</b>: SleepDuration</p><p><b>status</b>: final</p><p><b>code</b>: Number of steps in unspecified time Pedometer <span>(Details : LOINC code '93832-4' = 'Sleep duration', given as 'Sleep duration')</span></p><p><b>subject</b>: ABC</p><p><b>value</b>: 8 h<span> (Details: UCUM code h = 'hours')</span></p></div>"
+                },
+                "status": "final",
+                "code": {
+                    "coding": [
+                        {
+                            "system": "http://loinc.org",
+                            "code": "93832-4",
+                            "display": "Sleep duration"
+                        }
+                    ],
+                    "text": "Sleep duration"
+                },
+                "subject": {
+                    "reference": "Patient/1"
+                },
+                "valueQuantity": {
+                    "value": 8,
+                    "unit": "h",
+                    "system": "http://unitsofmeasure.org",
+                    "code": "h"
+                }
+            }
+        },
+        {
+            "fullUrl": "Observation/BodyFatMass",
+            "resource": {
+                "resourceType": "Observation",
+                "id": "BodyFatMass",
+                "meta": {
+                    "profile": [
+                        "https://nrces.in/ndhm/fhir/r4/StructureDefinition/ObservationGeneralAssessment"
+                    ]
+                },
+                "text": {
+                    "status": "generated",
+                    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en-IN\" lang=\"en-IN\"><p><b>Narrative with Details</b></p><p><b>id</b>: BodyFatMass</p><p><b>status</b>: final</p><p><b>code</b>: Body fat [Mass] Calculated <span>(Details : LOINC code '73708-0' = 'Body fat [Mass] Calculated', given as 'Body fat [Mass] Calculated')</span></p><p><b>subject</b>: ABC</p><p><b>performer</b>: Dr. DEF, MD</p><p><b>value</b>: 11 kg<span> (Details: UCUM code kg = 'kg')</span></p></div>"
+                },
+                "status": "final",
+                "code": {
+                    "coding": [
+                        {
+                            "system": "http://loinc.org",
+                            "code": "73708-0",
+                            "display": "Body fat [Mass] Calculated"
+                        }
+                    ],
+                    "text": "Body fat [Mass] Calculated"
+                },
+                "subject": {
+                    "reference": "Patient/1"
+                },
+                "performer": [
+                    {
+                        "reference": "Practitioner/1"
+                    }
+                ],
+                "valueQuantity": {
+                    "value": 11,
+                    "unit": "kg",
+                    "system": "http://unitsofmeasure.org",
+                    "code": "kg"
+                }
+            }
+        },
+        {
+            "fullUrl": "Observation/BloodGlucose",
+            "resource": {
+                "resourceType": "Observation",
+                "id": "BloodGlucose",
+                "meta": {
+                    "profile": [
+                        "https://nrces.in/ndhm/fhir/r4/StructureDefinition/ObservationGeneralAssessment"
+                    ]
+                },
+                "text": {
+                    "status": "generated",
+                    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en-IN\" lang=\"en-IN\"><p><b>Narrative with Details</b></p><p><b>id</b>: BloodGlucose</p><p><b>status</b>: final</p><p><b>code</b>: Glucose [Mass/volume] in Blood <span>(Details : LOINC code '2339-0' = 'Glucose [Mass/volume] in Blood', given as 'Glucose [Mass/volume] in Blood')</span></p><p><b>subject</b>: ABC</p><p><b>value</b>: 142 mg/dL<span> (Details: UCUM code mg/dL = 'mg/dL')</span></p></div>"
+                },
+                "status": "final",
+                "code": {
+                    "coding": [
+                        {
+                            "system": "http://loinc.org",
+                            "code": "2339-0",
+                            "display": "Glucose [Mass/volume] in Blood"
+                        }
+                    ],
+                    "text": "Glucose [Mass/volume] in Blood"
+                },
+                "subject": {
+                    "reference": "Patient/1"
+                },
+                "valueQuantity": {
+                    "value": 142,
+                    "unit": "mg/dL",
+                    "system": "http://unitsofmeasure.org",
+                    "code": "mg/dL"
+                }
+            }
+        },
+        {
+            "fullUrl": "Observation/FluidIntake",
+            "resource": {
+                "resourceType": "Observation",
+                "id": "FluidIntake",
+                "meta": {
+                    "profile": [
+                        "https://nrces.in/ndhm/fhir/r4/StructureDefinition/ObservationGeneralAssessment"
+                    ]
+                },
+                "text": {
+                    "status": "generated",
+                    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en-IN\" lang=\"en-IN\"><p><b>Narrative with Details</b></p><p><b>id</b>: FluidIntake</p><p><b>status</b>: final</p><p><b>code</b>: Fluid intake oral Estimated <span>(Details : LOINC code '8999-5' = 'Fluid intake oral Estimated', given as 'Fluid intake oral Estimated')</span></p><p><b>subject</b>: ABC</p><p><b>value</b>: 3 Litres</p></div>"
+                },
+                "status": "final",
+                "code": {
+                    "coding": [
+                        {
+                            "system": "http://loinc.org",
+                            "code": "8999-5",
+                            "display": "Fluid intake oral Estimated"
+                        }
+                    ],
+                    "text": "Fluid intake oral Estimated"
+                },
+                "subject": {
+                    "reference": "Patient/1"
+                },
+                "valueQuantity": {
+                    "value": 3,
+                    "unit": "Litres",
+                    "system": "http://unitsofmeasure.org",
+                    "code": "{mL or Litres}"
+                }
+            }
+        },
+        {
+            "fullUrl": "Observation/CalorieIntake",
+            "resource": {
+                "resourceType": "Observation",
+                "id": "CalorieIntake",
+                "meta": {
+                    "profile": [
+                        "https://nrces.in/ndhm/fhir/r4/StructureDefinition/ObservationGeneralAssessment"
+                    ]
+                },
+                "text": {
+                    "status": "generated",
+                    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en-IN\" lang=\"en-IN\"><p><b>Narrative with Details</b></p><p><b>id</b>: CalorieIntake</p><p><b>status</b>: final</p><p><b>code</b>: Calorie intake total <span>(Details : LOINC code '9052-2' = 'Calorie intake total', given as 'Calorie intake total')</span></p><p><b>subject</b>: ABC</p><p><b>value</b>: 1750 kcal<span> (Details: UCUM code kcal = 'kcal')</span></p></div>"
+                },
+                "status": "final",
+                "code": {
+                    "coding": [
+                        {
+                            "system": "http://loinc.org",
+                            "code": "9052-2",
+                            "display": "Calorie intake total"
+                        }
+                    ],
+                    "text": "Calorie intake total"
+                },
+                "subject": {
+                    "reference": "Patient/1"
+                },
+                "valueQuantity": {
+                    "value": 1750,
+                    "unit": "kcal",
+                    "system": "http://unitsofmeasure.org",
+                    "code": "kcal"
+                }
+            }
+        },
+        {
+            "fullUrl": "Observation/AgeOfMenarche",
+            "resource": {
+                "resourceType": "Observation",
+                "id": "AgeOfMenarche",
+                "meta": {
+                    "profile": [
+                        "https://nrces.in/ndhm/fhir/r4/StructureDefinition/ObservationWomenHealth"
+                    ]
+                },
+                "text": {
+                    "status": "generated",
+                    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en-IN\" lang=\"en-IN\"><p><b>Narrative with Details</b></p><p><b>id</b>: AgeOfMenarche</p><p><b>status</b>: final</p><p><b>code</b>: Age at menarche <span>(Details : LOINC code '42798-9' = 'Age at menarche', given as 'Age at menarche')</span></p><p><b>subject</b>: ABC</p><p><b>value</b>: 14 age</p></div>"
+                },
+                "status": "final",
+                "code": {
+                    "coding": [
+                        {
+                            "system": "http://loinc.org",
+                            "code": "42798-9",
+                            "display": "Age at menarche"
+                        }
+                    ],
+                    "text": "Age at menarche"
+                },
+                "subject": {
+                    "reference": "Patient/1"
+                },
+                "valueQuantity": {
+                    "value": 14,
+                    "unit": "age",
+                    "system": "http://unitsofmeasure.org",
+                    "code": "{age}"
+                }
+            }
+        },
+        {
+            "fullUrl": "Observation/LastMenstrualPeriod",
+            "resource": {
+                "resourceType": "Observation",
+                "id": "LastMenstrualPeriod",
+                "meta": {
+                    "profile": [
+                        "https://nrces.in/ndhm/fhir/r4/StructureDefinition/ObservationWomenHealth"
+                    ]
+                },
+                "text": {
+                    "status": "generated",
+                    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en-IN\" lang=\"en-IN\"><p><b>Generated Narrative with Details</b></p><p><b>id</b>: LastMenstrualPeriod</p><p><b>meta</b>: </p><p><b>status</b>: final</p><p><b>code</b>: Last menstrual period start date <span>(Details : {LOINC code '8665-2' = 'Last menstrual period start date', given as 'Last menstrual period start date'})</span></p><p><b>subject</b>: <a>Patient/1</a></p><p><b>effective</b>: 2020-11-14</p><p><b>value</b>: 110120 MMDDYY</p></div>"
+                },
+                "status": "final",
+                "code": {
+                    "coding": [
+                        {
+                            "system": "http://loinc.org",
+                            "code": "8665-2",
+                            "display": "Last menstrual period start date"
+                        }
+                    ],
+                    "text": "Last menstrual period start date"
+                },
+                "subject": {
+                    "reference": "Patient/1"
+                },
+                "effectiveDateTime": "2020-11-14",
+                "valueQuantity": {
+                    "value": 110120,
+                    "unit": "MMDDYY",
+                    "system": "http://unitsofmeasure.org",
+                    "code": "{MMDDYY}"
+                }
+            }
+        },
+        {
+            "fullUrl": "Observation/DietType",
+            "resource": {
+                "resourceType": "Observation",
+                "id": "DietType",
+                "meta": {
+                    "profile": [
+                        "https://nrces.in/ndhm/fhir/r4/StructureDefinition/ObservationLifestyle"
+                    ]
+                },
+                "text": {
+                    "status": "generated",
+                    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en-IN\" lang=\"en-IN\"><p><b>Narrative with Details</b></p><p><b>id</b>: DietType</p><p><b>status</b>: final</p><p><b>code</b>: Diet [Type] <span>(Details : LOINC code '81663-7' = 'Diet [Type]', given as 'Diet [Type]')</span></p><p><b>subject</b>: ABC</p><p><b>value</b>: Vegan<span> (Details: SNOMED CT code 24930006 = 'Vegan', given as 'Vegan')</span></p></div>"
+                },
+                "status": "final",
+                "code": {
+                    "coding": [
+                        {
+                            "system": "http://loinc.org",
+                            "code": "81663-7",
+                            "display": "Diet [Type]"
+                        }
+                    ],
+                    "text": "Diet [Type]"
+                },
+                "subject": {
+                    "reference": "Patient/1"
+                },
+                "valueCodeableConcept": {
+                    "coding": [
+                        {
+                            "system": "http://snomed.info/sct",
+                            "code": "24930006",
+                            "display": "Vegan"
+                        }
+                    ],
+                    "text": "Vegan"
+                }
+            }
+        },
+        {
+            "fullUrl": "Observation/TobaccoSmokingStatus",
+            "resource": {
+                "resourceType": "Observation",
+                "id": "TobaccoSmokingStatus",
+                "meta": {
+                    "profile": [
+                        "https://nrces.in/ndhm/fhir/r4/StructureDefinition/ObservationLifestyle"
+                    ]
+                },
+                "text": {
+                    "status": "generated",
+                    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en-IN\" lang=\"en-IN\"><p><b>Narrative with Details</b></p><p><b>id</b>: TobaccoSmokingStatus</p><p><b>status</b>: final</p><p><b>code</b>: Finding of tobacco smoking behavior <span>(Details : SNOMED CT code '365981007' = 'Finding of tobacco smoking behavior', given as 'Finding of tobacco smoking behavior')</span></p><p><b>subject</b>: ABC</p><p><b>value</b>: Never smoked tobacco<span> (Details: SNOMED CT code 266919005 = 'Never smoked tobacco', given as 'Never smoked tobacco')</span></p></div>"
+                },
+                "status": "final",
+                "code": {
+                    "coding": [
+                        {
+                            "system": "http://snomed.info/sct",
+                            "code": "365981007",
+                            "display": "Finding of tobacco smoking behavior"
+                        }
+                    ],
+                    "text": "Finding of tobacco smoking behavior"
+                },
+                "subject": {
+                    "reference": "Patient/1"
+                },
+                "valueCodeableConcept": {
+                    "coding": [
+                        {
+                            "system": "http://snomed.info/sct",
+                            "code": "266919005",
+                            "display": "Never smoked tobacco"
+                        }
+                    ],
+                    "text": "Never smoked tobacco"
+                }
+            }
+        },
+        {
+            "fullUrl": "DocumentReference/1",
+            "resource": {
+                "resourceType": "DocumentReference",
+                "id": "1",
+                "meta": {
+                    "profile": [
+                        "https://nrces.in/ndhm/fhir/r4/StructureDefinition/DocumentReference"
+                    ]
+                },
+                "text": {
+                    "status": "generated",
+                    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Generated Narrative: DocumentReference</b><a name=\"1\"> </a></p><div style=\"display: inline-block; background-color: #d9e0e7; padding: 6px; margin: 4px; border: 1px solid #8da1b4; border-radius: 5px; line-height: 60%\"><p style=\"margin-bottom: 0px\">Resource DocumentReference \"1\" </p><p style=\"margin-bottom: 0px\">Profile: <a href=\"StructureDefinition-DocumentReference.html\">DocumentReference</a></p></div><p><b>status</b>: current</p><p><b>docStatus</b>: final</p><p><b>type</b>: Wellness Record <span style=\"background: LightGoldenRodYellow; margin: 4px; border: 1px solid khaki\"> ()</span></p><p><b>subject</b>: <a href=\"#Patient_1\">See above (Patient/1)</a></p><blockquote><p><b>content</b></p><h3>Attachments</h3><table class=\"grid\"><tr><td>-</td><td><b>ContentType</b></td><td><b>Language</b></td><td><b>Data</b></td><td><b>Title</b></td><td><b>Creation</b></td></tr><tr><td>*</td><td>application/pdf</td><td>en-IN</td><td>DUMMY</td><td>Laboratory report</td><td>2019-05-29 02:58:58+0530</td></tr></table></blockquote></div>"
+                },
+                "status": "current",
+                "docStatus": "final",
+                "type": {
+                    "text": "Wellness Record"
+                },
+                "subject": {
+                    "reference": "Patient/1"
+                },
+                "content": [
+                    {
+                        "attachment": {
+                            "contentType": "application/pdf",
+                            "language": "en-IN",
+                            "data": "DUMMY",
+                            "title": "Laboratory report",
+                            "creation": "2019-05-29T14:58:58.181+05:30"
+                        }
+                    }
+                ]
+            }
+        }
+    ]
+}

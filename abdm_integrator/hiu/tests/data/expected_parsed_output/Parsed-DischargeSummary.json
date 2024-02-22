@@ -1,0 +1,246 @@
+{
+    "title": "Discharge summary",
+    "health_information_type": "DischargeSummary",
+    "content": [
+        {
+            "section": "Patient Details",
+            "resource": "Patient",
+            "entries": [
+                {
+                    "label": "Patient Registered As",
+                    "value": "ABC"
+                }
+            ]
+        },
+        {
+            "section": "Visit Details",
+            "resource": "Encounter",
+            "entries": [
+                {
+                    "label": "Visit Type",
+                    "value": "inpatient encounter"
+                }
+            ]
+        },
+        {
+            "section": "Practitioner Details",
+            "resource": "Practitioner",
+            "entries": [
+                {
+                    "label": "Name",
+                    "value": "DEF"
+                }
+            ]
+        },
+        {
+            "section": "Condition",
+            "resource": "Condition",
+            "entries": [
+                {
+                    "label": "Condition",
+                    "value": "History of aortoiliac atherosclerosis"
+                },
+                {
+                    "label": "Condition Details",
+                    "value": "Patient complained about pain in left arm"
+                }
+            ]
+        },
+        {
+            "section": "Condition",
+            "resource": "Condition",
+            "entries": [
+                {
+                    "label": "Condition",
+                    "value": "Myocardial infarction"
+                },
+                {
+                    "label": "Condition Details",
+                    "value": "pain in the chest, neck, back or arms, as well as fatigue, lightheadedness, abnormal heartbeat and anxiety."
+                }
+            ]
+        },
+        {
+            "section": "Observation",
+            "resource": "Observation",
+            "entries": [
+                {
+                    "label": "Observation",
+                    "value": "Cholesterol [Mass or Moles/volume] in Serum or Plasma"
+                },
+                {
+                    "label": "Observation Details",
+                    "value": "Cholesterol [Mass or moles/Vol]"
+                },
+                {
+                    "label": "Value",
+                    "value": "6.3"
+                },
+                {
+                    "label": "Unit",
+                    "value": "mmol/L"
+                }
+            ]
+        },
+        {
+            "section": "Observation",
+            "resource": "Observation",
+            "entries": [
+                {
+                    "label": "Observation",
+                    "value": "Triglyceride [Mass or Moles/volume] in Serum or Plasma"
+                },
+                {
+                    "label": "Observation Details",
+                    "value": "Triglyceride [Mass or moles/Vol]"
+                },
+                {
+                    "label": "Value",
+                    "value": "1.3"
+                },
+                {
+                    "label": "Unit",
+                    "value": "mmol/L"
+                }
+            ]
+        },
+        {
+            "section": "Procedure ",
+            "resource": "Procedure",
+            "entries": [
+                {
+                    "label": "Procedure Name",
+                    "value": "Placement of stent in coronary artery"
+                },
+                {
+                    "label": "Procedure Name Details",
+                    "value": "Placement of stent in coronary artery"
+                }
+            ]
+        },
+        {
+            "section": "Procedure ",
+            "resource": "Procedure",
+            "entries": [
+                {
+                    "label": "Procedure Name",
+                    "value": "Coronary artery bypass grafting"
+                },
+                {
+                    "label": "Procedure Name Details",
+                    "value": "Coronary artery bypass grafting"
+                }
+            ]
+        },
+        {
+            "section": "Diagnostic Report",
+            "resource": "DiagnosticReport",
+            "entries": [
+                {
+                    "label": "Report Category",
+                    "value": "Hematology service"
+                },
+                {
+                    "label": "Report Name",
+                    "value": "Lipid 1996 panel - Serum or Plasma"
+                },
+                {
+                    "label": "Report Name Details",
+                    "value": "Lipid 1996 panel"
+                },
+                {
+                    "label": "Conclusion",
+                    "value": "Elevated cholesterol/high density lipoprotein ratio"
+                },
+                {
+                    "label": "Conclusion Category",
+                    "value": "Elevated cholesterol/high density lipoprotein ratio"
+                },
+                {
+                    "label": "Content Type",
+                    "value": "application/pdf"
+                },
+                {
+                    "label": "Attachment",
+                    "value": "DUMMY"
+                }
+            ]
+        },
+        {
+            "section": "Prescription Medicine Name and Reason",
+            "resource": "MedicationRequest",
+            "entries": [
+                {
+                    "label": "Medicine Name",
+                    "value": "Nitroglycerin 5 mg buccal tablet"
+                }
+            ]
+        },
+        {
+            "section": "Prescription Medicine Instruction",
+            "resource": "MedicationRequest",
+            "entries": [
+                {
+                    "label": "Instructions",
+                    "value": "One tablet at once"
+                },
+                {
+                    "label": "With/Without Food",
+                    "value": "With or after food"
+                },
+                {
+                    "label": "How many times",
+                    "value": "1"
+                },
+                {
+                    "label": "How many days",
+                    "value": "1"
+                },
+                {
+                    "label": "Period Unit",
+                    "value": "d"
+                },
+                {
+                    "label": "Route",
+                    "value": "Oral Route"
+                },
+                {
+                    "label": "Method",
+                    "value": "Swallow"
+                }
+            ]
+        },
+        {
+            "section": "Care Plan ",
+            "resource": "CarePlan",
+            "entries": [
+                {
+                    "label": "Care Plan Type",
+                    "value": "Coronary heart disease care plan"
+                },
+                {
+                    "label": "Care Plan Title",
+                    "value": "Coronary heart disease care plan"
+                },
+                {
+                    "label": "Care Plan Description",
+                    "value": "Treatment of coronary artery and related disease problems"
+                }
+            ]
+        },
+        {
+            "section": "Document Reference",
+            "resource": "DocumentReference",
+            "entries": [
+                {
+                    "label": "Content Type",
+                    "value": "application/pdf"
+                },
+                {
+                    "label": "Attachment",
+                    "value": "DUMMY"
+                }
+            ]
+        }
+    ]
+}

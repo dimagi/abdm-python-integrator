@@ -1,0 +1,426 @@
+{
+    "title": "Wellness Record",
+    "health_information_type": "WellnessRecord",
+    "content": [
+        {
+            "section": "Patient Details",
+            "resource": "Patient",
+            "entries": [
+                {
+                    "label": "Patient Registered As",
+                    "value": "ABC"
+                }
+            ]
+        },
+        {
+            "section": "Practitioner Details",
+            "resource": "Practitioner",
+            "entries": [
+                {
+                    "label": "Name",
+                    "value": "Dr. DEF"
+                }
+            ]
+        },
+        {
+            "section": "Observation",
+            "resource": "Observation",
+            "entries": [
+                {
+                    "label": "Observation",
+                    "value": "Respiratory rate"
+                },
+                {
+                    "label": "Observation Details",
+                    "value": "Respiratory rate"
+                },
+                {
+                    "label": "Value",
+                    "value": "26"
+                },
+                {
+                    "label": "Unit",
+                    "value": "breaths/minute"
+                }
+            ]
+        },
+        {
+            "section": "Observation",
+            "resource": "Observation",
+            "entries": [
+                {
+                    "label": "Observation",
+                    "value": "Heart rate"
+                },
+                {
+                    "label": "Observation Details",
+                    "value": "Heart rate"
+                },
+                {
+                    "label": "Value",
+                    "value": "44"
+                },
+                {
+                    "label": "Unit",
+                    "value": "beats/minute"
+                }
+            ]
+        },
+        {
+            "section": "Observation",
+            "resource": "Observation",
+            "entries": [
+                {
+                    "label": "Observation",
+                    "value": "Oxygen saturation in Arterial blood"
+                },
+                {
+                    "label": "Value",
+                    "value": "95"
+                },
+                {
+                    "label": "Unit",
+                    "value": "%"
+                }
+            ]
+        },
+        {
+            "section": "Observation",
+            "resource": "Observation",
+            "entries": [
+                {
+                    "label": "Observation",
+                    "value": "Body surface temperature"
+                },
+                {
+                    "label": "Observation Details",
+                    "value": "Body surface temperature"
+                },
+                {
+                    "label": "Value",
+                    "value": "36.5"
+                },
+                {
+                    "label": "Unit",
+                    "value": "Cel"
+                }
+            ]
+        },
+        {
+            "section": "Observation",
+            "resource": "Observation",
+            "entries": [
+                {
+                    "label": "Observation",
+                    "value": "Body height"
+                },
+                {
+                    "label": "Observation Details",
+                    "value": "Body height"
+                },
+                {
+                    "label": "Value",
+                    "value": "66.89999999999999"
+                },
+                {
+                    "label": "Unit",
+                    "value": "in"
+                }
+            ]
+        },
+        {
+            "section": "Observation",
+            "resource": "Observation",
+            "entries": [
+                {
+                    "label": "Observation",
+                    "value": "Body weight"
+                },
+                {
+                    "label": "Value",
+                    "value": "185"
+                },
+                {
+                    "label": "Unit",
+                    "value": "lbs"
+                }
+            ]
+        },
+        {
+            "section": "Observation",
+            "resource": "Observation",
+            "entries": [
+                {
+                    "label": "Observation",
+                    "value": "Body mass index (BMI) [Ratio]"
+                },
+                {
+                    "label": "Observation Details",
+                    "value": "BMI"
+                },
+                {
+                    "label": "Value",
+                    "value": "16.2"
+                },
+                {
+                    "label": "Unit",
+                    "value": "kg/m2"
+                }
+            ]
+        },
+        {
+            "section": "Observation",
+            "resource": "Observation",
+            "entries": [
+                {
+                    "label": "Observation",
+                    "value": "Blood pressure panel with all children optional"
+                },
+                {
+                    "label": "Observation Details",
+                    "value": "Blood pressure panel with all children optional"
+                }
+            ]
+        },
+        {
+            "section": "Observation",
+            "resource": "Observation",
+            "entries": [
+                {
+                    "label": "Observation",
+                    "value": "Number of steps in unspecified time Pedometer"
+                },
+                {
+                    "label": "Observation Details",
+                    "value": "Number of steps in unspecified time Pedometer"
+                },
+                {
+                    "label": "Value",
+                    "value": "10000"
+                },
+                {
+                    "label": "Unit",
+                    "value": "steps"
+                }
+            ]
+        },
+        {
+            "section": "Observation",
+            "resource": "Observation",
+            "entries": [
+                {
+                    "label": "Observation",
+                    "value": "Calories burned"
+                },
+                {
+                    "label": "Observation Details",
+                    "value": "Calories burned"
+                },
+                {
+                    "label": "Value",
+                    "value": "800"
+                },
+                {
+                    "label": "Unit",
+                    "value": "kcal"
+                }
+            ]
+        },
+        {
+            "section": "Observation",
+            "resource": "Observation",
+            "entries": [
+                {
+                    "label": "Observation",
+                    "value": "Sleep duration"
+                },
+                {
+                    "label": "Observation Details",
+                    "value": "Sleep duration"
+                },
+                {
+                    "label": "Value",
+                    "value": "8"
+                },
+                {
+                    "label": "Unit",
+                    "value": "h"
+                }
+            ]
+        },
+        {
+            "section": "Observation",
+            "resource": "Observation",
+            "entries": [
+                {
+                    "label": "Observation",
+                    "value": "Body fat [Mass] Calculated"
+                },
+                {
+                    "label": "Observation Details",
+                    "value": "Body fat [Mass] Calculated"
+                },
+                {
+                    "label": "Value",
+                    "value": "11"
+                },
+                {
+                    "label": "Unit",
+                    "value": "kg"
+                }
+            ]
+        },
+        {
+            "section": "Observation",
+            "resource": "Observation",
+            "entries": [
+                {
+                    "label": "Observation",
+                    "value": "Glucose [Mass/volume] in Blood"
+                },
+                {
+                    "label": "Observation Details",
+                    "value": "Glucose [Mass/volume] in Blood"
+                },
+                {
+                    "label": "Value",
+                    "value": "142"
+                },
+                {
+                    "label": "Unit",
+                    "value": "mg/dL"
+                }
+            ]
+        },
+        {
+            "section": "Observation",
+            "resource": "Observation",
+            "entries": [
+                {
+                    "label": "Observation",
+                    "value": "Fluid intake oral Estimated"
+                },
+                {
+                    "label": "Observation Details",
+                    "value": "Fluid intake oral Estimated"
+                },
+                {
+                    "label": "Value",
+                    "value": "3"
+                },
+                {
+                    "label": "Unit",
+                    "value": "Litres"
+                }
+            ]
+        },
+        {
+            "section": "Observation",
+            "resource": "Observation",
+            "entries": [
+                {
+                    "label": "Observation",
+                    "value": "Calorie intake total"
+                },
+                {
+                    "label": "Observation Details",
+                    "value": "Calorie intake total"
+                },
+                {
+                    "label": "Value",
+                    "value": "1750"
+                },
+                {
+                    "label": "Unit",
+                    "value": "kcal"
+                }
+            ]
+        },
+        {
+            "section": "Observation",
+            "resource": "Observation",
+            "entries": [
+                {
+                    "label": "Observation",
+                    "value": "Age at menarche"
+                },
+                {
+                    "label": "Observation Details",
+                    "value": "Age at menarche"
+                },
+                {
+                    "label": "Value",
+                    "value": "14"
+                },
+                {
+                    "label": "Unit",
+                    "value": "age"
+                }
+            ]
+        },
+        {
+            "section": "Observation",
+            "resource": "Observation",
+            "entries": [
+                {
+                    "label": "Observation",
+                    "value": "Last menstrual period start date"
+                },
+                {
+                    "label": "Observation Details",
+                    "value": "Last menstrual period start date"
+                },
+                {
+                    "label": "Value",
+                    "value": "110120"
+                },
+                {
+                    "label": "Unit",
+                    "value": "MMDDYY"
+                }
+            ]
+        },
+        {
+            "section": "Observation",
+            "resource": "Observation",
+            "entries": [
+                {
+                    "label": "Observation",
+                    "value": "Diet [Type]"
+                },
+                {
+                    "label": "Observation Details",
+                    "value": "Diet [Type]"
+                }
+            ]
+        },
+        {
+            "section": "Observation",
+            "resource": "Observation",
+            "entries": [
+                {
+                    "label": "Observation",
+                    "value": "Finding of tobacco smoking behavior"
+                },
+                {
+                    "label": "Observation Details",
+                    "value": "Finding of tobacco smoking behavior"
+                }
+            ]
+        },
+        {
+            "section": "Document Reference",
+            "resource": "DocumentReference",
+            "entries": [
+                {
+                    "label": "Content Type",
+                    "value": "application/pdf"
+                },
+                {
+                    "label": "Attachment",
+                    "value": "DUMMY"
+                }
+            ]
+        }
+    ]
+}

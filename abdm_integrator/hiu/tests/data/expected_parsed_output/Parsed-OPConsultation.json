@@ -1,0 +1,144 @@
+{
+    "title": "Clinical consultation report",
+    "health_information_type": "OPConsultation",
+    "content": [
+        {
+            "section": "Patient Details",
+            "resource": "Patient",
+            "entries": [
+                {
+                    "label": "Patient Registered As",
+                    "value": "ABC"
+                }
+            ]
+        },
+        {
+            "section": "Visit Details",
+            "resource": "Encounter",
+            "entries": [
+                {
+                    "label": "Visit Type",
+                    "value": "ambulatory"
+                }
+            ]
+        },
+        {
+            "section": "Practitioner Details",
+            "resource": "Practitioner",
+            "entries": [
+                {
+                    "label": "Name",
+                    "value": "Dr. DEF"
+                }
+            ]
+        },
+        {
+            "section": "Document Reference",
+            "resource": "DocumentReference",
+            "entries": [
+                {
+                    "label": "Content Type",
+                    "value": "application/pdf"
+                },
+                {
+                    "label": "Attachment",
+                    "value": "DUMMY"
+                }
+            ]
+        },
+        {
+            "section": "AllergyIntolerance",
+            "resource": "AllergyIntolerance",
+            "entries": [
+                {
+                    "label": "Allergy Tolerance",
+                    "value": "No known allergy"
+                },
+                {
+                    "label": "Allergy Tolerance Details",
+                    "value": "NKA"
+                }
+            ]
+        },
+        {
+            "section": "Procedure ",
+            "resource": "Procedure",
+            "entries": [
+                {
+                    "label": "Procedure Name",
+                    "value": "Assessment of diabetic foot ulcer"
+                },
+                {
+                    "label": "Procedure Name Details",
+                    "value": "Assessment of diabetic foot ulcer"
+                }
+            ]
+        },
+        {
+            "section": "Service Request",
+            "resource": "ServiceRequest",
+            "entries": [
+                {
+                    "label": "Service Request",
+                    "value": "Fasting lipid profile"
+                },
+                {
+                    "label": "Service Request Details",
+                    "value": "Fasting lipid profile"
+                }
+            ]
+        },
+        {
+            "section": "Prescription Medicine Name and Reason",
+            "resource": "MedicationRequest",
+            "entries": [
+                {
+                    "label": "Medicine Name",
+                    "value": "Neomycin 5 microgram/mg cutaneous ointment"
+                }
+            ]
+        },
+        {
+            "section": "Prescription Medicine Instruction",
+            "resource": "MedicationRequest",
+            "entries": [
+                {
+                    "label": "With/Without Food",
+                    "value": "Twice a day"
+                },
+                {
+                    "label": "Route",
+                    "value": "Topical route"
+                }
+            ]
+        },
+        {
+            "section": "Medication Statement",
+            "resource": "MedicationStatement",
+            "entries": [
+                {
+                    "label": "Medicine",
+                    "value": "Telmisartan 20 mg oral tablet"
+                }
+            ]
+        },
+        {
+            "section": "Appointment",
+            "resource": "Appointment",
+            "entries": [
+                {
+                    "label": "Service Category",
+                    "value": "General medical practice"
+                },
+                {
+                    "label": "Service Type",
+                    "value": "Consultation"
+                },
+                {
+                    "label": "Appointment Type",
+                    "value": "Follow-up visit"
+                }
+            ]
+        }
+    ]
+}

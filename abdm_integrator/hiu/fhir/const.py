@@ -5,7 +5,7 @@ HEALTH_INFO_TYPE_RESOURCES_MAP = {
                                          'MedicationRequest', 'MedicationStatement'],
 
     HealthInformationType.OP_CONSULTATION: ['Patient', 'Encounter', 'Practitioner', 'DocumentReference',
-                                            'OPConsultRecord', 'Observation', 'AllergyIntolerance', 'Procedure',
+                                            'Observation', 'AllergyIntolerance', 'Procedure',
                                             'FamilyMemberHistory', 'ServiceRequest', 'MedicationRequest',
                                             'MedicationStatement', 'Appointment'],
 

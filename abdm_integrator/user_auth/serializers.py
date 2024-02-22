@@ -39,6 +39,7 @@ class AuthInitSerializer(serializers.Serializer):
     def validate_authMode(self, data):
         if data == AuthenticationMode.DIRECT:
             raise serializers.ValidationError(f"'{AuthenticationMode.DIRECT}' Auth mode is not supported!")
+        return data
 
 
 class GatewayAuthOnInitSerializer(GatewayCallbackResponseBaseSerializer):

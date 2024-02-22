@@ -109,7 +109,10 @@ class ABDMRequestHelper:
 
     @staticmethod
     def common_request_data():
-        return {'requestId': str(uuid.uuid4()), 'timestamp': datetime.utcnow().isoformat()}
+        return {
+            'requestId': str(uuid.uuid4()),
+            'timestamp': datetime_to_abdm_iso(datetime.utcnow()),
+        }
 
     @staticmethod
     def _handle_abha_http_error(api_path, http_error, request_type='GET'):

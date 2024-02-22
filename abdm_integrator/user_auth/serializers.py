@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 from abdm_integrator.const import AuthenticationMode, AuthFetchModesPurpose, Gender, IdentifierType, RequesterType
-from abdm_integrator.serializers import GatewayCallbackResponseBaseSerializer
+from abdm_integrator.serializers import ABDMDateTimeField, GatewayCallbackResponseBaseSerializer
 
 
 class AuthFetchModesSerializer(serializers.Serializer):
@@ -26,7 +26,7 @@ class GatewayAuthOnFetchModesSerializer(GatewayCallbackResponseBaseSerializer):
 
 class AuthRequesterSerializer(serializers.Serializer):
     type = serializers.ChoiceField(choices=RequesterType.CHOICES)
-    id = serializers.CharField()
+    id = serializers.CharField(required=False)
 
 
 class AuthInitSerializer(serializers.Serializer):
@@ -86,7 +86,7 @@ class GatewayAuthOnConfirmSerializer(GatewayCallbackResponseBaseSerializer):
         class TokenValiditySerializer(serializers.Serializer):
             purpose = serializers.ChoiceField(choices=AuthFetchModesPurpose.CHOICES)
             requester = AuthRequesterSerializer()
-            expiry = serializers.DateTimeField()
+            expiry = ABDMDateTimeField()
             limit = serializers.IntegerField()
 
         class PatientDemographicSerializer(serializers.Serializer):

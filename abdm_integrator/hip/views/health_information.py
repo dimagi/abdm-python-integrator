@@ -27,7 +27,7 @@ from abdm_integrator.hip.serializers.health_information import GatewayHealthInfo
 from abdm_integrator.hip.tasks import process_hip_health_information_request
 from abdm_integrator.hip.views.base import HIPGatewayBaseView
 from abdm_integrator.settings import app_settings
-from abdm_integrator.utils import ABDMRequestHelper, abdm_iso_to_datetime
+from abdm_integrator.utils import ABDMRequestHelper, abdm_iso_to_datetime, datetime_to_abdm_iso
 
 import logging
 logger = logging.getLogger('abdm_integrator')
@@ -141,7 +141,7 @@ class GatewayHealthInformationRequestProcessor:
         payload['notification'] = {
             'consent_id': str(artefact.artefact_id),
             'transaction_id': self.request_data['transactionId'],
-            'doneAt': datetime.utcnow().isoformat(),
+            'doneAt': datetime_to_abdm_iso(datetime.utcnow()),
             'notifier': {
                 'type': RequesterType.HIP,
                 'id': artefact.details['hip']['id']

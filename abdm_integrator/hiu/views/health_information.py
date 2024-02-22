@@ -25,7 +25,13 @@ from abdm_integrator.hiu.serializers.health_information import (
 from abdm_integrator.hiu.tasks import process_hiu_health_information_receiver
 from abdm_integrator.hiu.views.base import HIUBaseView, HIUGatewayBaseView
 from abdm_integrator.settings import app_settings
-from abdm_integrator.utils import ABDMCache, ABDMRequestHelper, abdm_iso_to_datetime, poll_and_pop_data_from_cache
+from abdm_integrator.utils import (
+    ABDMCache,
+    ABDMRequestHelper,
+    abdm_iso_to_datetime,
+    datetime_to_abdm_iso,
+    poll_and_pop_data_from_cache,
+)
 
 logger = logging.getLogger('abdm_integrator')
 
@@ -315,7 +321,7 @@ class ReceiveHealthInformationProcessor:
         payload['notification'] = {
             'consent_id': str(artefact.artefact_id),
             'transaction_id': self.request_data['transactionId'],
-            'doneAt': datetime.utcnow().isoformat(),
+            'doneAt': datetime_to_abdm_iso(datetime.utcnow()),
             'notifier': {
                 'type': RequesterType.HIU,
                 'id': self.get_hiu_id_from_consent()

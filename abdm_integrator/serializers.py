@@ -20,6 +20,11 @@ class GatewayIdSerializer(serializers.Serializer):
     id = serializers.CharField()
 
 
+class GatewayIdNameSerializer(serializers.Serializer):
+    id = serializers.CharField()
+    name = serializers.CharField(required=False, allow_null=True)
+
+
 class GatewayCareContextSerializer(serializers.Serializer):
     patientReference = serializers.CharField()
     careContextReference = serializers.CharField()

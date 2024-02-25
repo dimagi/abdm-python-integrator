@@ -8,6 +8,7 @@ from abdm_integrator.serializers import (
     ABDMDateTimeField,
     GatewayCallbackResponseBaseSerializer,
     GatewayCareContextSerializer,
+    GatewayIdNameSerializer,
     GatewayIdSerializer,
     GatewayPermissionSerializer,
     GatewayPurposeSerializer,
@@ -91,8 +92,8 @@ class GatewayConsentRequestOnFetchSerializer(GatewayCallbackResponseBaseSerializ
             patient = GatewayIdSerializer()
             careContexts = serializers.ListField(child=GatewayCareContextSerializer(), min_length=1)
             purpose = GatewayPurposeSerializer()
-            hip = GatewayIdSerializer()
-            hiu = GatewayIdSerializer()
+            hip = GatewayIdNameSerializer()
+            hiu = GatewayIdNameSerializer()
             consentManager = GatewayIdSerializer()
             requester = GatewayRequesterSerializer()
             hiTypes = serializers.ListField(child=serializers.ChoiceField(choices=HealthInformationType.CHOICES),

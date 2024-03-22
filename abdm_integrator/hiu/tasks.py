@@ -28,7 +28,8 @@ def process_hiu_expired_consents():
 
 
 def _process_hiu_expired_consents():
-    for consent in ConsentRequest.objects.exclude(status=ConsentStatus.EXPIRED).filter(
+    exclude = [ConsentStatus.EXPIRED, ConsentStatus.REVOKED, ConsentStatus.DENIED]
+    for consent in ConsentRequest.objects.exclude(status__in=exclude).filter(
         expiry_date__lt=datetime.utcnow()
     ):
         with transaction.atomic():

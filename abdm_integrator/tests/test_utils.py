@@ -1,3 +1,4 @@
+from datetime import datetime
 from unittest.mock import Mock, patch
 
 import requests
@@ -7,6 +8,8 @@ from abdm_integrator.exceptions import ABDMGatewayError
 from abdm_integrator.utils import (
     ABDMCache,
     ABDMRequestHelper,
+    abdm_iso_to_datetime,
+    datetime_to_abdm_iso,
     poll_and_pop_data_from_cache,
     removes_prefix_for_abdm_mobile,
 )
@@ -97,3 +100,17 @@ class TestUtils(SimpleTestCase):
         self.assertEqual(removes_prefix_for_abdm_mobile('+91-9988776655'), '9988776655')
         self.assertEqual(removes_prefix_for_abdm_mobile('+919988776655'), '9988776655')
         self.assertEqual(removes_prefix_for_abdm_mobile('9988776655'), '9988776655')
+
+    def test_datetime_to_abdm_iso(self):
+        date1 = datetime(year=2023, month=1, day=1, hour=1, minute=1, second=1, microsecond=123456)
+        date2 = datetime(year=2023, month=1, day=1, hour=1, minute=1, second=1, microsecond=123)
+        date3 = datetime(year=2023, month=1, day=1, hour=1, minute=1, second=1)
+        self.assertEqual(datetime_to_abdm_iso(date1), '2023-01-01T01:01:01.123Z')
+        self.assertEqual(datetime_to_abdm_iso(date2), '2023-01-01T01:01:01.000Z')
+        self.assertEqual(datetime_to_abdm_iso(date3), '2023-01-01T01:01:01.000Z')
+
+    def test_abdm_iso_to_datetime(self):
+        expected_date = datetime(year=2023, month=1, day=1, hour=1, minute=1, second=1, microsecond=123000)
+        self.assertEqual(abdm_iso_to_datetime('2023-01-01T01:01:01.123Z'), expected_date)
+        self.assertEqual(abdm_iso_to_datetime('2023-01-01T01:01:01.123000Z'), expected_date)
+        self.assertEqual(abdm_iso_to_datetime('2023-01-01T01:01:01.123000'), expected_date)

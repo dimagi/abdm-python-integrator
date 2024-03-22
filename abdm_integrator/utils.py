@@ -109,7 +109,10 @@ class ABDMRequestHelper:
 
     @staticmethod
     def common_request_data():
-        return {'requestId': str(uuid.uuid4()), 'timestamp': datetime.utcnow().isoformat()}
+        return {
+            'requestId': str(uuid.uuid4()),
+            'timestamp': datetime_to_abdm_iso(datetime.utcnow()),
+        }
 
     @staticmethod
     def _handle_abha_http_error(api_path, http_error, request_type='GET'):
@@ -139,6 +142,10 @@ def past_date_validator(value):
 
 def abdm_iso_to_datetime(value):
     return parse_datetime(value).replace(tzinfo=None)
+
+
+def datetime_to_abdm_iso(value):
+    return value.isoformat(timespec='milliseconds') + 'Z'
 
 
 def json_from_file(file_path):

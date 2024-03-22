@@ -4,6 +4,8 @@ from datetime import datetime, timedelta
 
 from fidelius import CryptoController, DecryptionRequest, EncryptionRequest, KeyMaterial
 
+from abdm_integrator.utils import datetime_to_abdm_iso
+
 CRYPTO_ALGORITHM = 'ECDH'
 CURVE = 'Curve25519'
 KEY_MATERIAL_EXPIRY = 60 * 60  # in seconds
@@ -36,7 +38,7 @@ class ABDMCrypto:
             'cryptoAlg': CRYPTO_ALGORITHM,
             'curve': CURVE,
             'dhPublicKey': {
-                'expiry': (datetime.utcnow() + timedelta(seconds=KEY_MATERIAL_EXPIRY)).isoformat(),
+                'expiry': datetime_to_abdm_iso(datetime.utcnow() + timedelta(seconds=KEY_MATERIAL_EXPIRY)),
                 'parameters': CURVE,
                 'keyValue': (self.key_material.x509_public_key if use_x509_for_transfer
                              else self.key_material.public_key)

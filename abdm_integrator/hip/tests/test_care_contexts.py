@@ -81,7 +81,7 @@ class TestHIPLinkCareContextAPI(APITestCase, APITestHelperMixin):
                         ],
                         'additionalInfo': {
                             'domain': 'test',
-                            'record_date': datetime.utcnow().isoformat()
+                            'record_date': f"{datetime.utcnow().isoformat(timespec='milliseconds')}Z"
                         }
                     }
                 ]

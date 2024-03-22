@@ -29,15 +29,19 @@ from abdm_integrator.utils import ABDMRequestHelper, APIResultsSetPagination
 
 
 class GenerateConsent(HIUBaseView):
+
     def post(self, request, format=None):
         serializer = GenerateConsentSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        consent_data = serializer.data
-        self.check_if_health_id_exists(consent_data['patient']['id'])
-        gateway_request_id = self.gateway_consent_request_init(consent_data)
-        consent_request = self.save_consent_request(gateway_request_id, consent_data, request.user)
-        return Response(status=HTTP_201_CREATED,
-                        data=ConsentRequestSerializer(consent_request).data)
+        self.check_if_health_id_exists(serializer.data['patient']['id'])
+        gateway_request_id = self.gateway_consent_request_init(serializer.data)
+        consent_request = self.save_consent_request(
+            gateway_request_id,
+            serializer.validated_data,
+            serializer.data,
+            request.user
+        )
+        return Response(status=HTTP_201_CREATED, data=ConsentRequestSerializer(consent_request).data)
 
     def check_if_health_id_exists(self, health_id):
         payload = {'healthId': health_id}
@@ -55,9 +59,9 @@ class GenerateConsent(HIUBaseView):
         ABDMRequestHelper().gateway_post(HIUGatewayAPIPath.CONSENT_REQUEST_INIT, payload)
         return payload['requestId']
 
-    def save_consent_request(self, gateway_request_id, consent_data, user):
-        consent_request = ConsentRequest(user=user, gateway_request_id=gateway_request_id, details=consent_data)
-        consent_request.update_user_amendable_details(consent_data['permission'], consent_data['hiTypes'])
+    def save_consent_request(self, gateway_request_id, validated_data, serialized_data, user):
+        consent_request = ConsentRequest(user=user, gateway_request_id=gateway_request_id, details=serialized_data)
+        consent_request.update_user_amendable_details(validated_data['permission'], validated_data['hiTypes'])
         return ConsentRequest.objects.get(gateway_request_id=gateway_request_id)
 
 
@@ -163,8 +167,9 @@ class GatewayConsentRequestNotifyProcessor:
 class GatewayConsentRequestOnFetch(HIUGatewayBaseView):
 
     def post(self, request, format=None):
-        GatewayConsentRequestOnFetchSerializer(data=request.data).is_valid(raise_exception=True)
-        self.process_request(request.data)
+        serializer = GatewayConsentRequestOnFetchSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.process_request(serializer.data)
         return Response(status=HTTP_202_ACCEPTED)
 
     @transaction.atomic

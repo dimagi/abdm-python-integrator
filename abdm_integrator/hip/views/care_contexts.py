@@ -56,6 +56,8 @@ from abdm_integrator.user_auth.views import AuthConfirm, AuthInit
 from abdm_integrator.utils import (
     ABDMCache,
     ABDMRequestHelper,
+    abdm_iso_to_datetime,
+    datetime_to_abdm_iso,
     poll_and_pop_data_from_cache,
     removes_prefix_for_abdm_mobile,
 )
@@ -458,13 +460,14 @@ class GatewayCareContextsLinkInitProcessor:
 
     @staticmethod
     def _generate_link_payload_from_otp_response(otp_response, link_reference):
+        expiry = datetime_to_abdm_iso(abdm_iso_to_datetime(otp_response['auth']['meta']['expiry']))
         return {
             'referenceNumber': str(link_reference),
             'authenticationType': AuthenticationMode.MOBILE_OTP,
             'meta': {
                 'communicationMedium': 'MOBILE',
                 'communicationHint': otp_response['auth']['meta']['hint'],
-                'communicationExpiry': otp_response['auth']['meta']['expiry']
+                'communicationExpiry': expiry,
             }
         }
 

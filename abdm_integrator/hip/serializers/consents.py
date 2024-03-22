@@ -2,6 +2,7 @@ from rest_framework import serializers
 
 from abdm_integrator.const import ConsentStatus, HealthInformationType
 from abdm_integrator.serializers import (
+    ABDMDateTimeField,
     GatewayCareContextSerializer,
     GatewayIdSerializer,
     GatewayPermissionSerializer,
@@ -16,7 +17,7 @@ class GatewayConsentRequestNotifySerializer(serializers.Serializer):
         class ConsentDetailSerializer(serializers.Serializer):
             schemaVersion = serializers.CharField(required=False)
             consentId = serializers.UUIDField()
-            createdAt = serializers.DateTimeField()
+            createdAt = ABDMDateTimeField()
             patient = GatewayIdSerializer()
             careContexts = serializers.ListField(child=GatewayCareContextSerializer(), min_length=1)
             purpose = GatewayPurposeSerializer()

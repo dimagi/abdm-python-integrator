@@ -109,11 +109,13 @@ class GatewayConsentRequestNotifyProcessor:
         elif consent_status == ConsentStatus.EXPIRED:
             self.handle_expired(consent_request)
         elif consent_status == ConsentStatus.DENIED:
+            consent_request.date_denied = datetime.utcnow()
             consent_request.update_status(ConsentStatus.DENIED)
 
     def handle_granted(self, consent_request):
         consent_artefacts = []
         with transaction.atomic():
+            consent_request.date_granted = datetime.utcnow()
             consent_request.update_status(ConsentStatus.GRANTED)
             for artefact in self.request_data['notification']['consentArtefacts']:
                 consent_artefact, _ = ConsentArtefact.objects.get_or_create(artefact_id=artefact['id'],
@@ -136,6 +138,7 @@ class GatewayConsentRequestNotifyProcessor:
         artefact_ids = [artefact['id'] for artefact in self.request_data['notification']['consentArtefacts']]
         consent_request = ConsentRequest.objects.get(artefacts__artefact_id=artefact_ids[0])
         ConsentArtefact.objects.filter(consent_request=consent_request).delete()
+        consent_request.date_revoked = datetime.utcnow()
         consent_request.update_status(ConsentStatus.REVOKED)
         self.gateway_consents_on_notify(artefact_ids)
 

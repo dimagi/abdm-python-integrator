@@ -15,6 +15,9 @@ class ConsentRequest(models.Model):
     error = models.JSONField(null=True)
     date_created = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
+    date_granted = models.DateTimeField(null=True)
+    date_revoked = models.DateTimeField(null=True)
+    date_denied = models.DateTimeField(null=True)
     # Below attributes correspond to ones that are approved by Patient when consent is granted.
     health_info_from_date = models.DateTimeField()
     health_info_to_date = models.DateTimeField()

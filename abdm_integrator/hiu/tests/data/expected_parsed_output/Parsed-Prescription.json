@@ -1,0 +1,126 @@
+{
+    "title": "Prescription record",
+    "health_information_type": "Prescription",
+    "content": [
+        {
+            "section": "Patient Details",
+            "resource": "Patient",
+            "entries": [
+                {
+                    "label": "Patient Registered As",
+                    "value": "ABC"
+                }
+            ]
+        },
+        {
+            "section": "Practitioner Details",
+            "resource": "Practitioner",
+            "entries": [
+                {
+                    "label": "Name",
+                    "value": "Dr. DEF"
+                }
+            ]
+        },
+        {
+            "section": "Documents",
+            "resource": "Binary",
+            "entries": [
+                {
+                    "label": "Attachment",
+                    "value": "DUMMY"
+                },
+                {
+                    "label": "Content Type",
+                    "value": "application/pdf"
+                }
+            ]
+        },
+        {
+            "section": "Documents",
+            "resource": "Binary",
+            "entries": [
+                {
+                    "label": "Attachment",
+                    "value": "DUMMY"
+                },
+                {
+                    "label": "Content Type",
+                    "value": "image/jpeg"
+                }
+            ]
+        },
+        {
+            "section": "Prescription Medicine Name and Reason",
+            "resource": "MedicationRequest",
+            "entries": [
+                {
+                    "label": "Medicine Name",
+                    "value": "Azithromycin (as azithromycin dihydrate) 250 mg oral capsule"
+                },
+                {
+                    "label": "Reason of Medicine",
+                    "value": "Traveler's diarrhea"
+                }
+            ]
+        },
+        {
+            "section": "Prescription Medicine Instruction",
+            "resource": "MedicationRequest",
+            "entries": [
+                {
+                    "label": "Instructions",
+                    "value": "One tablet at once"
+                },
+                {
+                    "label": "With/Without Food",
+                    "value": "With or after food"
+                },
+                {
+                    "label": "How many times",
+                    "value": "1"
+                },
+                {
+                    "label": "How many days",
+                    "value": "1"
+                },
+                {
+                    "label": "Period Unit",
+                    "value": "d"
+                },
+                {
+                    "label": "Route",
+                    "value": "Oral Route"
+                },
+                {
+                    "label": "Method",
+                    "value": "Swallow"
+                }
+            ]
+        },
+        {
+            "section": "Prescription Medicine Name and Reason",
+            "resource": "MedicationRequest",
+            "entries": [
+                {
+                    "label": "Medicine Name Details",
+                    "value": "Paracetemol 500mg Oral Tab"
+                },
+                {
+                    "label": "Reason of Medicine",
+                    "value": "Ross river fever"
+                }
+            ]
+        },
+        {
+            "section": "Prescription Medicine Instruction",
+            "resource": "MedicationRequest",
+            "entries": [
+                {
+                    "label": "Instructions",
+                    "value": "Take two tablets orally with or after meal once a day"
+                }
+            ]
+        }
+    ]
+}

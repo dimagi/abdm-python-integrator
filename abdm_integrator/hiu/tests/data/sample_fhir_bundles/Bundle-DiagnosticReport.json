@@ -1,0 +1,553 @@
+{
+    "resourceType": "Bundle",
+    "id": "DiagnosticReport-Imaging-DCM-example-01",
+    "meta": {
+        "versionId": "1",
+        "lastUpdated": "2020-07-09T15:32:26.605+05:30",
+        "profile": [
+            "https://nrces.in/ndhm/fhir/r4/StructureDefinition/DocumentBundle"
+        ],
+        "security": [
+            {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-Confidentiality",
+                "code": "V",
+                "display": "very restricted"
+            }
+        ]
+    },
+    "identifier": {
+        "system": "http://hip.in",
+        "value": "242590bb-b122-45d0-8eb2-883392297ee1"
+    },
+    "type": "document",
+    "timestamp": "2020-07-09T15:32:26.605+05:30",
+    "entry": [
+        {
+            "fullUrl": "Composition/1",
+            "resource": {
+                "resourceType": "Composition",
+                "id": "1",
+                "meta": {
+                    "versionId": "1",
+                    "lastUpdated": "2020-07-09T15:32:26.605+05:30",
+                    "profile": [
+                        "https://nrces.in/ndhm/fhir/r4/StructureDefinition/DiagnosticReportRecord"
+                    ]
+                },
+                "language": "en-IN",
+                "text": {
+                    "status": "generated",
+                    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en-IN\" lang=\"en-IN\"><h4>Narrative with Details</h4>\r\n      <p><b>id:</b> 1</p>\r\n\t  <p><b>status:</b> final</p>\r\n\t  <p><b>category:</b> Computerized tomography service (Details : {http://snomed.info/sct} code '310128004' = 'Computerized tomography service')</p>\r\n\t  <p><b>subject:</b> ABC. Generated Summary: id: 1; Medical Record Number = 1234 (System : {https://healthid.ndhm.gov.in/}); active; ABC ; ph: +919818512600(HOME); gender: male; birthDate: 1981-01-12</p>\r\n\t  <p><b>issued:</b> 2020-07-09</p>\r\n\t  <p><b>performer:</b> XYZ Lab Pvt.Ltd.</p>\r\n\t  <p><b>resultInterpreter:</b> Dr. DEF. Generated Summary: id: 1; Medical License number = 7601003178999 (System : {doctor.ndhm.gov.in})</p>\n\t\t\t\t\t\t<h3>Diagnostic Report for ABC issued 9-July 2020 14:26</h3>\n\t\t\t\t\t\t<pre>\ncode: CT of head-neck\nImaging Study: HEAD and NECK CT DICOM imaging study\nConclusion: CT brains: large tumor sphenoid/clivus. </pre>\n\t\t\t\t\t\t<p>XYZ Lab Pvt.Ltd., Inc signed: Dr. DEF Radiologist</p>\n\t\t\t\t\t</div>"
+                },
+                "identifier": {
+                    "system": "https://ndhm.in/phr",
+                    "value": "645bb0c3-ff7e-4123-bef5-3852a4784813"
+                },
+                "status": "final",
+                "type": {
+                    "coding": [
+                        {
+                            "system": "http://snomed.info/sct",
+                            "code": "721981007",
+                            "display": "Diagnostic studies report"
+                        }
+                    ],
+                    "text": "Diagnostic Report- Imaging DICOM"
+                },
+                "subject": {
+                    "reference": "Patient/1"
+                },
+                "date": "2017-05-27T11:46:09+05:30",
+                "author": [
+                    {
+                        "reference": "Practitioner/1"
+                    }
+                ],
+                "title": "Diagnostic Report- Imaging DICOM",
+                "section": [
+                    {
+                        "title": "Computed tomography imaging report",
+                        "code": {
+                            "coding": [
+                                {
+                                    "system": "http://snomed.info/sct",
+                                    "code": "4261000179100",
+                                    "display": "Computed tomography imaging report"
+                                }
+                            ]
+                        },
+                        "entry": [
+                            {
+                                "reference": "DiagnosticReport/1",
+                                "type": "DiagnosticReport"
+                            },
+                            {
+                                "reference": "DocumentReference/1",
+                                "type": "DocumentReference"
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "fullUrl": "Patient/1",
+            "resource": {
+                "resourceType": "Patient",
+                "id": "1",
+                "meta": {
+                    "versionId": "1",
+                    "lastUpdated": "2020-07-09T14:58:58.181+05:30",
+                    "profile": [
+                        "https://nrces.in/ndhm/fhir/r4/StructureDefinition/Patient"
+                    ]
+                },
+                "text": {
+                    "status": "generated",
+                    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en-IN\" lang=\"en-IN\">ABC, 41 year, Male</div>"
+                },
+                "identifier": [
+                    {
+                        "type": {
+                            "coding": [
+                                {
+                                    "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+                                    "code": "MR",
+                                    "display": "Medical record number"
+                                }
+                            ]
+                        },
+                        "system": "https://healthid.ndhm.gov.in",
+                        "value": "22-7225-4829-5255"
+                    }
+                ],
+                "name": [
+                    {
+                        "text": "ABC"
+                    }
+                ],
+                "telecom": [
+                    {
+                        "system": "phone",
+                        "value": "+919818512600",
+                        "use": "home"
+                    }
+                ],
+                "gender": "male",
+                "birthDate": "1981-01-12"
+            }
+        },
+        {
+            "fullUrl": "Practitioner/1",
+            "resource": {
+                "resourceType": "Practitioner",
+                "id": "1",
+                "meta": {
+                    "versionId": "1",
+                    "lastUpdated": "2019-05-29T14:58:58.181+05:30",
+                    "profile": [
+                        "https://nrces.in/ndhm/fhir/r4/StructureDefinition/Practitioner"
+                    ]
+                },
+                "text": {
+                    "status": "generated",
+                    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en-IN\" lang=\"en-IN\">Dr. DEF, MD (Radiology)</div>"
+                },
+                "identifier": [
+                    {
+                        "type": {
+                            "coding": [
+                                {
+                                    "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+                                    "code": "MD",
+                                    "display": "Medical License number"
+                                }
+                            ]
+                        },
+                        "system": "https://doctor.ndhm.gov.in",
+                        "value": "21-1521-3828-3227"
+                    }
+                ],
+                "name": [
+                    {
+                        "text": "Dr. DEF"
+                    }
+                ]
+            }
+        },
+        {
+            "fullUrl": "Organization/example-01",
+            "resource": {
+                "resourceType": "Organization",
+                "id": "example-01",
+                "meta": {
+                    "profile": [
+                        "https://nrces.in/ndhm/fhir/r4/StructureDefinition/Organization"
+                    ]
+                },
+                "text": {
+                    "status": "generated",
+                    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en-IN\" lang=\"en-IN\">XYZ Lab Pvt.Ltd. ph: +91 243 2634 1234, email:<a href=\"mailto:contact@labs.xyz.org\">contact@labs.xyz.org</a></div>"
+                },
+                "identifier": [
+                    {
+                        "type": {
+                            "coding": [
+                                {
+                                    "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+                                    "code": "PRN",
+                                    "display": "Provider number"
+                                }
+                            ]
+                        },
+                        "system": "https://facility.ndhm.gov.in/",
+                        "value": "4567878"
+                    }
+                ],
+                "name": "XYZ Lab Pvt.Ltd.",
+                "telecom": [
+                    {
+                        "system": "phone",
+                        "value": "+91 243 2634 1234",
+                        "use": "work"
+                    },
+                    {
+                        "system": "email",
+                        "value": "contact@labs.xyz.org",
+                        "use": "work"
+                    }
+                ]
+            }
+        },
+        {
+            "fullUrl": "DiagnosticReport/1",
+            "resource": {
+                "resourceType": "DiagnosticReport",
+                "id": "1",
+                "meta": {
+                    "versionId": "1",
+                    "lastUpdated": "2020-07-09T14:58:58.181+05:30",
+                    "profile": [
+                        "https://nrces.in/ndhm/fhir/r4/StructureDefinition/DiagnosticReportImaging"
+                    ]
+                },
+                "text": {
+                    "status": "generated",
+                    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en-IN\" lang=\"en-IN\">\n\t\t\t\t\t\t<h3>Diagnostic Report for ABC issued 9-July 2020 14:26</h3>\n\t\t\t\t\t\t<pre>\ncode: CT of head-neck\nImaging Study: HEAD and NECK CT DICOM imaging study\nConclusion: CT brains: large tumor sphenoid/clivus. </pre>\n\t\t\t\t\t\t<p>XYZ Lab Pvt.Ltd., Inc signed: Dr. DEF Radiologist</p>\n\t\t\t\t\t</div>"
+                },
+                "identifier": [
+                    {
+                        "system": "https://xyz.com/lab/reports",
+                        "value": "5234342"
+                    }
+                ],
+                "basedOn": [
+                    {
+                        "reference": "ServiceRequest/1"
+                    }
+                ],
+                "status": "final",
+                "category": [
+                    {
+                        "coding": [
+                            {
+                                "system": "http://snomed.info/sct",
+                                "code": "310128004",
+                                "display": "Computerized tomography service"
+                            }
+                        ]
+                    }
+                ],
+                "code": {
+                    "coding": [
+                        {
+                            "system": "http://loinc.org",
+                            "code": "82692-5",
+                            "display": "CT Head and Neck WO contrast"
+                        }
+                    ],
+                    "text": "CT Head and Neck WO contrast"
+                },
+                "subject": {
+                    "reference": "Patient/1",
+                    "display": "ABC"
+                },
+                "issued": "2020-07-10T11:45:33+11:00",
+                "performer": [
+                    {
+                        "reference": "Organization/example-01",
+                        "display": "XYZ Lab Pvt.Ltd."
+                    }
+                ],
+                "resultsInterpreter": [
+                    {
+                        "reference": "Practitioner/1",
+                        "display": "Dr. DEF"
+                    }
+                ],
+                "imagingStudy": [
+                    {
+                        "reference": "ImagingStudy/1",
+                        "display": "HEAD and NECK CT DICOM imaging study"
+                    }
+                ],
+                "media": [
+                    {
+                        "link": {
+                            "reference": "Media/1"
+                        }
+                    }
+                ],
+                "conclusion": "CT brains: large tumor sphenoid/clivus.",
+                "conclusionCode": [
+                    {
+                        "coding": [
+                            {
+                                "system": "http://snomed.info/sct",
+                                "code": "188340000",
+                                "display": "Malignant tumor of craniopharyngeal duct"
+                            }
+                        ]
+                    }
+                ],
+                "presentedForm": [
+                    {
+                        "contentType": "application/pdf",
+                        "language": "en-IN",
+                        "data": "DUMMY",
+                        "title": "Diagnostic Report"
+                    }
+                ]
+            }
+        },
+        {
+            "fullUrl": "ImagingStudy/1",
+            "resource": {
+                "resourceType": "ImagingStudy",
+                "id": "1",
+                "meta": {
+                    "profile": [
+                        "https://nrces.in/ndhm/fhir/r4/StructureDefinition/ImagingStudy"
+                    ]
+                },
+                "text": {
+                    "status": "generated",
+                    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en-IN\" lang=\"en-IN\">HEAD and NECK CT DICOM imaging study</div>"
+                },
+                "identifier": [
+                    {
+                        "system": "https://xyz.in/DCMServer",
+                        "value": "7897"
+                    }
+                ],
+                "status": "available",
+                "subject": {
+                    "reference": "Patient/1"
+                },
+                "interpreter": [
+                    {
+                        "reference": "Practitioner/1"
+                    }
+                ],
+                "numberOfSeries": 1,
+                "numberOfInstances": 1,
+                "series": [
+                    {
+                        "uid": "2.16.124.113543.6003.2588828330.45298.17418.2723805630",
+                        "number": 1,
+                        "modality": {
+                            "system": "http://snomed.info/sct",
+                            "code": "429858000",
+                            "display": "CT of head and neck"
+                        },
+                        "description": "CT Surview 180",
+                        "numberOfInstances": 1,
+                        "bodySite": {
+                            "system": "http://snomed.info/sct",
+                            "code": "774007",
+                            "display": "Structure of head and/or neck"
+                        },
+                        "instance": [
+                            {
+                                "uid": "2.16.124.113543.6003.189642796.63084.16748.2599092903",
+                                "sopClass": {
+                                    "system": "urn:ietf:rfc:3986",
+                                    "code": "urn:oid:1.2.840.10008.5.1.4.1.1.2"
+                                },
+                                "number": 1,
+                                "title": "CT of head and neck"
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "fullUrl": "Media/1",
+            "resource": {
+                "resourceType": "Media",
+                "id": "1",
+                "meta": {
+                    "profile": [
+                        "https://nrces.in/ndhm/fhir/r4/StructureDefinition/Media"
+                    ]
+                },
+                "text": {
+                    "status": "generated",
+                    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en-IN\" lang=\"en-IN\">HEAD and NECK CT DICOM imaging study</div>"
+                },
+                "status": "completed",
+                "modality": {
+                    "coding": [
+                        {
+                            "system": "http://snomed.info/sct",
+                            "code": "429858000",
+                            "display": "CT of head and neck"
+                        }
+                    ]
+                },
+                "subject": {
+                    "reference": "Patient/1"
+                },
+                "createdDateTime": "2020-07-10",
+                "bodySite": {
+                    "coding": [
+                        {
+                            "system": "http://snomed.info/sct",
+                            "code": "774007",
+                            "display": "Structure of head and/or neck"
+                        }
+                    ]
+                },
+                "content": {
+                    "contentType": "image/jpeg",
+                    "language": "en-IN",
+                    "data": "DUMMY",
+                    "title": "Computed tomography (CT) of head and neck",
+                    "creation": "2020-07-09T11:46:09+05:30"
+                }
+            }
+        },
+        {
+            "fullUrl": "ServiceRequest/1",
+            "resource": {
+                "resourceType": "ServiceRequest",
+                "id": "1",
+                "meta": {
+                    "profile": [
+                        "https://nrces.in/ndhm/fhir/r4/StructureDefinition/ServiceRequest"
+                    ]
+                },
+                "text": {
+                    "status": "generated",
+                    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en-IN\" lang=\"en-IN\"><p><b>Generated Narrative with Details</b></p><p><b>id</b>: 1</p><p><b>status</b>: active</p><p><b>intent</b>: original-order</p><p><b>subject</b>: <a>ABC</a></p><p><b>occurrence</b>: 08/07/2020 9:33:27 AM</p><p><b>requester</b>: <a>Dr PQR</a></p></div>"
+                },
+                "status": "active",
+                "intent": "original-order",
+                "subject": {
+                    "reference": "Patient/1"
+                },
+                "occurrenceDateTime": "2020-07-08T09:33:27+07:00",
+                "requester": {
+                    "reference": "Practitioner/2",
+                    "display": "Dr. PQR"
+                }
+            }
+        },
+        {
+            "fullUrl": "Practitioner/2",
+            "resource": {
+                "resourceType": "Practitioner",
+                "id": "2",
+                "meta": {
+                    "versionId": "1",
+                    "lastUpdated": "2019-05-29T14:58:58.181+05:30",
+                    "profile": [
+                        "https://nrces.in/ndhm/fhir/r4/StructureDefinition/Practitioner"
+                    ]
+                },
+                "text": {
+                    "status": "generated",
+                    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en-IN\" lang=\"en-IN\">Dr. PQR, MD (Medicine)</div>"
+                },
+                "identifier": [
+                    {
+                        "type": {
+                            "coding": [
+                                {
+                                    "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+                                    "code": "MD",
+                                    "display": "Medical License number"
+                                }
+                            ]
+                        },
+                        "system": "https://doctor.ndhm.gov.in",
+                        "value": "25-1531-3528-3228"
+                    }
+                ],
+                "name": [
+                    {
+                        "text": "Dr. PQR"
+                    }
+                ]
+            }
+        },
+        {
+            "fullUrl": "DocumentReference/1",
+            "resource": {
+                "resourceType": "DocumentReference",
+                "id": "1",
+                "meta": {
+                    "profile": [
+                        "https://nrces.in/ndhm/fhir/r4/StructureDefinition/DocumentReference"
+                    ]
+                },
+                "text": {
+                    "status": "generated",
+                    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Generated Narrative: DocumentReference</b><a name=\"1\"> </a></p><div style=\"display: inline-block; background-color: #d9e0e7; padding: 6px; margin: 4px; border: 1px solid #8da1b4; border-radius: 5px; line-height: 60%\"><p style=\"margin-bottom: 0px\">Resource DocumentReference \"1\" </p><p style=\"margin-bottom: 0px\">Profile: <a href=\"StructureDefinition-DocumentReference.html\">DocumentReference</a></p></div><p><b>status</b>: current</p><p><b>docStatus</b>: final</p><p><b>type</b>: Laboratory report <span style=\"background: LightGoldenRodYellow; margin: 4px; border: 1px solid khaki\"> (<a href=\"https://browser.ihtsdotools.org/\">SNOMED CT</a>#4241000179101)</span></p><p><b>subject</b>: <a href=\"#Patient_1\">See above (Patient/1)</a></p><blockquote><p><b>content</b></p><h3>Attachments</h3><table class=\"grid\"><tr><td>-</td><td><b>ContentType</b></td><td><b>Language</b></td><td><b>Data</b></td><td><b>Title</b></td><td><b>Creation</b></td></tr><tr><td>*</td><td>application/pdf</td><td>en-IN</td><td>DUMMY</td><td>Laboratory report</td><td>2019-05-29 02:58:58+0530</td></tr></table></blockquote></div>"
+                },
+                "status": "current",
+                "docStatus": "final",
+                "type": {
+                    "coding": [
+                        {
+                            "system": "http://snomed.info/sct",
+                            "code": "4241000179101",
+                            "display": "Laboratory report"
+                        }
+                    ],
+                    "text": "Laboratory report"
+                },
+                "subject": {
+                    "reference": "Patient/1"
+                },
+                "content": [
+                    {
+                        "attachment": {
+                            "contentType": "application/pdf",
+                            "language": "en-IN",
+                            "data": "DUMMY",
+                            "title": "Laboratory report",
+                            "creation": "2019-05-29T14:58:58.181+05:30"
+                        }
+                    }
+                ]
+            }
+        }
+    ],
+    "signature": {
+        "type": [
+            {
+                "system": "urn:iso-astm:E1762-95:2013",
+                "code": "1.2.840.10065.1.12.1.1",
+                "display": "Author's Signature"
+            }
+        ],
+        "when": "2020-07-09T07:42:33+10:00",
+        "who": {
+            "reference": "Practitioner/1"
+        },
+        "sigFormat": "image/jpeg",
+        "data": "DUMMY"
+    }
+}

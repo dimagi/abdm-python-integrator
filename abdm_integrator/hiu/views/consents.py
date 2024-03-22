@@ -135,9 +135,8 @@ class GatewayConsentRequestNotifyProcessor:
     def handle_revoked(self):
         artefact_ids = [artefact['id'] for artefact in self.request_data['notification']['consentArtefacts']]
         consent_request = ConsentRequest.objects.get(artefacts__artefact_id=artefact_ids[0])
-        ConsentArtefact.objects.filter(artefact_id__in=artefact_ids).delete()
-        if consent_request.artefacts.all().count() == 0:
-            consent_request.update_status(ConsentStatus.REVOKED)
+        ConsentArtefact.objects.filter(consent_request=consent_request).delete()
+        consent_request.update_status(ConsentStatus.REVOKED)
         self.gateway_consents_on_notify(artefact_ids)
 
     def fetch_artefact_and_update_status(self, consent_artefact):

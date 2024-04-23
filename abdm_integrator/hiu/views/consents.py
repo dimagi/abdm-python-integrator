@@ -4,6 +4,7 @@ from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework.serializers import ValidationError
 from rest_framework.status import HTTP_201_CREATED, HTTP_202_ACCEPTED
+from rest_framework.throttling import UserRateThrottle
 
 from abdm_integrator.const import ArtefactFetchStatus, ConsentStatus
 from abdm_integrator.exceptions import (
@@ -28,7 +29,12 @@ from abdm_integrator.hiu.views.base import HIUBaseView, HIUGatewayBaseView
 from abdm_integrator.utils import ABDMRequestHelper, APIResultsSetPagination
 
 
+class ConsentRequestThrottle(UserRateThrottle):
+    rate = '10/minute'
+
+
 class GenerateConsent(HIUBaseView):
+    throttle_classes = [ConsentRequestThrottle]
 
     def post(self, request, format=None):
         serializer = GenerateConsentSerializer(data=request.data)
